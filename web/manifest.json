@@ -1,6 +1,6 @@
 {
-    "name": "aplikasi_haji_pintar",
-    "short_name": "aplikasi_haji_pintar",
+    "name": "hajipintar",
+    "short_name": "hajipintar",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

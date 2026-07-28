@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:latlong2/latlong.dart';
 
 import 'app_theme.dart';
 import 'islamic_icons.dart';
@@ -11,8 +13,7 @@ class OfflineMapScreen extends StatefulWidget {
 }
 
 class _OfflineMapScreenState extends State<OfflineMapScreen> {
-  final TransformationController _transformationController =
-      TransformationController();
+  final MapController _mapController = MapController();
 
   int _selectedMap = 0;
 
@@ -20,14 +21,16 @@ class _OfflineMapScreenState extends State<OfflineMapScreen> {
     _OfflineMapData(
       title: 'Peta Mina',
       subtitle: 'Kawasan khemah dan laluan utama Mina',
-      assetPath: 'assets/maps/mina_map.jpg',
       icon: HajjIconType.mina,
+      initialCenter: LatLng(21.4133, 39.8931),
+      initialZoom: 14.0,
     ),
     _OfflineMapData(
       title: 'Peta Arafah',
       subtitle: 'Kawasan utama dan panduan lokasi Arafah',
-      assetPath: 'assets/maps/arafah_map.jpg',
       icon: HajjIconType.arafah,
+      initialCenter: LatLng(21.3544, 39.9839),
+      initialZoom: 13.5,
     ),
   ];
 
@@ -36,44 +39,34 @@ class _OfflineMapScreenState extends State<OfflineMapScreen> {
   void _selectMap(int index) {
     setState(() {
       _selectedMap = index;
-      _transformationController.value = Matrix4.identity();
     });
+    // Pindahkan pandangan peta secara langsung ke lokasi Mina atau Arafah
+    _mapController.move(_currentMap.initialCenter, _currentMap.initialZoom);
   }
 
   void _resetZoom() {
-    _transformationController.value = Matrix4.identity();
+    _mapController.move(_currentMap.initialCenter, _currentMap.initialZoom);
   }
 
   void _zoomIn() {
-    final Matrix4 current = _transformationController.value.clone();
-
-    final double currentScale = current.getMaxScaleOnAxis();
-
-    if (currentScale >= 5) {
-      return;
+    final double currentZoom = _mapController.camera.zoom;
+    if (currentZoom < 18) {
+      _mapController.move(_mapController.camera.center, currentZoom + 1);
     }
-
-    _transformationController.value = current
-      ..scaleByDouble(1.25, 1.25, 1.0, 1.0);
   }
 
   void _zoomOut() {
-    final Matrix4 current = _transformationController.value.clone();
-
-    final double currentScale = current.getMaxScaleOnAxis();
-
-    if (currentScale <= 1) {
+    final double currentZoom = _mapController.camera.zoom;
+    if (currentZoom > 12) {
+      _mapController.move(_mapController.camera.center, currentZoom - 1);
+    } else {
       _resetZoom();
-      return;
     }
-
-    _transformationController.value = current
-      ..scaleByDouble(0.8, 0.8, 1.0, 1.0);
   }
 
   @override
   void dispose() {
-    _transformationController.dispose();
+    _mapController.dispose();
     super.dispose();
   }
 
@@ -132,7 +125,7 @@ class _OfflineMapScreenState extends State<OfflineMapScreen> {
             child: Column(
               children: <Widget>[
                 Text(
-                  'PETA LUAR TALIAN',
+                  'PETA INTERAKTIF',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     color: colors.onSurface,
@@ -250,26 +243,27 @@ class _OfflineMapScreenState extends State<OfflineMapScreen> {
       child: Stack(
         children: <Widget>[
           Positioned.fill(
-            child: InteractiveViewer(
-              transformationController: _transformationController,
-              minScale: 1,
-              maxScale: 5,
-              boundaryMargin: const EdgeInsets.all(120),
-              child: SizedBox.expand(
-                child: Image.asset(
-                  _currentMap.assetPath,
-                  key: ValueKey<String>(_currentMap.assetPath),
-                  fit: BoxFit.contain,
-                  errorBuilder:
-                      (
-                        BuildContext context,
-                        Object error,
-                        StackTrace? stackTrace,
-                      ) {
-                        return _buildMissingImage(context);
-                      },
+            child: FlutterMap(
+              mapController: _mapController,
+              options: MapOptions(
+                initialCenter: _currentMap.initialCenter,
+                initialZoom: _currentMap.initialZoom,
+                minZoom: 12,
+                maxZoom: 18,
+                // Kunci kawasan peta agar khusus sekitar Masyair sahaja
+                cameraConstraint: CameraConstraint.contain(
+                  bounds: LatLngBounds(
+                    const LatLng(21.3100, 39.8400), // Sempadan Bawah Kiri
+                    const LatLng(21.4700, 40.0500), // Sempadan Atas Kanan
+                  ),
                 ),
               ),
+              children: <Widget>[
+                TileLayer(
+  urlTemplate: 'https://mt1.google.com/vt/lyrs=m&hl=en&x={x}&y={y}&z={z}',
+  userAgentPackageName: 'my.hajipintar.app',
+),
+              ],
             ),
           ),
           Positioned(
@@ -282,7 +276,7 @@ class _OfflineMapScreenState extends State<OfflineMapScreen> {
           Positioned(
             left: 14,
             bottom: 14,
-            child: _OfflineBadge(color: palette.emerald),
+            child: _OnlineBadge(color: palette.emerald),
           ),
         ],
       ),
@@ -385,68 +379,26 @@ class _OfflineMapScreenState extends State<OfflineMapScreen> {
   Widget _divider(HajjColors palette) {
     return Container(width: 30, height: 1, color: palette.glassBorder);
   }
-
-  Widget _buildMissingImage(BuildContext context) {
-    final HajjColors palette = context.hajjColors;
-    final ColorScheme colors = context.appColorScheme;
-
-    return Container(
-      padding: const EdgeInsets.all(26),
-      alignment: Alignment.center,
-      decoration: BoxDecoration(
-        gradient: RadialGradient(
-          colors: <Color>[palette.softSurface, palette.gradientEnd],
-        ),
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-          HajjIcon(
-            type: _currentMap.icon,
-            color: palette.gold,
-            size: 78,
-            strokeWidth: 4.2,
-          ),
-          const SizedBox(height: 18),
-          Text(
-            'Gambar ${_currentMap.title} '
-            'belum ditemui',
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              color: colors.onSurface,
-              fontSize: 18,
-              fontWeight: FontWeight.w900,
-            ),
-          ),
-          const SizedBox(height: 10),
-          Text(
-            'Masukkan fail ke:\n'
-            '${_currentMap.assetPath}',
-            textAlign: TextAlign.center,
-            style: TextStyle(color: palette.mutedText, height: 1.5),
-          ),
-        ],
-      ),
-    );
-  }
 }
 
 class _OfflineMapData {
   const _OfflineMapData({
     required this.title,
     required this.subtitle,
-    required this.assetPath,
     required this.icon,
+    required this.initialCenter,
+    required this.initialZoom,
   });
 
   final String title;
   final String subtitle;
-  final String assetPath;
   final HajjIconType icon;
+  final LatLng initialCenter;
+  final double initialZoom;
 }
 
-class _OfflineBadge extends StatelessWidget {
-  const _OfflineBadge({required this.color});
+class _OnlineBadge extends StatelessWidget {
+  const _OnlineBadge({required this.color});
 
   final Color color;
 
@@ -462,10 +414,10 @@ class _OfflineBadge extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
-          Icon(Icons.offline_pin_rounded, color: color, size: 16),
+          Icon(Icons.public_rounded, color: color, size: 16),
           const SizedBox(width: 7),
           Text(
-            'Offline',
+            'Online',
             style: TextStyle(
               color: color,
               fontSize: 12,
@@ -491,8 +443,9 @@ class _MapIconButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final HajjColors palette = context.hajjColors;
-
+    // Betulkan cara panggil warna di sini:
+    final HajjColors palette = context.hajjColors; 
+    
     return IconButton(
       tooltip: tooltip,
       onPressed: onPressed,

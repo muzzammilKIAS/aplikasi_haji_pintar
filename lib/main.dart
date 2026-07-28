@@ -15,6 +15,9 @@ import 'offline_map_screen.dart';
 import 'sai_counter_screen.dart';
 import 'theme_controller.dart';
 
+import 'dart:async';
+import 'package:hijri/hijri_calendar.dart';
+
 late Box<dynamic> tawafBox;
 late Box<dynamic> saiBox;
 late Box<dynamic> settingsBox;
@@ -48,7 +51,7 @@ class AplikasiHajiPintar extends StatelessWidget {
       animation: themeController,
       builder: (BuildContext context, Widget? child) {
         return MaterialApp(
-          title: 'Aplikasi Haji Pintar',
+          title: 'hajipintar',
           debugShowCheckedModeBanner: false,
           theme: AppTheme.light,
           darkTheme: AppTheme.dark,
@@ -205,6 +208,8 @@ class HalamanUtama extends StatelessWidget {
                         DashboardHeader(themeController: themeController),
                         const SizedBox(height: 28),
                         const HeroPanel(),
+                        const SizedBox(height: 20),
+                        const TimeAndCountdownPanel(),
                         const SizedBox(height: 34),
                         const SectionTitle(),
                         const SizedBox(height: 16),
@@ -251,7 +256,21 @@ class HalamanUtama extends StatelessWidget {
                             _bukaPanduanHaji(context);
                           },
                         ),
-                      ],
+                        
+                        // --- KOD COPYRIGHT ---
+                        const SizedBox(height: 48),
+                        Center(
+                          child: Text(
+                            '© Muzzammil Najib | Versi BETA • Kemas kini akan menyusul.',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: palette.mutedText.withValues(alpha: 0.6), 
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ], // <--- Kurungan ']' inilah yang terpadam tadi
                     ),
                   ),
                 ),
@@ -262,7 +281,6 @@ class HalamanUtama extends StatelessWidget {
       ),
     );
   }
-
   Widget _buildFeatureGrid(BuildContext context, double width) {
     int columns = 1;
 
@@ -432,21 +450,21 @@ class DashboardHeader extends StatelessWidget {
           width: 48,
           height: 48,
           decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: <Color>[palette.emerald, colors.primaryContainer],
-            ),
             borderRadius: BorderRadius.circular(15),
             boxShadow: <BoxShadow>[
               BoxShadow(
                 color: palette.emerald.withValues(alpha: 0.23),
                 blurRadius: 22,
+                offset: const Offset(0, 4),
               ),
             ],
           ),
-          child: HajjIcon(
-            type: HajjIconType.mosque,
-            color: palette.onAccent,
-            size: 29,
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(15),
+            child: Image.asset(
+              'assets/images/app_icon.png', // <-- Menggunakan ikon sedia ada anda
+              fit: BoxFit.cover,
+            ),
           ),
         ),
         const SizedBox(width: 14),
@@ -605,7 +623,7 @@ class HeroPanel extends StatelessWidget {
               ),
               const SizedBox(height: 22),
               Text(
-                'Assalamualaikum,\nSelamat Datang.',
+                'Assalamualaikum,\nSelamat Datang!',
                 style: TextStyle(
                   color: colors.onSurface,
                   fontSize: 34,
@@ -616,8 +634,8 @@ class HeroPanel extends StatelessWidget {
               ),
               const SizedBox(height: 14),
               Text(
-                'Panduan digital yang membantu perjalanan '
-                'ibadah anda lebih tersusun, selamat dan tenang.',
+                'HajiPintar adalah panduan digital yang membantu perjalanan '
+                'haji anda lebih tersusun, selamat dan tenang.',
                 style: TextStyle(
                   color: palette.mutedText,
                   fontSize: 15,
@@ -2329,6 +2347,232 @@ class GlowDot extends StatelessWidget {
         boxShadow: <BoxShadow>[
           BoxShadow(color: color, blurRadius: 18, spreadRadius: 3),
         ],
+      ),
+    );
+  }
+}
+
+class TimeAndCountdownPanel extends StatefulWidget {
+  const TimeAndCountdownPanel({super.key});
+
+  @override
+  State<TimeAndCountdownPanel> createState() => _TimeAndCountdownPanelState();
+}
+
+class _TimeAndCountdownPanelState extends State<TimeAndCountdownPanel> {
+  late Timer _timer;
+  late DateTime _now;
+  late HijriCalendar _hijriNow;
+  
+  // Tetapan sasaran Hari Wukuf (Contoh: 15 Mei 2027 untuk Musim Haji akan datang)
+  final DateTime _targetHajj = DateTime(2027, 5, 15);
+
+  @override
+  void initState() {
+    super.initState();
+    _now = DateTime.now();
+    
+    // 1. Daftarkan kamus Bahasa Melayu mengikut format Map<int, String>
+    HijriCalendar.addLocale('ms', <String, Map<int, String>>{
+      'long': <int, String>{
+        1: 'Muharram', 2: 'Safar', 3: 'Rabiulawal', 4: 'Rabiulakhir',
+        5: 'Jamadilawal', 6: 'Jamadilakhir', 7: 'Rejab', 8: 'Syaaban',
+        9: 'Ramadan', 10: 'Syawal', 11: 'Zulkaedah', 12: 'Zulhijjah'
+      },
+      'short': <int, String>{
+        1: 'Muh', 2: 'Saf', 3: 'Raw', 4: 'Rak', 5: 'Jaw', 6: 'Jak',
+        7: 'Rej', 8: 'Sya', 9: 'Ram', 10: 'Syw', 11: 'Zkd', 12: 'Zhj'
+      },
+      'days': <int, String>{
+        1: 'Isnin', 2: 'Selasa', 3: 'Rabu', 4: 'Khamis', 5: 'Jumaat', 6: 'Sabtu', 7: 'Ahad'
+      },
+      'short_days': <int, String>{
+        1: 'Isn', 2: 'Sel', 3: 'Rab', 4: 'Kha', 5: 'Jum', 6: 'Sab', 7: 'Ahd'
+      }
+    });
+
+    // 2. Sekarang baru kita boleh gunakan 'ms'
+    HijriCalendar.setLocal('ms');
+    _hijriNow = HijriCalendar.now();
+    
+    // 3. Mengemas kini masa setiap 1 saat
+    _timer = Timer.periodic(const Duration(seconds: 1), (Timer timer) {
+      if (mounted) {
+        setState(() {
+          _now = DateTime.now();
+          // Kemas kini tarikh hijrah jika masuk waktu tengah malam
+          if (_now.hour == 0 && _now.minute == 0 && _now.second == 0) {
+            _hijriNow = HijriCalendar.now();
+          }
+        });
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer.cancel();
+    super.dispose();
+  }
+
+  String _formatWaktu(DateTime masa) {
+    final int jam = masa.hour > 12 ? masa.hour - 12 : (masa.hour == 0 ? 12 : masa.hour);
+    final String minit = masa.minute.toString().padLeft(2, '0');
+    final String saat = masa.second.toString().padLeft(2, '0');
+    final String ampm = masa.hour >= 12 ? 'PM' : 'AM';
+    return '$jam:$minit:$saat $ampm';
+  }
+
+  String _formatTarikhMasihi(DateTime masa) {
+    const List<String> bulan = <String>[
+      'Jan', 'Feb', 'Mac', 'Apr', 'Mei', 'Jun',
+      'Jul', 'Ogos', 'Sep', 'Okt', 'Nov', 'Dis'
+    ];
+    return '${masa.day} ${bulan[masa.month - 1]} ${masa.year}';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // Ini memastikan warna bertukar mengikut mode Gelap/Terang
+    final HajjColors palette = context.hajjColors;
+    final ColorScheme colors = context.appColorScheme;
+
+    final Duration bezaMasa = _targetHajj.difference(_now);
+    final int bakiHari = bezaMasa.inDays > 0 ? bezaMasa.inDays : 0;
+
+    return GlassContainer(
+      borderRadius: 24,
+      padding: const EdgeInsets.all(22),
+      child: LayoutBuilder(
+        builder: (BuildContext context, BoxConstraints constraints) {
+          final bool compact = constraints.maxWidth < 650;
+
+          final Widget jamSekarang = Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              // Perkataan "Waktu Semasa" telah dibuang di sini
+              Text(
+                _formatWaktu(_now),
+                style: TextStyle(
+                  color: colors.onSurface, 
+                  fontSize: 32,
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: 1,
+                ),
+              ),
+              const SizedBox(height: 6),
+              
+              // Blok Tarikh (Masihi & Hijrah)
+              Wrap(
+                spacing: 10,
+                runSpacing: 10,
+                children: <Widget>[
+                  // Kotak Tarikh Masihi
+                  Container(
+                    alignment: Alignment.center,
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: palette.emerald.withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: palette.emerald.withValues(alpha: 0.25)),
+                    ),
+                    child: Text(
+                      _formatTarikhMasihi(_now),
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: colors.onSurface, 
+                        fontSize: 13, 
+                        fontWeight: FontWeight.w700,
+                        height: 1.0,
+                      ),
+                    ),
+                  ),
+                  
+                  // Kotak Tarikh Hijrah
+                  Container(
+                    alignment: Alignment.center,
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: palette.gold.withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: palette.gold.withValues(alpha: 0.25)),
+                    ),
+                    child: Text(
+                      '${_hijriNow.hDay} ${_hijriNow.getLongMonthName()} ${_hijriNow.hYear}H',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: colors.onSurface, 
+                        fontSize: 13, 
+                        fontWeight: FontWeight.w700,
+                        height: 1.0,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          );
+
+          final Widget countdownHaji = Container(
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 18),
+            decoration: BoxDecoration(
+              color: palette.gold.withValues(alpha: 0.12),
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: palette.gold.withValues(alpha: 0.3)),
+            ),
+            child: Column(
+              crossAxisAlignment: compact ? CrossAxisAlignment.start : CrossAxisAlignment.center,
+              children: <Widget>[
+                // Ditukar kepada perkataan "Wukuf" sahaja
+                Text(
+                  'WUKUF',
+                  style: TextStyle(
+                    color: palette.gold,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: 1.2,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.baseline,
+                  textBaseline: TextBaseline.alphabetic,
+                  children: <Widget>[
+                    Text(
+                      '$bakiHari',
+                      style: TextStyle(
+                        color: colors.onSurface,
+                        fontSize: 36,
+                        fontWeight: FontWeight.w900,
+                      ),
+                    ),
+                    const SizedBox(width: 6),
+                    Text(
+                      'HARI LAGI',
+                      style: TextStyle(
+                        color: palette.mutedText,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          );
+
+          if (compact) {
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: <Widget>[jamSekarang, const SizedBox(height: 20), countdownHaji],
+            );
+          }
+
+          return Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[jamSekarang, countdownHaji],
+          );
+        },
       ),
     );
   }
