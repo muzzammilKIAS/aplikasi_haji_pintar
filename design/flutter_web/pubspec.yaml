@@ -1,0 +1,16 @@
+name: haji_pintar_redesign
+description: A small standalone Flutter web mockup for the "Elegant" redesign
+publish_to: none
+version: 0.0.1
+environment:
+  sdk: '>=2.18.0 <3.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  google_fonts: ^5.0.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/
