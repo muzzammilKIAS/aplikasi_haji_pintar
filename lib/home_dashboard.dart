@@ -368,7 +368,7 @@ class HalamanUtama extends StatelessWidget {
                             ],
                           ),
                         ),
-                      ], // <--- Kurungan ']' inilah yang terpadam tadi
+                      ],
                     ),
                   ),
                 ),
@@ -576,10 +576,7 @@ class DashboardHeader extends StatelessWidget {
           ),
           child: ClipRRect(
             borderRadius: BorderRadius.circular(15),
-            child: Image.asset(
-              'assets/images/app_icon.png', // <-- Menggunakan ikon sedia ada anda
-              fit: BoxFit.cover,
-            ),
+            child: Image.asset('assets/images/app_icon.png', fit: BoxFit.cover),
           ),
         ),
         const SizedBox(width: 14),
@@ -854,7 +851,6 @@ class HeroPanel extends StatelessWidget {
                       'assets/images/muka_depan.jpg',
                       fit: BoxFit.cover,
                       errorBuilder: (context, error, stackTrace) {
-                        // Kembali ke ikon asal jika gambar tiada
                         return HajjIcon(
                           type: HajjIconType.kaaba,
                           color: palette.gold,
@@ -2030,15 +2026,14 @@ class _TimeAndCountdownPanelState extends State<TimeAndCountdownPanel> {
   late DateTime _now;
   late HijriCalendar _hijriNow;
 
-  // Tarikh sasaran Hari Wukuf (9 Zulhijjah) — dikira secara automatik
-  // setiap kali skrin dibuka, bukan hardcode, supaya betul untuk
-  // musim Haji akan datang tanpa perlu kemas kini kod setiap tahun.
   late DateTime _targetHajj;
+  late int _hariIni; // Digunakan untuk menyemak pertukaran hari yang tepat
 
   @override
   void initState() {
     super.initState();
     _now = DateTime.now();
+    _hariIni = _now.day;
     _targetHajj = kiraTarikhWukufAkanDatang(_now);
 
     // 1. Daftarkan kamus Bahasa Melayu mengikut format Map<int, String>
@@ -2100,8 +2095,10 @@ class _TimeAndCountdownPanelState extends State<TimeAndCountdownPanel> {
       if (mounted) {
         setState(() {
           _now = DateTime.now();
-          // Kemas kini tarikh hijrah dan sasaran Wukuf jika masuk waktu tengah malam
-          if (_now.hour == 0 && _now.minute == 0 && _now.second == 0) {
+
+          // Memperbaiki ralat pertukaran hari - kini menyemak tarikh berbanding saat tepat
+          if (_now.day != _hariIni) {
+            _hariIni = _now.day;
             _hijriNow = HijriCalendar.now();
             _targetHajj = kiraTarikhWukufAkanDatang(_now);
           }
@@ -2146,12 +2143,18 @@ class _TimeAndCountdownPanelState extends State<TimeAndCountdownPanel> {
 
   @override
   Widget build(BuildContext context) {
-    // Ini memastikan warna bertukar mengikut mode Gelap/Terang
     final HajjColors palette = context.hajjColors;
     final ColorScheme colors = context.appColorScheme;
 
-    final Duration bezaMasa = _targetHajj.difference(_now);
-    final int bakiHari = bezaMasa.inDays > 0 ? bezaMasa.inDays : 0;
+    // Memperbaiki ralat .inDays - Memastikan pengiraan hari menggunakan tarikh kalendar mutlak
+    // tanpa dipengaruhi oleh waktu jam/minit/saat.
+    final DateTime tarikhSemasa = DateTime(_now.year, _now.month, _now.day);
+    final DateTime tarikhSasaran = DateTime(
+      _targetHajj.year,
+      _targetHajj.month,
+      _targetHajj.day,
+    );
+    final int bakiHari = tarikhSasaran.difference(tarikhSemasa).inDays;
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(26, 0, 26, 26),
@@ -2162,7 +2165,6 @@ class _TimeAndCountdownPanelState extends State<TimeAndCountdownPanel> {
           final Widget jamSekarang = Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              // Perkataan "Waktu Semasa" telah dibuang di sini
               Text(
                 _formatWaktu(_now),
                 style: GoogleFonts.playfairDisplay(
@@ -2173,13 +2175,10 @@ class _TimeAndCountdownPanelState extends State<TimeAndCountdownPanel> {
                 ),
               ),
               const SizedBox(height: 6),
-
-              // Blok Tarikh (Masihi & Hijrah)
               Wrap(
                 spacing: 10,
                 runSpacing: 10,
                 children: <Widget>[
-                  // Kotak Tarikh Masihi
                   Container(
                     alignment: Alignment.center,
                     padding: const EdgeInsets.symmetric(
@@ -2204,8 +2203,6 @@ class _TimeAndCountdownPanelState extends State<TimeAndCountdownPanel> {
                       ),
                     ),
                   ),
-
-                  // Kotak Tarikh Hijrah
                   Container(
                     alignment: Alignment.center,
                     padding: const EdgeInsets.symmetric(
@@ -2247,7 +2244,6 @@ class _TimeAndCountdownPanelState extends State<TimeAndCountdownPanel> {
                   ? CrossAxisAlignment.start
                   : CrossAxisAlignment.center,
               children: <Widget>[
-                // Ditukar kepada perkataan "Wukuf" sahaja
                 Text(
                   'WUKUF',
                   style: TextStyle(

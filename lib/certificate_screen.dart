@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart' show rootBundle;
 import 'package:hive_ce_flutter/hive_ce_flutter.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
@@ -151,303 +152,458 @@ class _CertificateScreenState extends State<CertificateScreen> {
       subject: 'Sijil pencapaian pembelajaran kendiri',
     );
 
-    const PdfColor ivory = PdfColor.fromInt(0xFFFAF7F0);
+    // Font serif (Playfair Display) untuk tajuk/nama, dan sans (Plus Jakarta
+    // Sans) untuk teks badan — sepadan dengan tipografi aplikasi. Jika
+    // muat turun font Google Fonts gagal (tiada internet semasa jana PDF),
+    // kembali guna fon lalai supaya sijil tetap boleh dijana.
+    pw.Font? serifBold;
+    pw.Font? serifRegular;
+    pw.Font? sansRegular;
+    pw.Font? sansBold;
+
+    try {
+      serifBold = await PdfGoogleFonts.playfairDisplayBold();
+      serifRegular = await PdfGoogleFonts.playfairDisplayRegular();
+      sansRegular = await PdfGoogleFonts.plusJakartaSansRegular();
+      sansBold = await PdfGoogleFonts.plusJakartaSansBold();
+    } catch (_) {
+      serifBold = null;
+      serifRegular = null;
+      sansRegular = null;
+      sansBold = null;
+    }
+
+    // Logo aplikasi sebenar (assets/images/app_icon.png, sama fail yang
+    // digunakan untuk ikon apps). Jika tiada / gagal dimuat, kembali guna
+    // monogram "HP" supaya sijil tetap lengkap.
+    pw.MemoryImage? logoImage;
+    try {
+      final ByteData logoData = await rootBundle.load(
+        'assets/images/app_icon.png',
+      );
+      logoImage = pw.MemoryImage(logoData.buffer.asUint8List());
+    } catch (_) {
+      logoImage = null;
+    }
+
+    const PdfColor ivory = PdfColor.fromInt(0xFFFBF7EE);
     const PdfColor white = PdfColor.fromInt(0xFFFFFFFF);
-    const PdfColor teal = PdfColor.fromInt(0xFF176D5D);
+    const PdfColor teal = PdfColor.fromInt(0xFF0E5C4F);
     const PdfColor tealSoft = PdfColor.fromInt(0xFFE4F0EB);
-    const PdfColor gold = PdfColor.fromInt(0xFFB28A46);
+    const PdfColor gold = PdfColor.fromInt(0xFFAD7B27);
     const PdfColor goldSoft = PdfColor.fromInt(0xFFF3EAD8);
     const PdfColor text = PdfColor.fromInt(0xFF25332E);
     const PdfColor muted = PdfColor.fromInt(0xFF687A73);
+    const PdfColor goldFaint = PdfColor.fromInt(0xFFDCC79A);
+    const PdfColor tealFaint = PdfColor.fromInt(0xFF9AB8B0);
+
+    pw.TextStyle serif({
+      double size = 12,
+      PdfColor color = text,
+      double letterSpacing = 0,
+    }) {
+      return pw.TextStyle(
+        font: serifBold,
+        fontFallback: serifRegular != null
+            ? <pw.Font>[serifRegular]
+            : <pw.Font>[],
+        fontWeight: pw.FontWeight.bold,
+        fontSize: size,
+        color: color,
+        letterSpacing: letterSpacing,
+      );
+    }
+
+    pw.TextStyle sans({
+      double size = 10,
+      PdfColor color = text,
+      bool bold = false,
+      double letterSpacing = 0,
+      double? lineSpacing,
+    }) {
+      return pw.TextStyle(
+        font: bold ? sansBold : sansRegular,
+        fontWeight: bold ? pw.FontWeight.bold : pw.FontWeight.normal,
+        fontSize: size,
+        color: color,
+        letterSpacing: letterSpacing,
+        lineSpacing: lineSpacing,
+      );
+    }
+
+    // Pembahagi hiasan pendek: garis - berlian kecil - garis. Padanan
+    // dengan `HajjOrnamentDivider` yang digunakan dalam UI aplikasi supaya
+    // sijil dan aplikasi berkongsi satu bahasa reka bentuk.
+    pw.Widget ornamentDivider({double width = 150}) {
+      return pw.Row(
+        mainAxisAlignment: pw.MainAxisAlignment.center,
+        children: <pw.Widget>[
+          pw.Container(width: width, height: 1, color: gold),
+          pw.Container(
+            margin: const pw.EdgeInsets.symmetric(horizontal: 7),
+            width: 5,
+            height: 5,
+            decoration: const pw.BoxDecoration(
+              color: gold,
+              shape: pw.BoxShape.circle,
+            ),
+          ),
+          pw.Container(width: width, height: 1, color: gold),
+        ],
+      );
+    }
+
+    // Bulatan hiasan kecil di setiap penjuru bingkai dalam — sentuhan
+    // "permata" yang halus, lazim pada sijil bergaya klasik/Islamik.
+    pw.Widget cornerJewel() {
+      return pw.Container(
+        width: 7,
+        height: 7,
+        decoration: const pw.BoxDecoration(
+          color: gold,
+          shape: pw.BoxShape.circle,
+        ),
+      );
+    }
 
     document.addPage(
       pw.Page(
         pageFormat: PdfPageFormat.a4.landscape,
-        margin: const pw.EdgeInsets.all(18),
+        margin: const pw.EdgeInsets.all(16),
         build: (pw.Context context) {
-          return pw.Container(
-            decoration: pw.BoxDecoration(
-              color: ivory,
-              border: pw.Border.all(color: gold, width: 3),
-            ),
-            padding: const pw.EdgeInsets.all(10),
-            child: pw.Container(
-              decoration: pw.BoxDecoration(
-                color: white,
-                border: pw.Border.all(color: teal, width: 1.4),
-              ),
-              padding: const pw.EdgeInsets.symmetric(
-                horizontal: 34,
-                vertical: 24,
-              ),
-              child: pw.Column(
-                crossAxisAlignment: pw.CrossAxisAlignment.center,
-                children: <pw.Widget>[
-                  pw.Row(
-                    mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
-                    children: <pw.Widget>[
-                      pw.Row(
-                        children: <pw.Widget>[
-                          pw.Container(
-                            width: 48,
-                            height: 48,
-                            alignment: pw.Alignment.center,
-                            decoration: const pw.BoxDecoration(
-                              color: teal,
-                              shape: pw.BoxShape.circle,
+          return pw.Stack(
+            children: <pw.Widget>[
+              // Bingkai berlapis tiga: emas tebal (luar) → putih → emas
+              // nipis (dalam) — memberi kesan "kertas rasmi" yang lebih
+              // bertaraf berbanding satu garis sempadan sahaja.
+              pw.Container(
+                decoration: pw.BoxDecoration(
+                  color: ivory,
+                  border: pw.Border.all(color: gold, width: 2.6),
+                ),
+                padding: const pw.EdgeInsets.all(9),
+                child: pw.Container(
+                  decoration: pw.BoxDecoration(
+                    color: white,
+                    border: pw.Border.all(color: teal, width: 1.1),
+                  ),
+                  padding: const pw.EdgeInsets.all(5),
+                  child: pw.Container(
+                    decoration: pw.BoxDecoration(
+                      border: pw.Border.all(color: goldFaint, width: 0.6),
+                    ),
+                    padding: const pw.EdgeInsets.symmetric(
+                      horizontal: 40,
+                      vertical: 26,
+                    ),
+                    child: pw.Column(
+                      crossAxisAlignment: pw.CrossAxisAlignment.center,
+                      children: <pw.Widget>[
+                        pw.Row(
+                          mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: pw.CrossAxisAlignment.center,
+                          children: <pw.Widget>[
+                            pw.Row(
+                              children: <pw.Widget>[
+                                pw.Container(
+                                  width: 50,
+                                  height: 50,
+                                  alignment: pw.Alignment.center,
+                                  decoration: pw.BoxDecoration(
+                                    color: logoImage != null ? white : teal,
+                                    shape: pw.BoxShape.circle,
+                                    border: pw.Border.all(
+                                      color: gold,
+                                      width: 1.3,
+                                    ),
+                                  ),
+                                  child: logoImage != null
+                                      ? pw.ClipRRect(
+                                          horizontalRadius: 25,
+                                          verticalRadius: 25,
+                                          child: pw.Image(
+                                            logoImage,
+                                            width: 42,
+                                            height: 42,
+                                            fit: pw.BoxFit.cover,
+                                          ),
+                                        )
+                                      : pw.Text(
+                                          'HP',
+                                          style: serif(size: 18, color: white),
+                                        ),
+                                ),
+                                pw.SizedBox(width: 13),
+                                pw.Column(
+                                  crossAxisAlignment:
+                                      pw.CrossAxisAlignment.start,
+                                  children: <pw.Widget>[
+                                    pw.Text(
+                                      'HAJI PINTAR',
+                                      style: serif(
+                                        size: 17,
+                                        color: teal,
+                                        letterSpacing: 2,
+                                      ),
+                                    ),
+                                    pw.SizedBox(height: 3),
+                                    pw.Text(
+                                      'Pembelajaran Kendiri Haji & Umrah',
+                                      style: sans(size: 9, color: muted),
+                                    ),
+                                  ],
+                                ),
+                              ],
                             ),
-                            child: pw.Text(
-                              'HP',
-                              style: pw.TextStyle(
-                                color: white,
-                                fontSize: 18,
-                                fontWeight: pw.FontWeight.bold,
+                            pw.Container(
+                              padding: const pw.EdgeInsets.symmetric(
+                                horizontal: 14,
+                                vertical: 8,
                               ),
+                              decoration: pw.BoxDecoration(
+                                color: goldSoft,
+                                borderRadius: pw.BorderRadius.circular(24),
+                                border: pw.Border.all(color: gold, width: 0.8),
+                              ),
+                              child: pw.Text(
+                                'MARKAH ${data.score}%',
+                                style: sans(
+                                  size: 10,
+                                  color: gold,
+                                  bold: true,
+                                  letterSpacing: 0.6,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        pw.SizedBox(height: 22),
+                        ornamentDivider(width: 46),
+                        pw.SizedBox(height: 16),
+                        pw.Text(
+                          'SIJIL PENCAPAIAN',
+                          textAlign: pw.TextAlign.center,
+                          style: serif(size: 32, color: teal, letterSpacing: 3),
+                        ),
+                        pw.SizedBox(height: 6),
+                        pw.Text(
+                          'PROGRAM PEMBELAJARAN KENDIRI ASAS IBADAH HAJI',
+                          textAlign: pw.TextAlign.center,
+                          style: sans(
+                            size: 11,
+                            color: gold,
+                            bold: true,
+                            letterSpacing: 1.6,
+                          ),
+                        ),
+                        pw.SizedBox(height: 20),
+                        pw.Text(
+                          'Dengan ini diperakui bahawa',
+                          style: sans(size: 11.5, color: muted),
+                        ),
+                        pw.SizedBox(height: 10),
+                        pw.Container(
+                          width: 580,
+                          padding: const pw.EdgeInsets.symmetric(
+                            horizontal: 12,
+                          ),
+                          child: pw.FittedBox(
+                            fit: pw.BoxFit.scaleDown,
+                            child: pw.Text(
+                              data.name,
+                              style: serif(size: 34, color: text),
                             ),
                           ),
-                          pw.SizedBox(width: 12),
-                          pw.Column(
-                            crossAxisAlignment: pw.CrossAxisAlignment.start,
+                        ),
+                        pw.SizedBox(height: 8),
+                        pw.Column(
+                          children: <pw.Widget>[
+                            pw.Container(width: 460, height: 1.4, color: gold),
+                            pw.SizedBox(height: 2),
+                            pw.Container(width: 460, height: 0.6, color: gold),
+                          ],
+                        ),
+                        pw.SizedBox(height: 16),
+                        pw.Container(
+                          width: 620,
+                          child: pw.Text(
+                            'telah berjaya menamatkan program pembelajaran '
+                            'kendiri dan memperoleh markah sekurang-kurangnya '
+                            '80 peratus dalam Penilaian Akhir Asas Ibadah Haji.',
+                            textAlign: pw.TextAlign.center,
+                            style: sans(size: 11, color: text, lineSpacing: 3),
+                          ),
+                        ),
+                        pw.SizedBox(height: 18),
+                        pw.Container(
+                          padding: const pw.EdgeInsets.symmetric(
+                            horizontal: 20,
+                            vertical: 11,
+                          ),
+                          decoration: pw.BoxDecoration(
+                            color: tealSoft,
+                            borderRadius: pw.BorderRadius.circular(9),
+                            border: pw.Border.all(color: teal, width: 0.8),
+                          ),
+                          child: pw.Row(
+                            mainAxisSize: pw.MainAxisSize.min,
+                            mainAxisAlignment: pw.MainAxisAlignment.center,
                             children: <pw.Widget>[
                               pw.Text(
-                                'HAJI PINTAR',
-                                style: pw.TextStyle(
+                                'STATUS  ',
+                                style: sans(size: 9, color: muted),
+                              ),
+                              pw.Text(
+                                'LULUS',
+                                style: sans(
+                                  size: 12,
                                   color: teal,
-                                  fontSize: 16,
-                                  fontWeight: pw.FontWeight.bold,
-                                  letterSpacing: 2,
+                                  bold: true,
+                                  letterSpacing: 0.8,
                                 ),
                               ),
-                              pw.SizedBox(height: 3),
+                              pw.SizedBox(width: 14),
+                              pw.Container(
+                                width: 1,
+                                height: 16,
+                                color: tealFaint,
+                              ),
+                              pw.SizedBox(width: 14),
                               pw.Text(
-                                'Pembelajaran Kendiri Haji',
-                                style: const pw.TextStyle(
-                                  color: muted,
-                                  fontSize: 9,
-                                ),
+                                '${data.score}%',
+                                style: sans(size: 12, color: teal, bold: true),
                               ),
                             ],
                           ),
-                        ],
-                      ),
-                      pw.Container(
-                        padding: const pw.EdgeInsets.symmetric(
-                          horizontal: 13,
-                          vertical: 7,
                         ),
-                        decoration: pw.BoxDecoration(
-                          color: goldSoft,
-                          borderRadius: pw.BorderRadius.circular(20),
-                          border: pw.Border.all(color: gold, width: 0.8),
+                        pw.Spacer(),
+                        pw.Row(
+                          crossAxisAlignment: pw.CrossAxisAlignment.end,
+                          children: <pw.Widget>[
+                            pw.Expanded(
+                              child: pw.Column(
+                                crossAxisAlignment: pw.CrossAxisAlignment.start,
+                                children: <pw.Widget>[
+                                  pw.Text(
+                                    'TARIKH DIKELUARKAN',
+                                    style: sans(
+                                      size: 7.5,
+                                      color: muted,
+                                      letterSpacing: 0.8,
+                                    ),
+                                  ),
+                                  pw.SizedBox(height: 5),
+                                  pw.Text(
+                                    _formatDate(data.issuedAt),
+                                    style: sans(
+                                      size: 10.5,
+                                      color: text,
+                                      bold: true,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            // "Meterai" pengesahan di tengah — cincin emas
+                            // berlapis dengan label SAH, gantian kepada
+                            // tandatangan fizikal untuk sijil digital.
+                            pw.Column(
+                              children: <pw.Widget>[
+                                pw.Container(
+                                  width: 60,
+                                  height: 60,
+                                  alignment: pw.Alignment.center,
+                                  decoration: pw.BoxDecoration(
+                                    shape: pw.BoxShape.circle,
+                                    color: goldSoft,
+                                    border: pw.Border.all(
+                                      color: gold,
+                                      width: 1.4,
+                                    ),
+                                  ),
+                                  child: pw.Container(
+                                    width: 48,
+                                    height: 48,
+                                    alignment: pw.Alignment.center,
+                                    decoration: pw.BoxDecoration(
+                                      shape: pw.BoxShape.circle,
+                                      border: pw.Border.all(
+                                        color: gold,
+                                        width: 0.6,
+                                      ),
+                                    ),
+                                    child: pw.Text(
+                                      'SAH',
+                                      style: serif(size: 12, color: gold),
+                                    ),
+                                  ),
+                                ),
+                                pw.SizedBox(height: 6),
+                                pw.Text(
+                                  'Program Haji Pintar',
+                                  style: sans(
+                                    size: 8.5,
+                                    color: text,
+                                    bold: true,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            pw.Expanded(
+                              child: pw.Column(
+                                crossAxisAlignment: pw.CrossAxisAlignment.end,
+                                children: <pw.Widget>[
+                                  pw.Text(
+                                    'NO. SIJIL',
+                                    style: sans(
+                                      size: 7.5,
+                                      color: muted,
+                                      letterSpacing: 0.8,
+                                    ),
+                                  ),
+                                  pw.SizedBox(height: 5),
+                                  pw.Text(
+                                    data.certificateNumber,
+                                    style: sans(
+                                      size: 10.5,
+                                      color: text,
+                                      bold: true,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
                         ),
-                        child: pw.Text(
-                          'MARKAH ${data.score}%',
-                          style: pw.TextStyle(
-                            color: gold,
-                            fontSize: 10,
-                            fontWeight: pw.FontWeight.bold,
+                        pw.SizedBox(height: 14),
+                        pw.Container(
+                          width: double.infinity,
+                          padding: const pw.EdgeInsets.only(top: 8),
+                          decoration: const pw.BoxDecoration(
+                            border: pw.Border(
+                              top: pw.BorderSide(color: goldSoft, width: 1),
+                            ),
                           ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  pw.SizedBox(height: 16),
-                  pw.Container(width: 78, height: 3, color: gold),
-                  pw.SizedBox(height: 13),
-                  pw.Text(
-                    'SIJIL PENCAPAIAN',
-                    textAlign: pw.TextAlign.center,
-                    style: pw.TextStyle(
-                      color: teal,
-                      fontSize: 29,
-                      fontWeight: pw.FontWeight.bold,
-                      letterSpacing: 2.2,
-                    ),
-                  ),
-                  pw.SizedBox(height: 5),
-                  pw.Text(
-                    'PROGRAM PEMBELAJARAN KENDIRI ASAS IBADAH HAJI',
-                    textAlign: pw.TextAlign.center,
-                    style: pw.TextStyle(
-                      color: gold,
-                      fontSize: 12,
-                      fontWeight: pw.FontWeight.bold,
-                      letterSpacing: 1.1,
-                    ),
-                  ),
-                  pw.SizedBox(height: 17),
-                  pw.Text(
-                    'Dengan ini diperakui bahawa',
-                    style: const pw.TextStyle(color: muted, fontSize: 11),
-                  ),
-                  pw.SizedBox(height: 9),
-                  pw.Container(
-                    width: 560,
-                    padding: const pw.EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 6,
-                    ),
-                    child: pw.FittedBox(
-                      fit: pw.BoxFit.scaleDown,
-                      child: pw.Text(
-                        data.name,
-                        style: pw.TextStyle(
-                          color: text,
-                          fontSize: 31,
-                          fontWeight: pw.FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ),
-                  pw.Container(width: 510, height: 1, color: gold),
-                  pw.SizedBox(height: 13),
-                  pw.Text(
-                    'telah berjaya menamatkan program pembelajaran kendiri '
-                    'dan memperoleh markah sekurang-kurangnya 80 peratus '
-                    'dalam Penilaian Akhir Asas Ibadah Haji.',
-                    textAlign: pw.TextAlign.center,
-                    style: const pw.TextStyle(
-                      color: text,
-                      fontSize: 11,
-                      lineSpacing: 3,
-                    ),
-                  ),
-                  pw.SizedBox(height: 17),
-                  pw.Container(
-                    width: 250,
-                    padding: const pw.EdgeInsets.symmetric(
-                      horizontal: 18,
-                      vertical: 10,
-                    ),
-                    decoration: pw.BoxDecoration(
-                      color: tealSoft,
-                      borderRadius: pw.BorderRadius.circular(8),
-                      border: pw.Border.all(color: teal, width: 0.8),
-                    ),
-                    child: pw.Row(
-                      mainAxisAlignment: pw.MainAxisAlignment.center,
-                      children: <pw.Widget>[
-                        pw.Text(
-                          'STATUS: ',
-                          style: const pw.TextStyle(color: muted, fontSize: 9),
-                        ),
-                        pw.Text(
-                          'LULUS',
-                          style: pw.TextStyle(
-                            color: teal,
-                            fontSize: 12,
-                            fontWeight: pw.FontWeight.bold,
-                          ),
-                        ),
-                        pw.SizedBox(width: 13),
-                        pw.Container(width: 1, height: 17, color: teal),
-                        pw.SizedBox(width: 13),
-                        pw.Text(
-                          '${data.score}%',
-                          style: pw.TextStyle(
-                            color: teal,
-                            fontSize: 12,
-                            fontWeight: pw.FontWeight.bold,
+                          child: pw.Text(
+                            'Sijil ini ialah sijil pencapaian yang dijana '
+                            'oleh Aplikasi Haji Pintar dan bukan sijil rasmi '
+                            'mana-mana pihak berkuasa atau agensi pengelola '
+                            'Haji.',
+                            textAlign: pw.TextAlign.center,
+                            style: sans(size: 6.5, color: muted),
                           ),
                         ),
                       ],
                     ),
                   ),
-                  pw.Spacer(),
-                  pw.Row(
-                    crossAxisAlignment: pw.CrossAxisAlignment.end,
-                    children: <pw.Widget>[
-                      pw.Expanded(
-                        child: pw.Column(
-                          crossAxisAlignment: pw.CrossAxisAlignment.start,
-                          children: <pw.Widget>[
-                            pw.Text(
-                              'Tarikh dikeluarkan',
-                              style: const pw.TextStyle(
-                                color: muted,
-                                fontSize: 8,
-                              ),
-                            ),
-                            pw.SizedBox(height: 4),
-                            pw.Text(
-                              _formatDate(data.issuedAt),
-                              style: pw.TextStyle(
-                                color: text,
-                                fontSize: 10,
-                                fontWeight: pw.FontWeight.bold,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      pw.Expanded(
-                        child: pw.Column(
-                          children: <pw.Widget>[
-                            pw.Container(width: 145, height: 1, color: gold),
-                            pw.SizedBox(height: 5),
-                            pw.Text(
-                              'Program Haji Pintar',
-                              style: pw.TextStyle(
-                                color: text,
-                                fontSize: 9,
-                                fontWeight: pw.FontWeight.bold,
-                              ),
-                            ),
-                            pw.Text(
-                              'Penyedia pembelajaran',
-                              style: const pw.TextStyle(
-                                color: muted,
-                                fontSize: 7,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      pw.Expanded(
-                        child: pw.Column(
-                          crossAxisAlignment: pw.CrossAxisAlignment.end,
-                          children: <pw.Widget>[
-                            pw.Text(
-                              'No. sijil',
-                              style: const pw.TextStyle(
-                                color: muted,
-                                fontSize: 8,
-                              ),
-                            ),
-                            pw.SizedBox(height: 4),
-                            pw.Text(
-                              data.certificateNumber,
-                              style: pw.TextStyle(
-                                color: text,
-                                fontSize: 10,
-                                fontWeight: pw.FontWeight.bold,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                  pw.SizedBox(height: 11),
-                  pw.Container(
-                    width: double.infinity,
-                    padding: const pw.EdgeInsets.only(top: 7),
-                    decoration: const pw.BoxDecoration(
-                      border: pw.Border(
-                        top: pw.BorderSide(color: goldSoft, width: 1),
-                      ),
-                    ),
-                    child: pw.Text(
-                      'Sijil ini ialah sijil pencapaian yang dijana oleh '
-                      'Aplikasi Haji Pintar dan bukan sijil rasmi mana-mana '
-                      'pihak berkuasa atau agensi pengelola Haji.',
-                      textAlign: pw.TextAlign.center,
-                      style: const pw.TextStyle(color: muted, fontSize: 6.5),
-                    ),
-                  ),
-                ],
+                ),
               ),
-            ),
+              // Permata hiasan pada keempat-empat penjuru bingkai dalam.
+              pw.Positioned(top: 20, left: 20, child: cornerJewel()),
+              pw.Positioned(top: 20, right: 20, child: cornerJewel()),
+              pw.Positioned(bottom: 20, left: 20, child: cornerJewel()),
+              pw.Positioned(bottom: 20, right: 20, child: cornerJewel()),
+            ],
           );
         },
       ),
