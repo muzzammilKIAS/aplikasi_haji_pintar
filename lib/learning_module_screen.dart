@@ -5,6 +5,7 @@ import 'app_theme.dart';
 import 'shared_widgets.dart';
 import 'final_assessment_screen.dart';
 import 'islamic_icons.dart';
+import 'interactive_ihram_module.dart';
 
 class LearningModuleScreen extends StatelessWidget {
   const LearningModuleScreen({required this.assessmentBox, super.key});
@@ -344,7 +345,7 @@ class LearningModuleScreen extends StatelessWidget {
                           },
                     ),
                     const SizedBox(height: 22),
-                    _PrototypeNotice(),
+                    const _PrototypeNotice(),
                   ],
                 ),
               ),
@@ -476,6 +477,8 @@ class LearningDetailScreen extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 18),
+
+                    // --- BAHAGIAN NOTA PEMBELAJARAN ---
                     ...module.sections.map((LearningSection section) {
                       return Padding(
                         padding: const EdgeInsets.only(bottom: 14),
@@ -485,6 +488,84 @@ class LearningDetailScreen extends StatelessWidget {
                         ),
                       );
                     }),
+
+                    // --- BAHAGIAN BUTANG INTERAKTIF (KUIZ/GAME) UNTUK MODUL 03 ---
+                    if (module.number == '03') ...<Widget>[
+                      const SizedBox(height: 12),
+                      Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.all(24),
+                        decoration: BoxDecoration(
+                          color: module.accent.withValues(alpha: 0.08),
+                          borderRadius: BorderRadius.circular(24),
+                          border: Border.all(
+                            color: module.accent.withValues(alpha: 0.3),
+                          ),
+                        ),
+                        child: Column(
+                          children: <Widget>[
+                            Container(
+                              width: 56,
+                              height: 56,
+                              decoration: BoxDecoration(
+                                color: module.accent.withValues(alpha: 0.15),
+                                shape: BoxShape.circle,
+                              ),
+                              child: Center(
+                                child: HajjIcon(
+                                  type:
+                                      HajjIconType.quiz, // Ikon rasmi aplikasi
+                                  color: module.accent,
+                                  size: 28,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 14),
+                            Text(
+                              'Uji Kefahaman Anda',
+                              style: TextStyle(
+                                color: colors.onSurface,
+                                fontSize: 18,
+                                fontWeight: FontWeight.w900,
+                              ),
+                            ),
+                            const SizedBox(height: 6),
+                            Text(
+                              'Sudah habis membaca? Mari uji kefahaman anda '
+                              'tentang larangan ihram melalui Kuiz dan Latih Tubi.',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                color: palette.mutedText,
+                                height: 1.45,
+                              ),
+                            ),
+                            const SizedBox(height: 20),
+                            SizedBox(
+                              width: double.infinity,
+                              height: 52,
+                              child: FilledButton.icon(
+                                style: FilledButton.styleFrom(
+                                  backgroundColor: module.accent,
+                                  foregroundColor: Colors.white,
+                                ),
+                                onPressed: () {
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute<void>(
+                                      builder: (_) =>
+                                          const InteractiveIhramMenu(),
+                                    ),
+                                  );
+                                },
+                                icon: const Icon(Icons.play_arrow_rounded),
+                                label: const Text('Mula Latihan Interaktif'),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 14),
+                    ],
+
                     const SizedBox(height: 8),
                     const _PrototypeNotice(),
                   ],
