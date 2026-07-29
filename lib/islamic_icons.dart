@@ -95,13 +95,21 @@ class HajjIcon extends StatelessWidget {
         return Icons.content_cut_rounded;
 
       case HajjIconType.tawafWada:
-        return Icons.directions_walk_rounded;
+        return Icons.waving_hand_rounded;
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final double glowBlur = size * (0.24 + (strokeWidth * 0.004));
+
+    if (type == HajjIconType.kaaba) {
+      return SizedBox(
+        width: size,
+        height: size,
+        child: CustomPaint(painter: _KaabaPainter(color: color)),
+      );
+    }
 
     return Icon(
       iconData,
@@ -111,5 +119,69 @@ class HajjIcon extends StatelessWidget {
         Shadow(color: color.withValues(alpha: 0.20), blurRadius: glowBlur),
       ],
     );
+  }
+}
+
+/// Melukis ikon Kaabah ringkas (kubus + jalur emas kiswah + pintu) supaya
+/// nampak dikenali sebagai Kaabah, bukan kotak 3D generik. Warna kubus
+/// mengikut parameter `color` (jadi automatik sepadan mod gelap/terang);
+/// jalur kiswah kekal warna emas fizikal Kaabah tanpa mengira tema.
+class _KaabaPainter extends CustomPainter {
+  _KaabaPainter({required this.color});
+
+  final Color color;
+
+  static const Color _jalurEmas = Color(0xFFC9A227);
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final double s = size.shortestSide;
+    final Rect kubusRect = Rect.fromLTWH(
+      (size.width - s) / 2,
+      (size.height - s) / 2,
+      s,
+      s,
+    );
+    final RRect kubus = RRect.fromRectAndRadius(
+      kubusRect,
+      Radius.circular(s * 0.14),
+    );
+
+    canvas.drawRRect(kubus, Paint()..color = color);
+
+    // Jalur emas (kiswah) melintang pada aras satu pertiga atas kubus.
+    final Rect jalurRect = Rect.fromLTWH(
+      kubusRect.left,
+      kubusRect.top + s * 0.32,
+      s,
+      s * 0.16,
+    );
+    canvas.save();
+    canvas.clipRRect(kubus);
+    canvas.drawRect(jalurRect, Paint()..color = _jalurEmas);
+    canvas.restore();
+
+    // Aksen pintu Kaabah kecil di bahagian bawah kanan.
+    final double lebarPintu = s * 0.16;
+    final double tinggiPintu = s * 0.22;
+    final Rect pintuRect = Rect.fromLTWH(
+      kubusRect.left + s * 0.62,
+      kubusRect.bottom - tinggiPintu,
+      lebarPintu,
+      tinggiPintu,
+    );
+    canvas.drawRRect(
+      RRect.fromRectAndCorners(
+        pintuRect,
+        topLeft: Radius.circular(lebarPintu * 0.4),
+        topRight: Radius.circular(lebarPintu * 0.4),
+      ),
+      Paint()..color = _jalurEmas.withValues(alpha: 0.85),
+    );
+  }
+
+  @override
+  bool shouldRepaint(covariant _KaabaPainter oldDelegate) {
+    return oldDelegate.color != color;
   }
 }

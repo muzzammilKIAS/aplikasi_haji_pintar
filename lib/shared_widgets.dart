@@ -377,3 +377,33 @@ class GlowDot extends StatelessWidget {
     );
   }
 }
+
+/// Pembahagi hiasan pendek — garis nipis, berlian kecil di tengah, garis
+/// nipis — digunakan untuk memisahkan sapaan daripada penerangan pada kad
+/// hero halaman utama.
+class HajjOrnamentDivider extends StatelessWidget {
+  const HajjOrnamentDivider({required this.color, super.key});
+
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: <Widget>[
+        Expanded(
+          child: Container(height: 1, color: color.withValues(alpha: 0.5)),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8),
+          child: Transform.rotate(
+            angle: 0.7853981633974483, // 45 darjah
+            child: Container(width: 6, height: 6, color: color),
+          ),
+        ),
+        Expanded(
+          child: Container(height: 1, color: color.withValues(alpha: 0.5)),
+        ),
+      ],
+    );
+  }
+}

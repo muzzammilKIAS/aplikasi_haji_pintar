@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:hijri/hijri_calendar.dart';
 
 import 'app_theme.dart';
@@ -87,7 +88,7 @@ DateTime kiraTarikhWukufAkanDatang(DateTime sekarang) {
 }
 
 /// Sapaan mengikut waktu semasa peranti (pagi/tengah hari/petang/malam),
-/// dipaparkan bersama "Assalamualaikum" pada kad hero halaman utama.
+/// dipaparkan pada kad hero halaman utama.
 String sapaanMengikutMasa() {
   final int jam = DateTime.now().hour;
 
@@ -101,6 +102,39 @@ String sapaanMengikutMasa() {
     return 'Selamat Petang';
   }
   return 'Selamat Malam';
+}
+
+/// Kad "hero" utama papan pemuka — menyatukan sapaan/pengenalan (HeroPanel)
+/// dan maklumat mendesak (tarikh Masihi/Hijrah, waktu semasa, countdown
+/// Wukuf daripada TimeAndCountdownPanel) dalam SATU kad kaca yang menonjol,
+/// dipisahkan oleh pembahagi emas. Ini supaya jemaah nampak semua maklumat
+/// paling penting sekali imbas, tanpa kad berasingan yang berselerak.
+class DashboardHeroCard extends StatelessWidget {
+  const DashboardHeroCard({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final HajjColors palette = context.hajjColors;
+
+    return GlassContainer(
+      borderRadius: 30,
+      padding: EdgeInsets.zero,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: <Widget>[
+          const HeroPanel(),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 26),
+            child: HajjOrnamentDivider(
+              color: palette.gold.withValues(alpha: 0.6),
+            ),
+          ),
+          const SizedBox(height: 22),
+          const TimeAndCountdownPanel(),
+        ],
+      ),
+    );
+  }
 }
 
 class HalamanUtama extends StatelessWidget {
@@ -246,13 +280,14 @@ class HalamanUtama extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
                         DashboardHeader(themeController: themeController),
-                        const SizedBox(height: 28),
-                        const HeroPanel(),
-                        const SizedBox(height: 20),
-                        const TimeAndCountdownPanel(),
-                        const SizedBox(height: 34),
-                        const SectionTitle(),
-                        const SizedBox(height: 16),
+                        const SizedBox(height: 24),
+                        const DashboardHeroCard(),
+                        const SizedBox(height: 40),
+                        const SectionTitle(
+                          title: 'Modul Utama',
+                          subtitle: 'Akses pantas kepada fungsi utama.',
+                        ),
+                        const SizedBox(height: 18),
                         LayoutBuilder(
                           builder:
                               (
@@ -265,15 +300,20 @@ class HalamanUtama extends StatelessWidget {
                                 );
                               },
                         ),
-                        const SizedBox(height: 32),
-                        const HajjJourneyBox(),
-                        const SizedBox(height: 32),
-                        LearningModulePanel(
-                          onTap: () {
-                            _bukaModulBelajar(context);
-                          },
+                        const SizedBox(height: 40),
+                        const SectionTitle(
+                          title: 'Info Perjalanan',
+                          subtitle:
+                              'Ringkasan tatacara, tempat, rukun dan wajib.',
                         ),
-                        const SizedBox(height: 32),
+                        const SizedBox(height: 18),
+                        const HajjJourneyBox(),
+                        const SizedBox(height: 40),
+                        const SectionTitle(
+                          title: 'Kemajuan Anda',
+                          subtitle: 'Penilaian akhir dan sijil pencapaian.',
+                        ),
+                        const SizedBox(height: 18),
                         AssessmentPanel(
                           onTap: () {
                             final bool passed =
@@ -288,12 +328,6 @@ class HalamanUtama extends StatelessWidget {
                             } else {
                               _bukaPenilaianAkhir(context);
                             }
-                          },
-                        ),
-                        const SizedBox(height: 32),
-                        HajjGuidePanel(
-                          onTap: () {
-                            _bukaPanduanHaji(context);
                           },
                         ),
 
@@ -349,9 +383,9 @@ class HalamanUtama extends StatelessWidget {
   Widget _buildFeatureGrid(BuildContext context, double width) {
     int columns = 1;
 
-    if (width >= 1000) {
-      columns = 4;
-    } else if (width >= 620) {
+    if (width >= 900) {
+      columns = 3;
+    } else if (width >= 560) {
       columns = 2;
     }
 
@@ -400,6 +434,22 @@ class HalamanUtama extends StatelessWidget {
             ),
           );
         },
+      ),
+      FeatureData(
+        number: '04',
+        title: 'Modul Belajar',
+        description: 'Asas, rukun, wajib, larangan ihram, dam dan doa.',
+        icon: HajjIconType.learning,
+        accent: palette.emerald,
+        onTap: () => _bukaModulBelajar(context),
+      ),
+      FeatureData(
+        number: '05',
+        title: 'Panduan Haji',
+        description: 'Ikuti langkah demi langkah dari persediaan hingga Wada’.',
+        icon: HajjIconType.guide,
+        accent: palette.gold,
+        onTap: () => _bukaPanduanHaji(context),
       ),
       FeatureData(
         number: 'SOS',
@@ -539,15 +589,22 @@ class DashboardHeader extends StatelessWidget {
             children: <Widget>[
               Text(
                 'HAJI PINTAR',
-                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                style: GoogleFonts.playfairDisplay(
                   color: colors.onSurface,
-                  fontSize: 18,
-                  letterSpacing: 2,
+                  fontSize: 20,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 3,
                 ),
               ),
+              const SizedBox(height: 3),
               Text(
-                'Smart Pilgrimage Companion',
-                style: TextStyle(color: palette.mutedText, fontSize: 12),
+                'SMART PILGRIMAGE COMPANION',
+                style: TextStyle(
+                  color: palette.gold,
+                  fontSize: 10,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 1.6,
+                ),
               ),
             ],
           ),
@@ -565,22 +622,21 @@ class DashboardHeader extends StatelessWidget {
         ),
         const SizedBox(width: 10),
         Container(
-          padding: const EdgeInsets.all(2.4),
+          padding: const EdgeInsets.all(2),
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            border: Border.all(
-              color: palette.gold.withValues(alpha: 0.38),
-              width: 1.3,
-            ),
+            border: Border.all(color: palette.gold.withValues(alpha: 0.55)),
           ),
           child: CircleAvatar(
-            radius: 19.5,
+            radius: 20,
             backgroundColor: palette.softSurface,
             child: Text(
               'U',
-              style: Theme.of(
-                context,
-              ).textTheme.titleMedium?.copyWith(color: palette.gold),
+              style: GoogleFonts.playfairDisplay(
+                color: palette.gold,
+                fontWeight: FontWeight.w700,
+                fontSize: 16,
+              ),
             ),
           ),
         ),
@@ -682,189 +738,176 @@ class HeroPanel extends StatelessWidget {
     final HajjColors palette = context.hajjColors;
     final ColorScheme colors = context.appColorScheme;
 
-    return GlassContainer(
-      borderRadius: 30,
-      padding: const EdgeInsets.all(26),
-      child: Stack(
-        clipBehavior: Clip.none,
-        children: <Widget>[
-          Positioned(
-            right: -18,
-            bottom: -22,
-            child: Opacity(
-              opacity: 0.05,
-              child: HajjIcon(
-                type: HajjIconType.kaaba,
-                color: palette.emerald,
-                size: 160,
-                strokeWidth: 2,
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(26, 26, 26, 26),
+      child: LayoutBuilder(
+        builder: (BuildContext context, BoxConstraints constraints) {
+          final bool compact = constraints.maxWidth < 700;
+
+          final Widget information = Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              StatusPill(
+                hajjIcon: HajjIconType.doa,
+                label: 'Perjalanan spiritual anda',
+                accentColor: palette.gold,
               ),
+              const SizedBox(height: 24),
+              Text(
+                'Assalamualaikum,',
+                style: GoogleFonts.playfairDisplay(
+                  color: palette.gold,
+                  fontSize: 20,
+                  fontStyle: FontStyle.italic,
+                  fontWeight: FontWeight.w500,
+                  height: 1.1,
+                ),
+              ),
+              Text(
+                sapaanMengikutMasa(),
+                style: GoogleFonts.playfairDisplay(
+                  color: colors.onSurface,
+                  fontSize: 36,
+                  height: 1.15,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: -0.5,
+                ),
+              ),
+              const SizedBox(height: 18),
+              SizedBox(
+                width: 96,
+                child: HajjOrnamentDivider(color: palette.gold),
+              ),
+              const SizedBox(height: 18),
+              Text(
+                'HajiPintar adalah panduan digital yang membantu perjalanan '
+                'haji anda lebih tersusun, selamat dan tenang.',
+                style: TextStyle(
+                  color: palette.mutedText,
+                  fontSize: 15,
+                  height: 1.6,
+                ),
+              ),
+              const SizedBox(height: 24),
+              const Wrap(
+                spacing: 10,
+                runSpacing: 10,
+                children: <Widget>[
+                  MiniInformation(
+                    icon: Icons.location_on_outlined,
+                    label: 'Makkah',
+                  ),
+                  MiniInformation(icon: Icons.wifi_rounded, label: 'Online'),
+                  MiniInformation(
+                    icon: Icons.verified_user_outlined,
+                    label: 'Jemaah',
+                  ),
+                ],
+              ),
+            ],
+          );
+
+          final Widget visual = Container(
+            width: compact ? double.infinity : 230,
+            height: 220,
+            decoration: BoxDecoration(
+              gradient: RadialGradient(
+                colors: <Color>[
+                  palette.emerald.withValues(alpha: 0.20),
+                  Colors.transparent,
+                ],
+              ),
+              borderRadius: BorderRadius.circular(28),
             ),
-          ),
-          LayoutBuilder(
-            builder: (BuildContext context, BoxConstraints constraints) {
-              final bool compact = constraints.maxWidth < 700;
-
-              final Widget information = Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  StatusPill(
-                    hajjIcon: HajjIconType.doa,
-                    label: 'Perjalanan spiritual anda',
-                    accentColor: palette.gold,
-                  ),
-                  const SizedBox(height: 22),
-                  Text(
-                    'Assalamualaikum,\n${sapaanMengikutMasa()}!',
-                    style: Theme.of(context).textTheme.headlineLarge?.copyWith(
-                      color: colors.onSurface,
-                      fontSize: 34,
-                      height: 1.1,
-                      letterSpacing: -1.2,
+            child: Stack(
+              alignment: Alignment.center,
+              children: <Widget>[
+                Container(
+                  width: 170,
+                  height: 170,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: palette.emerald.withValues(alpha: 0.24),
                     ),
                   ),
-                  const SizedBox(height: 14),
-                  Text(
-                    'HajiPintar adalah panduan digital yang membantu perjalanan '
-                    'haji anda lebih tersusun, selamat dan tenang.',
-                    style: TextStyle(
-                      color: palette.mutedText,
-                      fontSize: 15,
-                      height: 1.6,
+                ),
+                Container(
+                  width: 125,
+                  height: 125,
+                  decoration: BoxDecoration(
+                    color: palette.softSurface,
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: palette.emerald.withValues(alpha: 0.38),
                     ),
-                  ),
-                  const SizedBox(height: 24),
-                  const Wrap(
-                    spacing: 10,
-                    runSpacing: 10,
-                    children: <Widget>[
-                      MiniInformation(
-                        icon: Icons.location_on_outlined,
-                        label: 'Makkah',
-                      ),
-                      MiniInformation(
-                        icon: Icons.wifi_rounded,
-                        label: 'Online',
-                      ),
-                      MiniInformation(
-                        icon: Icons.verified_user_outlined,
-                        label: 'Jemaah',
+                    boxShadow: <BoxShadow>[
+                      BoxShadow(
+                        color: palette.emerald.withValues(alpha: 0.20),
+                        blurRadius: 35,
+                        spreadRadius: 2,
                       ),
                     ],
                   ),
-                ],
-              );
-
-              final Widget visual = Container(
-                width: compact ? double.infinity : 230,
-                height: 220,
-                decoration: BoxDecoration(
-                  gradient: RadialGradient(
-                    colors: <Color>[
-                      palette.emerald.withValues(alpha: 0.20),
-                      Colors.transparent,
-                    ],
+                  child: ClipOval(
+                    child: Image.asset(
+                      'assets/images/muka_depan.jpg',
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) {
+                        // Kembali ke ikon asal jika gambar tiada
+                        return HajjIcon(
+                          type: HajjIconType.kaaba,
+                          color: palette.gold,
+                          size: 70,
+                          strokeWidth: 4.2,
+                        );
+                      },
+                    ),
                   ),
-                  borderRadius: BorderRadius.circular(28),
                 ),
-                child: Stack(
-                  alignment: Alignment.center,
-                  children: <Widget>[
-                    Container(
-                      width: 194,
-                      height: 194,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color: palette.gold.withValues(alpha: 0.16),
-                        ),
-                      ),
-                    ),
-                    Container(
-                      width: 170,
-                      height: 170,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color: palette.emerald.withValues(alpha: 0.24),
-                        ),
-                      ),
-                    ),
-                    Container(
-                      width: 125,
-                      height: 125,
-                      decoration: BoxDecoration(
-                        color: palette.softSurface,
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color: palette.emerald.withValues(alpha: 0.38),
-                        ),
-                        boxShadow: <BoxShadow>[
-                          BoxShadow(
-                            color: palette.emerald.withValues(alpha: 0.20),
-                            blurRadius: 35,
-                            spreadRadius: 2,
-                          ),
-                        ],
-                      ),
-                      child: ClipOval(
-                        child: Image.asset(
-                          'assets/images/muka_depan.jpg',
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) {
-                            // Kembali ke ikon asal jika gambar tiada
-                            return HajjIcon(
-                              type: HajjIconType.kaaba,
-                              color: palette.gold,
-                              size: 70,
-                              strokeWidth: 4.2,
-                            );
-                          },
-                        ),
-                      ),
-                    ),
-                    Positioned(
-                      right: 28,
-                      top: 35,
-                      child: GlowDot(size: 10, color: palette.emerald),
-                    ),
-                    Positioned(
-                      left: 26,
-                      bottom: 45,
-                      child: GlowDot(size: 7, color: palette.gold),
-                    ),
-                  ],
+                Positioned(
+                  right: 28,
+                  top: 35,
+                  child: GlowDot(size: 10, color: palette.emerald),
                 ),
-              );
+                Positioned(
+                  left: 26,
+                  bottom: 45,
+                  child: GlowDot(size: 7, color: palette.gold),
+                ),
+              ],
+            ),
+          );
 
-              if (compact) {
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    information,
-                    const SizedBox(height: 18),
-                    visual,
-                  ],
-                );
-              }
+          if (compact) {
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                information,
+                const SizedBox(height: 18),
+                visual,
+              ],
+            );
+          }
 
-              return Row(
-                children: <Widget>[
-                  Expanded(child: information),
-                  const SizedBox(width: 24),
-                  visual,
-                ],
-              );
-            },
-          ),
-        ],
+          return Row(
+            children: <Widget>[
+              Expanded(child: information),
+              const SizedBox(width: 24),
+              visual,
+            ],
+          );
+        },
       ),
     );
   }
 }
 
 class SectionTitle extends StatelessWidget {
-  const SectionTitle({super.key});
+  const SectionTitle({required this.title, required this.subtitle, super.key});
+
+  final String title;
+  final String subtitle;
 
   @override
   Widget build(BuildContext context) {
@@ -881,17 +924,16 @@ class SectionTitle extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   Text(
-                    'Pusat Ibadah',
-                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                    title,
+                    style: GoogleFonts.playfairDisplay(
                       color: colors.onSurface,
-                      fontSize: 23,
+                      fontSize: 24,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: -0.3,
                     ),
                   ),
                   const SizedBox(height: 5),
-                  Text(
-                    'Akses pantas kepada fungsi utama.',
-                    style: TextStyle(color: palette.mutedText),
-                  ),
+                  Text(subtitle, style: TextStyle(color: palette.mutedText)),
                 ],
               ),
             ),
@@ -979,43 +1021,22 @@ class _FeatureCardState extends State<FeatureCard> {
             child: InkWell(
               borderRadius: BorderRadius.circular(24),
               onTap: widget.data.onTap,
-              child: Stack(
-                clipBehavior: Clip.none,
-                children: <Widget>[
-                  Positioned(
-                    right: 4,
-                    top: -14,
-                    child: Opacity(
-                      opacity: 0.07,
-                      child: Text(
-                        widget.data.number,
-                        style: Theme.of(context).textTheme.headlineLarge
-                            ?.copyWith(color: accent, fontSize: 64),
-                      ),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(21),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+              child: Padding(
+                padding: const EdgeInsets.all(21),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Row(
                       children: <Widget>[
                         Container(
                           width: 52,
                           height: 52,
-                          alignment: Alignment.center,
                           decoration: BoxDecoration(
-                            color: accent.withValues(alpha: 0.14),
+                            color: accent.withValues(alpha: 0.12),
                             borderRadius: BorderRadius.circular(16),
                             border: Border.all(
-                              color: accent.withValues(alpha: 0.3),
+                              color: accent.withValues(alpha: 0.28),
                             ),
-                            boxShadow: <BoxShadow>[
-                              BoxShadow(
-                                color: accent.withValues(alpha: 0.18),
-                                blurRadius: 16,
-                                offset: const Offset(0, 6),
-                              ),
-                            ],
                           ),
                           child: HajjIcon(
                             type: widget.data.icon,
@@ -1023,50 +1044,59 @@ class _FeatureCardState extends State<FeatureCard> {
                             size: 29,
                           ),
                         ),
-                        const SizedBox(height: 22),
+                        const Spacer(),
                         Text(
-                          widget.data.title,
-                          style: Theme.of(context).textTheme.titleLarge
-                              ?.copyWith(color: colors.onSurface, fontSize: 19),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          widget.data.description,
-                          style: TextStyle(
-                            color: palette.mutedText,
-                            fontSize: 13,
-                            height: 1.5,
+                          widget.data.number,
+                          style: GoogleFonts.playfairDisplay(
+                            color: accent.withValues(alpha: 0.80),
+                            fontSize: 15,
+                            fontStyle: FontStyle.italic,
+                            fontWeight: FontWeight.w700,
+                            letterSpacing: 0.5,
                           ),
-                        ),
-                        const SizedBox(height: 18),
-                        Container(
-                          height: 1,
-                          color: accent.withValues(alpha: 0.18),
-                        ),
-                        const SizedBox(height: 14),
-                        Row(
-                          children: <Widget>[
-                            Text(
-                              widget.data.number == 'SOS'
-                                  ? 'Buka SOS'
-                                  : 'Buka fungsi',
-                              style: TextStyle(
-                                color: accent,
-                                fontWeight: FontWeight.w700,
-                              ),
-                            ),
-                            const SizedBox(width: 8),
-                            Icon(
-                              Icons.arrow_forward_rounded,
-                              color: accent,
-                              size: 18,
-                            ),
-                          ],
                         ),
                       ],
                     ),
-                  ),
-                ],
+                    const SizedBox(height: 24),
+                    Text(
+                      widget.data.title,
+                      style: GoogleFonts.playfairDisplay(
+                        color: colors.onSurface,
+                        fontSize: 20,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      widget.data.description,
+                      style: TextStyle(
+                        color: palette.mutedText,
+                        fontSize: 13,
+                        height: 1.5,
+                      ),
+                    ),
+                    const SizedBox(height: 22),
+                    Row(
+                      children: <Widget>[
+                        Text(
+                          widget.data.number == 'SOS'
+                              ? 'Buka SOS'
+                              : 'Buka fungsi',
+                          style: TextStyle(
+                            color: accent,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Icon(
+                          Icons.arrow_forward_rounded,
+                          color: accent,
+                          size: 18,
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
@@ -1322,10 +1352,10 @@ class _HajjJourneyBoxState extends State<HajjJourneyBox> {
         children: <Widget>[
           Text(
             'Panduan Perjalanan',
-            style: TextStyle(
+            style: GoogleFonts.playfairDisplay(
               color: colors.onSurface,
-              fontSize: 22,
-              fontWeight: FontWeight.w900,
+              fontSize: 23,
+              fontWeight: FontWeight.w700,
             ),
           ),
           const SizedBox(height: 6),
@@ -1560,6 +1590,9 @@ class LearningModulePanel extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: palette.emerald.withValues(alpha: 0.11),
                       borderRadius: BorderRadius.circular(15),
+                      border: Border.all(
+                        color: palette.emerald.withValues(alpha: 0.24),
+                      ),
                     ),
                     child: HajjIcon(
                       type: HajjIconType.learning,
@@ -1574,10 +1607,10 @@ class LearningModulePanel extends StatelessWidget {
                       children: <Widget>[
                         Text(
                           'Modul Belajar Haji',
-                          style: TextStyle(
+                          style: GoogleFonts.playfairDisplay(
                             color: colors.onSurface,
-                            fontSize: 19,
-                            fontWeight: FontWeight.w900,
+                            fontSize: 20,
+                            fontWeight: FontWeight.w700,
                           ),
                         ),
                         const SizedBox(height: 5),
@@ -1719,6 +1752,9 @@ class AssessmentPanel extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: palette.gold.withValues(alpha: 0.11),
                       borderRadius: BorderRadius.circular(15),
+                      border: Border.all(
+                        color: palette.gold.withValues(alpha: 0.24),
+                      ),
                     ),
                     child: Center(
                       child: HajjIcon(
@@ -1735,10 +1771,10 @@ class AssessmentPanel extends StatelessWidget {
                       children: <Widget>[
                         Text(
                           'Penilaian Akhir',
-                          style: TextStyle(
+                          style: GoogleFonts.playfairDisplay(
                             color: colors.onSurface,
-                            fontSize: 19,
-                            fontWeight: FontWeight.w900,
+                            fontSize: 20,
+                            fontWeight: FontWeight.w700,
                           ),
                         ),
                         const SizedBox(height: 5),
@@ -1864,6 +1900,9 @@ class HajjGuidePanel extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: palette.gold.withValues(alpha: 0.11),
                       borderRadius: BorderRadius.circular(15),
+                      border: Border.all(
+                        color: palette.gold.withValues(alpha: 0.24),
+                      ),
                     ),
                     child: HajjIcon(
                       type: HajjIconType.guide,
@@ -1878,10 +1917,10 @@ class HajjGuidePanel extends StatelessWidget {
                       children: <Widget>[
                         Text(
                           'Panduan Langkah demi Langkah',
-                          style: TextStyle(
+                          style: GoogleFonts.playfairDisplay(
                             color: colors.onSurface,
-                            fontSize: 19,
-                            fontWeight: FontWeight.w900,
+                            fontSize: 20,
+                            fontWeight: FontWeight.w700,
                           ),
                         ),
                         const SizedBox(height: 5),
@@ -2114,9 +2153,8 @@ class _TimeAndCountdownPanelState extends State<TimeAndCountdownPanel> {
     final Duration bezaMasa = _targetHajj.difference(_now);
     final int bakiHari = bezaMasa.inDays > 0 ? bezaMasa.inDays : 0;
 
-    return GlassContainer(
-      borderRadius: 24,
-      padding: const EdgeInsets.all(22),
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(26, 0, 26, 26),
       child: LayoutBuilder(
         builder: (BuildContext context, BoxConstraints constraints) {
           final bool compact = constraints.maxWidth < 650;
@@ -2127,10 +2165,10 @@ class _TimeAndCountdownPanelState extends State<TimeAndCountdownPanel> {
               // Perkataan "Waktu Semasa" telah dibuang di sini
               Text(
                 _formatWaktu(_now),
-                style: TextStyle(
+                style: GoogleFonts.playfairDisplay(
                   color: colors.onSurface,
                   fontSize: 32,
-                  fontWeight: FontWeight.w900,
+                  fontWeight: FontWeight.w700,
                   letterSpacing: 1,
                 ),
               ),
@@ -2227,10 +2265,10 @@ class _TimeAndCountdownPanelState extends State<TimeAndCountdownPanel> {
                   children: <Widget>[
                     Text(
                       '$bakiHari',
-                      style: TextStyle(
+                      style: GoogleFonts.playfairDisplay(
                         color: colors.onSurface,
                         fontSize: 36,
-                        fontWeight: FontWeight.w900,
+                        fontWeight: FontWeight.w700,
                       ),
                     ),
                     const SizedBox(width: 6),
