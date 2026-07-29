@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hive_ce_flutter/hive_ce_flutter.dart';
 
 import 'app_theme.dart';
+import 'shared_widgets.dart';
 import 'islamic_icons.dart';
 
 class SaiCounterScreen extends StatefulWidget {
@@ -104,7 +105,7 @@ class _SaiCounterScreenState extends State<SaiCounterScreen> {
                   children: <Widget>[
                     Row(
                       children: <Widget>[
-                        _ThemeIconButton(
+                        HajjIconButton(
                           tooltip: 'Kembali',
                           icon: Icons.arrow_back_rounded,
                           onPressed: () {
@@ -122,7 +123,7 @@ class _SaiCounterScreenState extends State<SaiCounterScreen> {
                             ),
                           ),
                         ),
-                        _ThemeIconButton(
+                        HajjIconButton(
                           tooltip: 'Reset',
                           icon: Icons.restart_alt_rounded,
                           onPressed: resetKaunter,
@@ -338,34 +339,6 @@ class _SaiCounterScreenState extends State<SaiCounterScreen> {
           ),
         ),
       ),
-    );
-  }
-}
-
-class _ThemeIconButton extends StatelessWidget {
-  const _ThemeIconButton({
-    required this.tooltip,
-    required this.icon,
-    required this.onPressed,
-  });
-
-  final String tooltip;
-  final IconData icon;
-  final VoidCallback onPressed;
-
-  @override
-  Widget build(BuildContext context) {
-    final HajjColors palette = context.hajjColors;
-
-    return IconButton(
-      tooltip: tooltip,
-      onPressed: onPressed,
-      style: IconButton.styleFrom(
-        backgroundColor: palette.glassSurface,
-        foregroundColor: context.appColorScheme.onSurface,
-        side: BorderSide(color: palette.glassBorder),
-      ),
-      icon: Icon(icon),
     );
   }
 }

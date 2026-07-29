@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:hive_ce_flutter/hive_ce_flutter.dart';
 
 import 'app_theme.dart';
+import 'shared_widgets.dart';
 import 'certificate_screen.dart';
 import 'islamic_icons.dart';
 
@@ -18,6 +19,29 @@ class FinalAssessmentScreen extends StatefulWidget {
 
 class _FinalAssessmentScreenState extends State<FinalAssessmentScreen> {
   static const int passingScore = 80;
+
+  /// Pulangkan salinan soalan dengan susunan pilihan (A/B/C/D) diacak,
+  /// dan `correctIndex` diselaraskan supaya masih menunjuk jawapan yang
+  /// betul selepas diacak. Ini menghalang corak "jawapan betul sentiasa
+  /// pilihan A" yang wujud dalam questionBank asal.
+  static AssessmentQuestion _acakPilihan(
+    AssessmentQuestion soalan,
+    math.Random random,
+  ) {
+    final List<int> susunan = List<int>.generate(
+      soalan.options.length,
+      (int i) => i,
+    );
+    susunan.shuffle(random);
+
+    return AssessmentQuestion(
+      topic: soalan.topic,
+      question: soalan.question,
+      options: susunan.map((int i) => soalan.options[i]).toList(),
+      correctIndex: susunan.indexOf(soalan.correctIndex),
+      explanation: soalan.explanation,
+    );
+  }
 
   static const List<AssessmentQuestion> questionBank = <AssessmentQuestion>[
     AssessmentQuestion(
@@ -298,9 +322,13 @@ class _FinalAssessmentScreenState extends State<FinalAssessmentScreen> {
   }
 
   void _prepareQuestions() {
-    questions = List<AssessmentQuestion>.from(questionBank);
+    final math.Random random = math.Random();
 
-    questions.shuffle(math.Random());
+    questions = questionBank
+        .map((AssessmentQuestion soalan) => _acakPilihan(soalan, random))
+        .toList();
+
+    questions.shuffle(random);
 
     selectedAnswers.clear();
     currentIndex = 0;
@@ -423,7 +451,7 @@ class _FinalAssessmentScreenState extends State<FinalAssessmentScreen> {
             children: <Widget>[
               Row(
                 children: <Widget>[
-                  _AssessmentIconButton(
+                  HajjIconButton(
                     tooltip: 'Kembali',
                     icon: Icons.arrow_back_rounded,
                     onPressed: () {
@@ -633,7 +661,7 @@ class _FinalAssessmentScreenState extends State<FinalAssessmentScreen> {
             children: <Widget>[
               Row(
                 children: <Widget>[
-                  _AssessmentIconButton(
+                  HajjIconButton(
                     tooltip: 'Kembali',
                     icon: Icons.arrow_back_rounded,
                     onPressed: () {
@@ -1183,34 +1211,6 @@ class _AssessmentNotice extends StatelessWidget {
           ),
         ],
       ),
-    );
-  }
-}
-
-class _AssessmentIconButton extends StatelessWidget {
-  const _AssessmentIconButton({
-    required this.tooltip,
-    required this.icon,
-    required this.onPressed,
-  });
-
-  final String tooltip;
-  final IconData icon;
-  final VoidCallback onPressed;
-
-  @override
-  Widget build(BuildContext context) {
-    final HajjColors palette = context.hajjColors;
-
-    return IconButton(
-      tooltip: tooltip,
-      onPressed: onPressed,
-      style: IconButton.styleFrom(
-        backgroundColor: palette.glassSurface,
-        foregroundColor: context.appColorScheme.onSurface,
-        side: BorderSide(color: palette.glassBorder),
-      ),
-      icon: Icon(icon),
     );
   }
 }

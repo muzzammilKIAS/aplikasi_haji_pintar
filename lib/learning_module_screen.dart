@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hive_ce_flutter/hive_ce_flutter.dart';
 
 import 'app_theme.dart';
+import 'shared_widgets.dart';
 import 'final_assessment_screen.dart';
 import 'islamic_icons.dart';
 
@@ -235,7 +236,7 @@ class LearningModuleScreen extends StatelessWidget {
                   children: <Widget>[
                     Row(
                       children: <Widget>[
-                        _LearningIconButton(
+                        HajjIconButton(
                           tooltip: 'Kembali',
                           icon: Icons.arrow_back_rounded,
                           onPressed: () {
@@ -390,7 +391,7 @@ class LearningDetailScreen extends StatelessWidget {
                   children: <Widget>[
                     Row(
                       children: <Widget>[
-                        _LearningIconButton(
+                        HajjIconButton(
                           tooltip: 'Kembali',
                           icon: Icons.arrow_back_rounded,
                           onPressed: () {
@@ -890,34 +891,6 @@ class _PrototypeNotice extends StatelessWidget {
           ),
         ],
       ),
-    );
-  }
-}
-
-class _LearningIconButton extends StatelessWidget {
-  const _LearningIconButton({
-    required this.tooltip,
-    required this.icon,
-    required this.onPressed,
-  });
-
-  final String tooltip;
-  final IconData icon;
-  final VoidCallback onPressed;
-
-  @override
-  Widget build(BuildContext context) {
-    final HajjColors palette = context.hajjColors;
-
-    return IconButton(
-      tooltip: tooltip,
-      onPressed: onPressed,
-      style: IconButton.styleFrom(
-        backgroundColor: palette.glassSurface,
-        foregroundColor: context.appColorScheme.onSurface,
-        side: BorderSide(color: palette.glassBorder),
-      ),
-      icon: Icon(icon),
     );
   }
 }

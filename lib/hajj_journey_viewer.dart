@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'app_theme.dart';
+import 'shared_widgets.dart';
 
 class HajjJourneyViewer extends StatefulWidget {
   const HajjJourneyViewer({super.key});
@@ -148,7 +149,7 @@ class _HajjJourneyViewerState extends State<HajjJourneyViewer>
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 14),
       child: Row(
         children: <Widget>[
-          _ViewerIconButton(
+          HajjIconButton(
             tooltip: 'Kembali',
             icon: Icons.arrow_back_rounded,
             onPressed: () {
@@ -175,7 +176,7 @@ class _HajjJourneyViewerState extends State<HajjJourneyViewer>
               ],
             ),
           ),
-          _ViewerIconButton(
+          HajjIconButton(
             tooltip: 'Reset paparan',
             icon: Icons.center_focus_strong_rounded,
             onPressed: resetView,
@@ -314,33 +315,5 @@ class _HajjJourneyViewerState extends State<HajjJourneyViewer>
 
   Widget _divider(HajjColors palette) {
     return Container(width: 30, height: 1, color: palette.glassBorder);
-  }
-}
-
-class _ViewerIconButton extends StatelessWidget {
-  const _ViewerIconButton({
-    required this.tooltip,
-    required this.icon,
-    required this.onPressed,
-  });
-
-  final String tooltip;
-  final IconData icon;
-  final VoidCallback onPressed;
-
-  @override
-  Widget build(BuildContext context) {
-    final HajjColors palette = context.hajjColors;
-
-    return IconButton(
-      tooltip: tooltip,
-      onPressed: onPressed,
-      style: IconButton.styleFrom(
-        backgroundColor: palette.glassSurface,
-        foregroundColor: context.appColorScheme.onSurface,
-        side: BorderSide(color: palette.glassBorder),
-      ),
-      icon: Icon(icon),
-    );
   }
 }

@@ -3,6 +3,7 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 
 import 'app_theme.dart';
+import 'shared_widgets.dart';
 import 'islamic_icons.dart';
 
 class OfflineMapScreen extends StatefulWidget {
@@ -114,7 +115,7 @@ class _OfflineMapScreenState extends State<OfflineMapScreen> {
       padding: const EdgeInsets.fromLTRB(18, 14, 18, 14),
       child: Row(
         children: <Widget>[
-          _MapIconButton(
+          HajjIconButton(
             tooltip: 'Kembali',
             icon: Icons.arrow_back_rounded,
             onPressed: () {
@@ -141,7 +142,7 @@ class _OfflineMapScreenState extends State<OfflineMapScreen> {
               ],
             ),
           ),
-          _MapIconButton(
+          HajjIconButton(
             tooltip: 'Reset paparan',
             icon: Icons.center_focus_strong_rounded,
             onPressed: _resetZoom,
@@ -260,9 +261,10 @@ class _OfflineMapScreenState extends State<OfflineMapScreen> {
               ),
               children: <Widget>[
                 TileLayer(
-  urlTemplate: 'https://mt1.google.com/vt/lyrs=m&hl=en&x={x}&y={y}&z={z}',
-  userAgentPackageName: 'my.hajipintar.app',
-),
+                  urlTemplate:
+                      'https://mt1.google.com/vt/lyrs=m&hl=en&x={x}&y={y}&z={z}',
+                  userAgentPackageName: 'my.hajipintar.app',
+                ),
               ],
             ),
           ),
@@ -426,35 +428,6 @@ class _OnlineBadge extends StatelessWidget {
           ),
         ],
       ),
-    );
-  }
-}
-
-class _MapIconButton extends StatelessWidget {
-  const _MapIconButton({
-    required this.tooltip,
-    required this.icon,
-    required this.onPressed,
-  });
-
-  final String tooltip;
-  final IconData icon;
-  final VoidCallback onPressed;
-
-  @override
-  Widget build(BuildContext context) {
-    // Betulkan cara panggil warna di sini:
-    final HajjColors palette = context.hajjColors; 
-    
-    return IconButton(
-      tooltip: tooltip,
-      onPressed: onPressed,
-      style: IconButton.styleFrom(
-        backgroundColor: palette.glassSurface,
-        foregroundColor: context.appColorScheme.onSurface,
-        side: BorderSide(color: palette.glassBorder),
-      ),
-      icon: Icon(icon),
     );
   }
 }

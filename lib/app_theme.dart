@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 @immutable
 class HajjColors extends ThemeExtension<HajjColors> {
@@ -32,31 +33,31 @@ class HajjColors extends ThemeExtension<HajjColors> {
 
   static const HajjColors light = HajjColors(
     gradientStart: Color(0xFFFBF8F1),
-    gradientMiddle: Color(0xFFF2E9DA),
-    gradientEnd: Color(0xFFEDF5F1),
-    glassSurface: Color(0xEFFFFFFF),
-    glassBorder: Color(0xFFD9E2DD),
-    mutedText: Color(0xFF687A73),
-    gold: Color(0xFFB28A46),
-    emerald: Color(0xFF176D5D),
+    gradientMiddle: Color(0xFFF4E9CE),
+    gradientEnd: Color(0xFFE7F2EC),
+    glassSurface: Color(0xF5FFFFFF),
+    glassBorder: Color(0xFFDCE3DC),
+    mutedText: Color(0xFF63756E),
+    gold: Color(0xFFAD7B27),
+    emerald: Color(0xFF0E5C4F),
     danger: Color(0xFFC94852),
-    softSurface: Color(0xFFF2EBDD),
-    shadow: Color(0x22000000),
+    softSurface: Color(0xFFF3ECD9),
+    shadow: Color(0x28000000),
     onAccent: Color(0xFFFFFFFF),
   );
 
   static const HajjColors dark = HajjColors(
-    gradientStart: Color(0xFF031411),
-    gradientMiddle: Color(0xFF0A2D27),
-    gradientEnd: Color(0xFF041513),
-    glassSurface: Color(0x14FFFFFF),
-    glassBorder: Color(0x1FFFFFFF),
-    mutedText: Color(0xFFA8B8B4),
-    gold: Color(0xFFD9B75F),
-    emerald: Color(0xFF31D6A0),
+    gradientStart: Color(0xFF020F0C),
+    gradientMiddle: Color(0xFF0A2E27),
+    gradientEnd: Color(0xFF031210),
+    glassSurface: Color(0x17FFFFFF),
+    glassBorder: Color(0x26FFFFFF),
+    mutedText: Color(0xFFAAB9B4),
+    gold: Color(0xFFE3C177),
+    emerald: Color(0xFF37DBA8),
     danger: Color(0xFFFF6571),
-    softSurface: Color(0xFF173A34),
-    shadow: Color(0x55000000),
+    softSurface: Color(0xFF163B34),
+    shadow: Color(0x66000000),
     onAccent: Color(0xFF041513),
   );
 
@@ -144,7 +145,7 @@ class AppTheme {
 
     final ColorScheme scheme =
         ColorScheme.fromSeed(
-          seedColor: const Color(0xFF176D5D),
+          seedColor: const Color(0xFF0E5C4F),
           brightness: brightness,
         ).copyWith(
           primary: palette.emerald,
@@ -169,33 +170,39 @@ class AppTheme {
       scaffoldBackgroundColor: palette.gradientStart,
       extensions: <ThemeExtension<dynamic>>[palette],
       textTheme: TextTheme(
-        headlineLarge: TextStyle(
+        headlineLarge: GoogleFonts.playfairDisplay(
           color: scheme.onSurface,
-          fontWeight: FontWeight.w900,
-          letterSpacing: -1,
-        ),
-        headlineMedium: TextStyle(
-          color: scheme.onSurface,
-          fontWeight: FontWeight.w900,
+          fontWeight: FontWeight.w800,
           letterSpacing: -0.6,
         ),
-        titleLarge: TextStyle(
+        headlineMedium: GoogleFonts.playfairDisplay(
+          color: scheme.onSurface,
+          fontWeight: FontWeight.w700,
+          letterSpacing: -0.4,
+        ),
+        titleLarge: GoogleFonts.playfairDisplay(
+          color: scheme.onSurface,
+          fontWeight: FontWeight.w700,
+        ),
+        titleMedium: GoogleFonts.plusJakartaSans(
           color: scheme.onSurface,
           fontWeight: FontWeight.w800,
         ),
-        titleMedium: TextStyle(
+        bodyLarge: GoogleFonts.plusJakartaSans(
           color: scheme.onSurface,
-          fontWeight: FontWeight.w800,
+          height: 1.5,
         ),
-        bodyLarge: TextStyle(color: scheme.onSurface, height: 1.5),
-        bodyMedium: TextStyle(color: palette.mutedText, height: 1.5),
+        bodyMedium: GoogleFonts.plusJakartaSans(
+          color: palette.mutedText,
+          height: 1.5,
+        ),
       ),
       iconTheme: IconThemeData(color: scheme.onSurface),
       dividerColor: palette.glassBorder,
       snackBarTheme: SnackBarThemeData(
         behavior: SnackBarBehavior.floating,
         backgroundColor: scheme.surface,
-        contentTextStyle: TextStyle(color: scheme.onSurface),
+        contentTextStyle: GoogleFonts.plusJakartaSans(color: scheme.onSurface),
       ),
       dialogTheme: DialogThemeData(
         backgroundColor: scheme.surface,
@@ -209,7 +216,26 @@ class AppTheme {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(18),
           ),
-          textStyle: const TextStyle(fontWeight: FontWeight.w800),
+          textStyle: GoogleFonts.plusJakartaSans(
+            fontWeight: FontWeight.w800,
+            letterSpacing: 0.2,
+          ),
+        ),
+      ),
+      outlinedButtonTheme: OutlinedButtonThemeData(
+        style: OutlinedButton.styleFrom(
+          foregroundColor: scheme.onSurface,
+          side: BorderSide(color: palette.glassBorder, width: 1.3),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(18),
+          ),
+          textStyle: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w800),
+        ),
+      ),
+      textButtonTheme: TextButtonThemeData(
+        style: TextButton.styleFrom(
+          foregroundColor: palette.emerald,
+          textStyle: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w800),
         ),
       ),
     );

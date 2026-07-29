@@ -7,6 +7,7 @@ import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
 
 import 'app_theme.dart';
+import 'shared_widgets.dart';
 
 class CertificateScreen extends StatefulWidget {
   const CertificateScreen({
@@ -565,7 +566,7 @@ class _CertificateScreenState extends State<CertificateScreen> {
                   children: <Widget>[
                     Row(
                       children: <Widget>[
-                        _CertificateIconButton(
+                        HajjIconButton(
                           tooltip: 'Kembali',
                           icon: Icons.arrow_back_rounded,
                           onPressed: () {
@@ -856,32 +857,4 @@ class _CertificateData {
   final int score;
   final String certificateNumber;
   final DateTime issuedAt;
-}
-
-class _CertificateIconButton extends StatelessWidget {
-  const _CertificateIconButton({
-    required this.tooltip,
-    required this.icon,
-    required this.onPressed,
-  });
-
-  final String tooltip;
-  final IconData icon;
-  final VoidCallback onPressed;
-
-  @override
-  Widget build(BuildContext context) {
-    final HajjColors palette = context.hajjColors;
-
-    return IconButton(
-      tooltip: tooltip,
-      onPressed: onPressed,
-      style: IconButton.styleFrom(
-        backgroundColor: palette.glassSurface,
-        foregroundColor: context.appColorScheme.onSurface,
-        side: BorderSide(color: palette.glassBorder),
-      ),
-      icon: Icon(icon),
-    );
-  }
 }

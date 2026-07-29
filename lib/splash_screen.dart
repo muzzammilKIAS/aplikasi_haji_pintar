@@ -4,7 +4,7 @@ import 'package:audioplayers/audioplayers.dart';
 import 'dart:ui';
 
 import 'theme_controller.dart';
-import 'main.dart'; // Untuk memanggil HalamanUtama dan sambungan tema
+import 'home_dashboard.dart'; // Untuk memanggil HalamanUtama
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({required this.themeController, super.key});
