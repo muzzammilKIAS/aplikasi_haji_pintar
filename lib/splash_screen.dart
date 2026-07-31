@@ -17,7 +17,7 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen>
-    with SingleTickerProviderStateMixin {
+    with TickerProviderStateMixin {
   final AudioPlayer _audioPlayer = AudioPlayer();
   late AnimationController _animationController;
   late AnimationController _introAnimationController;
