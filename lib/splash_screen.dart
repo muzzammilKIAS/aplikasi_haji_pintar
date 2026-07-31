@@ -21,8 +21,11 @@ class _SplashScreenState extends State<SplashScreen>
   final AudioPlayer _audioPlayer = AudioPlayer();
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
+  late final PageController _introPageController;
 
   bool _sudahMula = false;
+  bool _paparPengenalan = false;
+  int _introPage = 0;
 
   @override
   void initState() {
@@ -35,6 +38,7 @@ class _SplashScreenState extends State<SplashScreen>
     _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(parent: _animationController, curve: Curves.easeIn),
     );
+    _introPageController = PageController();
   }
 
   Future<void> _mulakanSkrin() async {
@@ -53,6 +57,12 @@ class _SplashScreenState extends State<SplashScreen>
 
   void _masukKeAplikasi() {
     _audioPlayer.stop();
+    setState(() {
+      _paparPengenalan = true;
+    });
+  }
+
+  void _masukKeDashboard() {
     Navigator.of(context).pushReplacement(
       PageRouteBuilder<void>(
         transitionDuration: const Duration(milliseconds: 800),
@@ -70,6 +80,7 @@ class _SplashScreenState extends State<SplashScreen>
   void dispose() {
     _audioPlayer.dispose();
     _animationController.dispose();
+    _introPageController.dispose();
     super.dispose();
   }
 
@@ -91,7 +102,11 @@ class _SplashScreenState extends State<SplashScreen>
             ],
           ),
         ),
-        child: _sudahMula ? _binaPaparanAnimasi() : _binaPaparanMula(),
+        child: !_sudahMula
+            ? _binaPaparanMula()
+            : _paparPengenalan
+            ? _binaPengenalan()
+            : _binaPaparanAnimasi(),
       ),
     );
   }
@@ -435,6 +450,244 @@ class _SplashScreenState extends State<SplashScreen>
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _binaPengenalan() {
+    final dynamic palette = context.hajjColors;
+    final ColorScheme colors = context.appColorScheme;
+    final List<_PengenalanData> pages = <_PengenalanData>[
+      const _PengenalanData(
+        icon: Icons.explore_rounded,
+        title: 'Teman persediaan Haji',
+        description:
+            'HajiPintar membantu anda memahami perjalanan Haji '
+            'dengan panduan yang tersusun, ringkas dan mudah dirujuk.',
+      ),
+      const _PengenalanData(
+        icon: Icons.auto_stories_rounded,
+        title: 'Belajar dengan lebih yakin',
+        description:
+            'Akses modul pembelajaran, doa, zikir, kuiz, peta lokasi '
+            'serta panduan langkah demi langkah dalam satu aplikasi.',
+      ),
+      const _PengenalanData(
+        icon: Icons.verified_user_rounded,
+        title: 'Rujukan yang bertanggungjawab',
+        description:
+            'Kandungan ini untuk pendidikan dan rujukan umum. '
+            'Untuk persoalan hukum khusus, rujuk pembimbing Haji '
+            'atau pihak berautoriti.',
+      ),
+    ];
+
+    return SafeArea(
+      child: LayoutBuilder(
+        builder: (BuildContext context, BoxConstraints constraints) {
+          return Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 620),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 28,
+                ),
+                child: Column(
+                  children: <Widget>[
+                    Row(
+                      children: <Widget>[
+                        Image.asset(
+                          'assets/images/app_icon.png',
+                          width: 46,
+                          height: 46,
+                          errorBuilder:
+                              (
+                                BuildContext context,
+                                Object error,
+                                StackTrace? stackTrace,
+                              ) {
+                                return Icon(
+                                  Icons.mosque_rounded,
+                                  color: palette.gold,
+                                  size: 36,
+                                );
+                              },
+                        ),
+                        const SizedBox(width: 12),
+                        Text(
+                          'HAJIPINTAR',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w900,
+                            letterSpacing: 2,
+                          ),
+                        ),
+                        const Spacer(),
+                        Text(
+                          '${_introPage + 1}/${pages.length}',
+                          style: TextStyle(
+                            color: Colors.white.withValues(alpha: 0.7),
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 24),
+                    Expanded(
+                      child: PageView.builder(
+                        controller: _introPageController,
+                        itemCount: pages.length,
+                        onPageChanged: (int page) {
+                          setState(() {
+                            _introPage = page;
+                          });
+                        },
+                        itemBuilder: (BuildContext context, int index) {
+                          final _PengenalanData page = pages[index];
+                          return _PengenalanPage(
+                            data: page,
+                            palette: palette,
+                            colors: colors,
+                          );
+                        },
+                      ),
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: List<Widget>.generate(pages.length, (
+                        int index,
+                      ) {
+                        final bool selected = _introPage == index;
+                        return AnimatedContainer(
+                          duration: const Duration(milliseconds: 220),
+                          margin: const EdgeInsets.symmetric(horizontal: 4),
+                          width: selected ? 28 : 8,
+                          height: 8,
+                          decoration: BoxDecoration(
+                            color: selected
+                                ? palette.gold
+                                : Colors.white.withValues(alpha: 0.3),
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                        );
+                      }),
+                    ),
+                    const SizedBox(height: 24),
+                    SizedBox(
+                      width: double.infinity,
+                      height: 54,
+                      child: FilledButton(
+                        onPressed: () {
+                          if (_introPage < pages.length - 1) {
+                            _introPageController.nextPage(
+                              duration: const Duration(milliseconds: 300),
+                              curve: Curves.easeOutCubic,
+                            );
+                          } else {
+                            _masukKeDashboard();
+                          }
+                        },
+                        child: Text(
+                          _introPage < pages.length - 1
+                              ? 'Seterusnya'
+                              : 'Mula Guna HajiPintar',
+                        ),
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: _masukKeDashboard,
+                      child: Text(
+                        'Langkau pengenalan',
+                        style: TextStyle(
+                          color: Colors.white.withValues(alpha: 0.75),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+}
+
+class _PengenalanData {
+  const _PengenalanData({
+    required this.icon,
+    required this.title,
+    required this.description,
+  });
+
+  final IconData icon;
+  final String title;
+  final String description;
+}
+
+class _PengenalanPage extends StatelessWidget {
+  const _PengenalanPage({
+    required this.data,
+    required this.palette,
+    required this.colors,
+  });
+
+  final _PengenalanData data;
+  final dynamic palette;
+  final ColorScheme colors;
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Container(
+              width: 178,
+              height: 178,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: palette.emerald.withValues(alpha: 0.22),
+                border: Border.all(
+                  color: palette.gold.withValues(alpha: 0.5),
+                  width: 1.5,
+                ),
+                boxShadow: <BoxShadow>[
+                  BoxShadow(
+                    color: palette.emerald.withValues(alpha: 0.35),
+                    blurRadius: 40,
+                    spreadRadius: 4,
+                  ),
+                ],
+              ),
+              child: Icon(data.icon, color: palette.gold, size: 78),
+            ),
+            const SizedBox(height: 38),
+            Text(
+              data.title,
+              textAlign: TextAlign.center,
+              style: GoogleFonts.playfairDisplay(
+                color: colors.onSurface,
+                fontSize: 30,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              data.description,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: Colors.white.withValues(alpha: 0.82),
+                fontSize: 16,
+                height: 1.6,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
