@@ -20,7 +20,10 @@ class _SplashScreenState extends State<SplashScreen>
     with SingleTickerProviderStateMixin {
   final AudioPlayer _audioPlayer = AudioPlayer();
   late AnimationController _animationController;
+  late AnimationController _introAnimationController;
   late Animation<double> _fadeAnimation;
+  late Animation<double> _introScaleAnimation;
+  late Animation<Offset> _introSlideAnimation;
   late final PageController _introPageController;
 
   bool _sudahMula = false;
@@ -38,6 +41,22 @@ class _SplashScreenState extends State<SplashScreen>
     _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(parent: _animationController, curve: Curves.easeIn),
     );
+    _introAnimationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 650),
+    )..forward();
+    final CurvedAnimation introCurve = CurvedAnimation(
+      parent: _introAnimationController,
+      curve: Curves.easeOutCubic,
+    );
+    _introScaleAnimation = Tween<double>(
+      begin: 0.88,
+      end: 1,
+    ).animate(introCurve);
+    _introSlideAnimation = Tween<Offset>(
+      begin: const Offset(0, 0.08),
+      end: Offset.zero,
+    ).animate(introCurve);
     _introPageController = PageController();
   }
 
@@ -60,6 +79,7 @@ class _SplashScreenState extends State<SplashScreen>
     setState(() {
       _paparPengenalan = true;
     });
+    _introAnimationController.forward(from: 0);
   }
 
   void _masukKeDashboard() {
@@ -80,6 +100,7 @@ class _SplashScreenState extends State<SplashScreen>
   void dispose() {
     _audioPlayer.dispose();
     _animationController.dispose();
+    _introAnimationController.dispose();
     _introPageController.dispose();
     super.dispose();
   }
@@ -495,6 +516,7 @@ class _SplashScreenState extends State<SplashScreen>
                 ),
                 child: Column(
                   children: <Widget>[
+                    _buildIntroGlow(palette),
                     Row(
                       children: <Widget>[
                         Image.asset(
@@ -543,13 +565,23 @@ class _SplashScreenState extends State<SplashScreen>
                           setState(() {
                             _introPage = page;
                           });
+                          _introAnimationController.forward(from: 0);
                         },
                         itemBuilder: (BuildContext context, int index) {
                           final _PengenalanData page = pages[index];
-                          return _PengenalanPage(
-                            data: page,
-                            palette: palette,
-                            colors: colors,
+                          return FadeTransition(
+                            opacity: _introAnimationController,
+                            child: SlideTransition(
+                              position: _introSlideAnimation,
+                              child: ScaleTransition(
+                                scale: _introScaleAnimation,
+                                child: _PengenalanPage(
+                                  data: page,
+                                  palette: palette,
+                                  colors: colors,
+                                ),
+                              ),
+                            ),
                           );
                         },
                       ),
@@ -607,6 +639,33 @@ class _SplashScreenState extends State<SplashScreen>
                     ),
                   ],
                 ),
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildIntroGlow(dynamic palette) {
+    return IgnorePointer(
+      child: AnimatedBuilder(
+        animation: _introAnimationController,
+        builder: (BuildContext context, Widget? child) {
+          final double pulse = 0.92 + (_introAnimationController.value * 0.08);
+          return Transform.scale(
+            scale: pulse,
+            child: Container(
+              width: 1,
+              height: 1,
+              decoration: BoxDecoration(
+                boxShadow: <BoxShadow>[
+                  BoxShadow(
+                    color: palette.gold.withValues(alpha: 0.22),
+                    blurRadius: 90,
+                    spreadRadius: 75,
+                  ),
+                ],
               ),
             ),
           );
