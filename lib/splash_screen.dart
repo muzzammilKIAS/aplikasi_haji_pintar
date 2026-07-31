@@ -276,26 +276,35 @@ class _SplashScreenState extends State<SplashScreen>
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: <Widget>[
                             Container(
-                              width: 168,
-                              height: 168,
+                              width: 156,
+                              height: 156,
                               alignment: Alignment.center,
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
+                                color: Colors.white.withValues(alpha: 0.08),
                                 border: Border.all(
-                                  color: palette.gold.withValues(alpha: 0.28),
+                                  color: palette.gold.withValues(alpha: 0.42),
+                                  width: 1.5,
                                 ),
+                                boxShadow: <BoxShadow>[
+                                  BoxShadow(
+                                    color: Colors.black.withValues(alpha: 0.24),
+                                    blurRadius: 24,
+                                    offset: const Offset(0, 10),
+                                  ),
+                                ],
                               ),
                               child: Container(
-                                width: 140,
-                                height: 140,
+                                width: 126,
+                                height: 126,
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
                                   color: palette.emerald.withValues(
-                                    alpha: 0.25,
+                                    alpha: 0.28,
                                   ),
                                   border: Border.all(
                                     color: palette.emerald.withValues(
-                                      alpha: 0.5,
+                                      alpha: 0.65,
                                     ),
                                     width: 2,
                                   ),
@@ -309,16 +318,30 @@ class _SplashScreenState extends State<SplashScreen>
                                     ),
                                   ],
                                 ),
-                                child: Center(
-                                  child: Icon(
-                                    Icons.mosque_rounded,
-                                    size: 70,
-                                    color: palette.gold,
+                                child: Padding(
+                                  padding: const EdgeInsets.all(14),
+                                  child: ClipOval(
+                                    child: Image.asset(
+                                      'assets/images/app_icon.png',
+                                      fit: BoxFit.cover,
+                                      errorBuilder:
+                                          (
+                                            BuildContext context,
+                                            Object error,
+                                            StackTrace? stackTrace,
+                                          ) {
+                                            return Icon(
+                                              Icons.mosque_rounded,
+                                              size: 62,
+                                              color: palette.gold,
+                                            );
+                                          },
+                                    ),
                                   ),
                                 ),
                               ),
                             ),
-                            const SizedBox(height: 50),
+                            const SizedBox(height: 34),
 
                             Text(
                               'أَهْلاً وَسَهْلاً',
