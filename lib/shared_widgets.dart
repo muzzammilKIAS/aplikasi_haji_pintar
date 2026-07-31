@@ -407,3 +407,28 @@ class HajjOrnamentDivider extends StatelessWidget {
     );
   }
 }
+
+/// Doa ma'thur (bersumberkan Al-Quran atau hadis sahih/hasan) yang
+/// berkaitan dengan sesuatu topik atau amalan. Digunakan merentasi
+/// pelbagai skrin kandungan (Panduan Haji, Modul Belajar) supaya format
+/// paparan doa konsisten di seluruh aplikasi.
+class ModuleDua {
+  const ModuleDua({
+    required this.title,
+    required this.arabic,
+    required this.translation,
+    required this.source,
+  });
+
+  /// Nama ringkas doa (contoh: "Talbiyah", "Sayyidul Istighfar").
+  final String title;
+
+  /// Teks Arab lengkap dengan tashkeel (baris/harakat).
+  final String arabic;
+
+  /// Terjemahan makna dalam Bahasa Melayu.
+  final String translation;
+
+  /// Sumber/rujukan doa (contoh: "Riwayat al-Bukhari").
+  final String source;
+}

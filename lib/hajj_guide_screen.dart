@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:hive_ce_flutter/hive_ce_flutter.dart';
 
 import 'app_theme.dart';
@@ -42,6 +43,39 @@ class _HajjGuideScreenState extends State<HajjGuideScreen> {
       ],
       reminder:
           'Gunakan senarai semak dan simpan salinan dokumen secara selamat.',
+      duas: <GuideDua>[
+        GuideDua(
+          title: 'Doa Musafir',
+          arabic:
+              'اللَّهُمَّ إِنَّا نَسْأَلُكَ فِي سَفَرِنَا هَـٰذَا الْبِرَّ '
+              'وَالتَّقْوَىٰ، وَمِنَ الْعَمَلِ مَا تَرْضَىٰ',
+          translation:
+              'Ya Allah, sesungguhnya kami memohon kepada-Mu dalam '
+              'perjalanan kami ini kebaikan dan ketakwaan, serta amalan '
+              'yang Engkau redai.',
+          source: 'Riwayat Muslim',
+        ),
+      ],
+      academicInsight:
+          'Para ulama meletakkan persediaan rohani setaraf pentingnya '
+          'dengan persediaan fizikal sebelum Haji. Menyelesaikan hutang, '
+          'memohon kemaafan dan restu keluarga, serta bertaubat dianggap '
+          'sebahagian daripada erti "tazawwud" (bekalan) yang disebut '
+          'dalam Surah al-Baqarah ayat 197: "Berbekallah, dan '
+          'sesungguhnya sebaik-baik bekalan ialah takwa." Dari sudut '
+          'fiqh, konsep istita\u2019ah (kemampuan) yang menjadi syarat '
+          'wajib Haji turut merangkumi tiga dimensi: kemampuan kewangan '
+          '(termasuk nafkah keluarga yang ditinggalkan), kesihatan '
+          'fizikal, dan keselamatan sepanjang perjalanan — ketiadaan '
+          'mana-mana satu boleh menggugurkan kewajipan tanpa dosa.',
+      reflectionQuestions: <String>[
+        'Sejauh manakah persediaan rohani (seperti bertaubat dan '
+            'menyelesaikan hutang) sama pentingnya dengan persediaan '
+            'fizikal sebelum Haji?',
+        'Bagaimana konsep istita\u2019ah (kemampuan) mempengaruhi '
+            'kewajipan Haji ke atas seseorang, dan apakah kesannya jika '
+            'salah satu syarat ini tidak dipenuhi?',
+      ],
     ),
     HajjGuideStepData(
       number: '02',
@@ -64,6 +98,45 @@ class _HajjGuideScreenState extends State<HajjGuideScreen> {
       ],
       reminder:
           'Jangan melepasi miqat tanpa niat. Rujuk pembimbing Haji jika tidak pasti.',
+      duas: <GuideDua>[
+        GuideDua(
+          title: 'Talbiyah',
+          arabic:
+              'لَبَّيْكَ اللَّهُمَّ لَبَّيْكَ، لَبَّيْكَ لَا شَرِيكَ لَكَ '
+              'لَبَّيْكَ، إِنَّ الْحَمْدَ وَالنِّعْمَةَ لَكَ وَالْمُلْكَ، '
+              'لَا شَرِيكَ لَكَ',
+          translation:
+              'Aku sahut panggilan-Mu ya Allah, aku sahut panggilan-Mu. '
+              'Aku sahut panggilan-Mu, tiada sekutu bagi-Mu, aku sahut '
+              'panggilan-Mu. Sesungguhnya segala puji, nikmat dan '
+              'kerajaan adalah milik-Mu, tiada sekutu bagi-Mu.',
+          source: 'Riwayat al-Bukhari dan Muslim',
+        ),
+        GuideDua(
+          title: 'Lafaz Niat Haji',
+          arabic: 'اللَّهُمَّ لَبَّيْكَ حَجًّا',
+          translation: 'Ya Allah, aku sahut seruan-Mu untuk menunaikan Haji.',
+          source: 'Lafaz yang diajarkan dalam kitab-kitab fiqh Haji',
+        ),
+      ],
+      academicInsight:
+          'Ihram membawa makna simbolik yang mendalam: dua helai kain '
+          'putih tanpa jahitan menghapuskan segala tanda status sosial, '
+          'bangsa dan kekayaan, menegakkan prinsip kesamarataan seluruh '
+          'manusia di hadapan Allah SWT. Amalan ini turut mengingatkan '
+          'jemaah tentang kain kafan dan hari kebangkitan. Dari sudut '
+          'fiqh, miqat makani (had tempat) yang lima — antaranya '
+          'Zulhulaifah, Juhfah dan Qarnul Manazil — ditetapkan sendiri '
+          'oleh Rasulullah SAW berdasarkan arah kedatangan jemaah, dan '
+          'sesiapa yang melepasinya tanpa berihram dikenakan dam '
+          'melainkan kembali semula ke miqat.',
+      reflectionQuestions: <String>[
+        'Apakah hikmah di sebalik pemakaian ihram yang sama bagi semua '
+            'jemaah tanpa mengira status sosial atau kekayaan?',
+        'Mengapakah niat perlu dilaksanakan sebelum melepasi miqat, dan '
+            'apakah tindakan yang wajar jika seseorang terlepas berbuat '
+            'demikian?',
+      ],
     ),
     HajjGuideStepData(
       number: '03',
@@ -87,6 +160,33 @@ class _HajjGuideScreenState extends State<HajjGuideScreen> {
       ],
       reminder:
           'Elakkan bergerak bersendirian di kawasan yang belum dikenal pasti.',
+      duas: <GuideDua>[
+        GuideDua(
+          title: 'Doa Memasuki Masjidil Haram',
+          arabic: 'اللَّهُمَّ افْتَحْ لِي أَبْوَابَ رَحْمَتِكَ',
+          translation: 'Ya Allah, bukakanlah bagiku pintu-pintu rahmat-Mu.',
+          source:
+              'Riwayat Muslim (doa umum memasuki masjid, diamalkan jemaah '
+              'semasa memasuki Masjidil Haram)',
+        ),
+      ],
+      academicInsight:
+          'Masjidil Haram telah mengalami pelbagai pengembangan sepanjang '
+          'sejarah Islam bagi menampung jemaah yang semakin ramai, namun '
+          'kedudukan Kaabah kekal sebagai kiblat dan pusat tumpuan sejak '
+          'zaman Nabi Ibrahim AS. Sunnah Rasulullah SAW ketika pertama '
+          'kali melihat Kaabah ialah mengangkat tangan dan berdoa dengan '
+          'penuh khusyuk, bukan semestinya menyentuhnya. Ramai ulama '
+          'turut menekankan pentingnya menjaga adab dan ketenangan hati '
+          'walaupun dilanda rasa teruja, kerana saat ini sering '
+          'digambarkan sebagai detik yang amat mustajab untuk berdoa.',
+      reflectionQuestions: <String>[
+        'Bagaimana jemaah dapat menyeimbangkan emosi (seperti teruja '
+            'atau terharu) dengan ketenangan dan tertib semasa ketibaan '
+            'di Masjidil Haram?',
+        'Mengapakah adab dan kesopanan penting dijaga walaupun berada '
+            'dalam keadaan sesak dan tergesa-gesa?',
+      ],
     ),
     HajjGuideStepData(
       number: '04',
@@ -109,6 +209,49 @@ class _HajjGuideScreenState extends State<HajjGuideScreen> {
       ],
       reminder:
           'Utamakan keselamatan dan elakkan bersesak jika keadaan terlalu padat.',
+      duas: <GuideDua>[
+        GuideDua(
+          title: 'Doa Antara Rukun Yamani dan Hajar Aswad',
+          arabic:
+              'رَبَّنَا آتِنَا فِي الدُّنْيَا حَسَنَةً وَفِي الْآخِرَةِ '
+              'حَسَنَةً وَقِنَا عَذَابَ النَّارِ',
+          translation:
+              'Ya Tuhan kami, berikanlah kami kebaikan di dunia dan '
+              'kebaikan di akhirat, serta peliharalah kami daripada azab '
+              'neraka.',
+          source:
+              'Al-Baqarah 2:201; diamalkan Rasulullah SAW ketika Tawaf (Abu Dawud)',
+        ),
+        GuideDua(
+          title: 'Doa Memulakan Sa\u2019i di Safa',
+          arabic: 'إِنَّ الصَّفَا وَالْمَرْوَةَ مِنْ شَعَائِرِ اللَّهِ',
+          translation:
+              'Sesungguhnya Safa dan Marwah sebahagian daripada '
+              'syiar-syiar Allah.',
+          source: 'Al-Baqarah 2:158',
+        ),
+      ],
+      academicInsight:
+          'Pergerakan Tawaf mengelilingi Kaabah secara berlawanan arah '
+          'jam sering dikaitkan oleh sarjana Islam dengan konsep '
+          'ketauhidan — menjadikan Allah SWT sebagai paksi tunggal '
+          'kehidupan, sepertimana malaikat bertawaf mengelilingi '
+          '"Baitul Makmur" di langit. Sa\u2019i pula mengabadikan kisah '
+          'Siti Hajar AS yang berulang-alik mencari air untuk anaknya, '
+          'Nabi Ismail AS, sehingga terpancarnya mata air Zamzam — '
+          'satu pengajaran agung tentang tawakal dan usaha yang tidak '
+          'berputus asa walaupun dalam keadaan yang paling getir. Dari '
+          'sudut fiqh, terdapat tiga jenis Tawaf: Qudum (ketibaan), '
+          'Ifadah (rukun) dan Wada\u2019 (perpisahan), masing-masing '
+          'dengan hukum dan waktu yang berbeza.',
+      reflectionQuestions: <String>[
+        'Apakah kaitan spiritual antara pergerakan Tawaf mengelilingi '
+            'Kaabah dengan konsep ketauhidan dan penyerahan diri kepada '
+            'Allah SWT?',
+        'Bagaimana kisah Siti Hajar AS dalam peristiwa Sa\u2019i '
+            'mengajar erti tawakal dan usaha yang berterusan kepada '
+            'jemaah masa kini?',
+      ],
     ),
     HajjGuideStepData(
       number: '05',
@@ -132,6 +275,43 @@ class _HajjGuideScreenState extends State<HajjGuideScreen> {
       ],
       reminder:
           'Wukuf ialah rukun utama Haji. Pastikan lokasi dan waktunya tepat.',
+      duas: <GuideDua>[
+        GuideDua(
+          title: 'Sebaik-baik Doa (Doa Hari Arafah)',
+          arabic:
+              'لَا إِلَٰهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ '
+              'الْمُلْكُ وَلَهُ الْحَمْدُ، وَهُوَ عَلَىٰ كُلِّ شَيْءٍ '
+              'قَدِيرٌ',
+          translation:
+              'Tiada Tuhan yang berhak disembah melainkan Allah, Yang '
+              'Maha Esa, tiada sekutu bagi-Nya. Bagi-Nya kerajaan dan '
+              'bagi-Nya segala pujian, dan Dia Maha Berkuasa atas segala '
+              'sesuatu.',
+          source:
+              'Riwayat at-Tirmidhi (hasan) — Rasulullah SAW bersabda: '
+              '"Sebaik-baik doa ialah doa pada hari Arafah."',
+        ),
+      ],
+      academicInsight:
+          'Sabda Rasulullah SAW "al-Hajju Arafah" (Haji itu adalah '
+          'Arafah) — riwayat at-Tirmidhi dan Abu Dawud — menegaskan '
+          'bahawa sesiapa yang sempat berada di Arafah walaupun sesaat '
+          'dalam waktu wukuf, sah Hajinya, manakala yang terlepas waktu '
+          'ini tanpa uzur dianggap tidak sempurna Hajinya pada tahun '
+          'tersebut. Arafah turut menjadi lokasi bersejarah Khutbah '
+          'Wada\u2019 yang disampaikan Rasulullah SAW, merangkumi '
+          'prinsip keadilan, kesamarataan, hak asasi, dan larangan riba '
+          '— sebuah piagam kemanusiaan yang mendahului zamannya. Hari '
+          'Arafah turut dianggap oleh ulama sebagai hari pengampunan '
+          'dosa yang paling agung sepanjang tahun.',
+      reflectionQuestions: <String>[
+        'Mengapakah Rasulullah SAW menegaskan "Haji itu adalah Arafah"? '
+            'Apakah pengajaran daripada penegasan ini kepada jemaah yang '
+            'terlepas rukun-rukun lain?',
+        'Bagaimana prinsip-prinsip yang disampaikan dalam Khutbah '
+            'Wada\u2019 di Arafah — seperti keadilan dan kesamarataan — '
+            'masih relevan dengan kehidupan bermasyarakat hari ini?',
+      ],
     ),
     HajjGuideStepData(
       number: '06',
@@ -155,6 +335,35 @@ class _HajjGuideScreenState extends State<HajjGuideScreen> {
       ],
       reminder:
           'Jangan berpisah daripada kumpulan ketika pergerakan besar-besaran.',
+      duas: <GuideDua>[
+        GuideDua(
+          title: 'Zikir di Masy\u2019aril Haram',
+          arabic: 'فَاذْكُرُوا اللَّهَ عِنْدَ الْمَشْعَرِ الْحَرَامِ',
+          translation:
+              'Maka sebutlah (ingatlah) Allah di Masy\u2019aril Haram '
+              '(Muzdalifah).',
+          source: 'Al-Baqarah 2:198',
+        ),
+      ],
+      academicInsight:
+          'Muzdalifah berperanan sebagai persinggahan yang menghimpunkan '
+          'jemaah selepas kesibukan Wukuf di Arafah, sebelum meneruskan '
+          'perjalanan ke Mina. Rasulullah SAW mengajarkan solat Maghrib '
+          'dan Isyak dijamak serta diqasarkan di sini — satu bentuk '
+          'rukhsah (kelonggaran) yang mencerminkan sifat Islam yang '
+          'mudah dan mengambil kira keletihan jemaah. Ulama berbeza '
+          'pendapat tentang hukum mabit (bermalam) di Muzdalifah — ada '
+          'yang mengategorikannya sebagai wajib dengan dam jika '
+          'ditinggalkan, manakala golongan lemah, wanita hamil, dan '
+          'warga emas diberikan kelonggaran untuk meneruskan perjalanan '
+          'lebih awal ke Mina.',
+      reflectionQuestions: <String>[
+        'Apakah hikmah disyariatkan mabit (bermalam) di Muzdalifah '
+            'sebelum meneruskan perjalanan ke Mina?',
+        'Bagaimana konsep rukhsah (kelonggaran) dalam menjamak solat di '
+            'Muzdalifah mencerminkan sifat Islam yang mengambil kira '
+            'keadaan dan kemampuan manusia?',
+      ],
     ),
     HajjGuideStepData(
       number: '07',
@@ -178,6 +387,36 @@ class _HajjGuideScreenState extends State<HajjGuideScreen> {
       ],
       reminder:
           'Jangan melawan arus atau memaksa diri ketika kawasan terlalu padat.',
+      duas: <GuideDua>[
+        GuideDua(
+          title: 'Takbir Semasa Melontar',
+          arabic: 'اللَّهُ أَكْبَرُ',
+          translation: 'Allah Maha Besar.',
+          source:
+              'Diajarkan Rasulullah SAW — takbir dilafazkan pada setiap '
+              'kali lontaran batu (Sahih Muslim)',
+        ),
+      ],
+      academicInsight:
+          'Ibadah melontar jamrah mengabadikan peristiwa agung Nabi '
+          'Ibrahim AS yang digoda oleh syaitan sebanyak tiga kali ketika '
+          'diperintahkan menyembelih anaknya, Nabi Ismail AS, dan setiap '
+          'kali baginda menolak godaan tersebut dengan melontar batu. '
+          'Amalan ini menjadi lambang penolakan tegas terhadap hasutan '
+          'syaitan dalam kehidupan seharian. Dari sudut fiqh, hari-hari '
+          'Tasyriq (11, 12 dan 13 Zulhijjah) mempunyai jadual dan '
+          'susunan lontaran yang tertentu pada setiap jamrah (Sughra, '
+          'Wusta, Kubra), dan pihak berkuasa Haji moden turut '
+          'memperkenalkan sistem berperingkat masa (tanawub) bagi '
+          'mengurangkan risiko kesesakan di Jamarat.',
+      reflectionQuestions: <String>[
+        'Apakah pengajaran daripada peristiwa Nabi Ibrahim AS menolak '
+            'godaan syaitan, yang diperingati melalui ibadah melontar '
+            'jamrah?',
+        'Bagaimana jemaah dapat mengekalkan disiplin, kesabaran dan '
+            'keselamatan diri dalam suasana sesak semasa melontar '
+            'jamrah?',
+      ],
     ),
     HajjGuideStepData(
       number: '08',
@@ -201,6 +440,37 @@ class _HajjGuideScreenState extends State<HajjGuideScreen> {
       ],
       reminder:
           'Rujuk pembimbing Haji tentang perbezaan tahallul awal dan tahallul thani.',
+      duas: <GuideDua>[
+        GuideDua(
+          title: 'Doa Memohon Penerimaan Amalan',
+          arabic: 'اللَّهُمَّ تَقَبَّلْ مِنِّي',
+          translation: 'Ya Allah, terimalah (amalan) daripadaku.',
+          source:
+              'Doa umum memohon penerimaan amalan, sesuai diamalkan '
+              'selepas menyempurnakan sebahagian besar rukun dan wajib '
+              'Haji',
+        ),
+      ],
+      academicInsight:
+          'Tahallul terbahagi kepada dua peringkat: tahallul awal, yang '
+          'berlaku selepas melaksanakan dua daripada tiga perkara '
+          '(melontar Jamrah Aqabah, bercukur/bergunting, dan Tawaf '
+          'Ifadah bersama Sa\u2019i), membenarkan jemaah kembali memakai '
+          'pakaian biasa dan mengangkat kebanyakan larangan ihram '
+          'kecuali hubungan suami isteri; manakala tahallul thani '
+          'berlaku selepas ketiga-tiga perkara tersebut selesai, '
+          'mengangkat sepenuhnya semua larangan ihram. Mencukur '
+          '(halq) atau bergunting (taqsir) turut membawa makna simbolik '
+          'kerendahan hati dan pelepasan diri daripada sifat '
+          'keduniaan, dengan mencukur habis dianggap lebih afdal bagi '
+          'lelaki berdasarkan doa khusus Rasulullah SAW kepada golongan '
+          'ini.',
+      reflectionQuestions: <String>[
+        'Apakah perbezaan antara tahallul awal dan tahallul thani dari '
+            'segi larangan ihram yang terangkat pada setiap peringkat?',
+        'Mengapakah mencukur atau menggunting rambut dipilih sebagai '
+            'simbol penyempurnaan sebahagian besar rukun Haji?',
+      ],
     ),
     HajjGuideStepData(
       number: '09',
@@ -224,6 +494,44 @@ class _HajjGuideScreenState extends State<HajjGuideScreen> {
       ],
       reminder:
           'Terdapat keadaan tertentu yang mempunyai pengecualian. Rujuk pembimbing Haji.',
+      duas: <GuideDua>[
+        GuideDua(
+          title: 'Doa Penutup Majlis (Kaffaratul Majlis)',
+          arabic:
+              'سُبْحَانَكَ اللَّهُمَّ وَبِحَمْدِكَ، أَشْهَدُ أَنْ لَا '
+              'إِلَٰهَ إِلَّا أَنْتَ، أَسْتَغْفِرُكَ وَأَتُوبُ إِلَيْكَ',
+          translation:
+              'Maha Suci Engkau ya Allah, dan dengan memuji-Mu, aku '
+              'bersaksi bahawa tiada Tuhan melainkan Engkau, aku memohon '
+              'ampun dan bertaubat kepada-Mu.',
+          source:
+              'Riwayat at-Tirmidhi — sesuai diamalkan sebelum '
+              'meninggalkan Makkah sebagai tanda kesyukuran dan '
+              'permohonan taubat',
+        ),
+      ],
+      academicInsight:
+          'Tawaf Wada\u2019 disyariatkan sebagai amalan terakhir sebelum '
+          'jemaah meninggalkan Makkah, berdasarkan arahan Rasulullah '
+          'SAW: "Janganlah seseorang daripada kamu berlalu (pulang) '
+          'sehingga akhir kegiatannya di Baitullah adalah Tawaf" '
+          '(riwayat Muslim). Ia melambangkan penghormatan terakhir '
+          'kepada Baitullah sebelum berpisah, sekali gus mengingatkan '
+          'jemaah tentang perpisahan hakiki dengan dunia kelak. Wanita '
+          'yang didatangi haid atau nifas dikecualikan daripada '
+          'kewajipan ini menurut jumhur ulama. Lebih penting lagi, para '
+          'ulama mengingatkan bahawa nilai sebenar Tawaf Wada\u2019 '
+          'ialah bukan sekadar pusingan fizikal terakhir, tetapi '
+          'komitmen untuk mengekalkan istiqamah dan kesan positif '
+          'ibadah Haji sepanjang baki kehidupan jemaah.',
+      reflectionQuestions: <String>[
+        'Mengapakah Tawaf Wada\u2019 disyariatkan sebagai amalan '
+            'terakhir sebelum meninggalkan Makkah, dan apakah maknanya '
+            'secara simbolik?',
+        'Bagaimana jemaah dapat mengekalkan kesan positif dan '
+            'istiqamah ibadah Haji selepas pulang ke tanah air, supaya '
+            'ia bukan sekadar pengalaman sekali lalu?',
+      ],
     ),
   ];
 
@@ -327,9 +635,9 @@ class _HajjGuideScreenState extends State<HajjGuideScreen> {
                               Text(
                                 'PANDUAN HAJI',
                                 textAlign: TextAlign.center,
-                                style: TextStyle(
+                                style: GoogleFonts.playfairDisplay(
                                   color: colors.onSurface,
-                                  fontWeight: FontWeight.w900,
+                                  fontWeight: FontWeight.w700,
                                   letterSpacing: 1.5,
                                 ),
                               ),
@@ -356,10 +664,10 @@ class _HajjGuideScreenState extends State<HajjGuideScreen> {
                     const SizedBox(height: 24),
                     Text(
                       'Perjalanan Haji',
-                      style: TextStyle(
+                      style: GoogleFonts.playfairDisplay(
                         color: colors.onSurface,
                         fontSize: 23,
-                        fontWeight: FontWeight.w900,
+                        fontWeight: FontWeight.w700,
                       ),
                     ),
                     const SizedBox(height: 6),
@@ -500,9 +808,9 @@ class _HajjGuideDetailScreenState extends State<HajjGuideDetailScreen> {
                           child: Text(
                             'LANGKAH ${step.number}',
                             textAlign: TextAlign.center,
-                            style: TextStyle(
+                            style: GoogleFonts.playfairDisplay(
                               color: colors.onSurface,
-                              fontWeight: FontWeight.w900,
+                              fontWeight: FontWeight.w700,
                               letterSpacing: 1.2,
                             ),
                           ),
@@ -519,8 +827,22 @@ class _HajjGuideDetailScreenState extends State<HajjGuideDetailScreen> {
                       accent: step.accent,
                       points: step.actions,
                     ),
+                    if (step.duas.isNotEmpty) ...<Widget>[
+                      const SizedBox(height: 14),
+                      _GuideDuaCard(duas: step.duas, accent: step.accent),
+                    ],
                     const SizedBox(height: 14),
                     _GuideChecklistCard(step: step),
+                    const SizedBox(height: 14),
+                    _GuideAcademicCard(
+                      insight: step.academicInsight,
+                      accent: step.accent,
+                    ),
+                    const SizedBox(height: 14),
+                    _GuideReflectionCard(
+                      questions: step.reflectionQuestions,
+                      accent: step.accent,
+                    ),
                     const SizedBox(height: 14),
                     _GuideReminderCard(
                       reminder: step.reminder,
@@ -588,6 +910,29 @@ class _HajjGuideDetailScreenState extends State<HajjGuideDetailScreen> {
   }
 }
 
+/// Doa ma'thur (doa yang bersumberkan Al-Quran atau hadis sahih/hasan)
+/// yang berkaitan dengan sesuatu amalan/lokasi dalam perjalanan Haji.
+class GuideDua {
+  const GuideDua({
+    required this.title,
+    required this.arabic,
+    required this.translation,
+    required this.source,
+  });
+
+  /// Nama ringkas doa (contoh: "Talbiyah", "Doa Sa'i").
+  final String title;
+
+  /// Teks Arab lengkap dengan tashkeel (baris/harakat).
+  final String arabic;
+
+  /// Terjemahan makna dalam Bahasa Melayu.
+  final String translation;
+
+  /// Sumber/rujukan doa (contoh: "Riwayat al-Bukhari dan Muslim").
+  final String source;
+}
+
 class HajjGuideStepData {
   const HajjGuideStepData({
     required this.number,
@@ -599,6 +944,9 @@ class HajjGuideStepData {
     required this.actions,
     required this.checklist,
     required this.reminder,
+    required this.duas,
+    required this.academicInsight,
+    required this.reflectionQuestions,
   });
 
   final String number;
@@ -610,6 +958,19 @@ class HajjGuideStepData {
   final List<String> actions;
   final List<String> checklist;
   final String reminder;
+
+  /// Doa ma'thur yang berkaitan dengan langkah/ritual ini. Boleh kosong
+  /// jika tiada doa khusus yang masyhur diriwayatkan bagi langkah tersebut.
+  final List<GuideDua> duas;
+
+  /// Perbincangan akademik/teologi yang lebih mendalam mengenai konteks,
+  /// sejarah, hikmah, atau perbahasan fiqh berkaitan langkah ini.
+  final String academicInsight;
+
+  /// Soalan kefahaman & pemikiran kritis berkaitan langkah ini, untuk
+  /// mendorong jemaah merenung dan memahami dengan lebih mendalam
+  /// (bukan kuiz aneka pilihan — bersifat renungan/soal jawab terbuka).
+  final List<String> reflectionQuestions;
 }
 
 class _GuideProgressCard extends StatelessWidget {
@@ -654,6 +1015,9 @@ class _GuideProgressCard extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: palette.emerald.withValues(alpha: 0.11),
                   borderRadius: BorderRadius.circular(16),
+                  border: Border.all(
+                    color: palette.emerald.withValues(alpha: 0.24),
+                  ),
                 ),
                 child: HajjIcon(
                   type: HajjIconType.guide,
@@ -668,10 +1032,10 @@ class _GuideProgressCard extends StatelessWidget {
                   children: <Widget>[
                     Text(
                       'Kemajuan Panduan',
-                      style: TextStyle(
+                      style: GoogleFonts.playfairDisplay(
                         color: colors.onSurface,
                         fontSize: 18,
-                        fontWeight: FontWeight.w900,
+                        fontWeight: FontWeight.w700,
                       ),
                     ),
                     const SizedBox(height: 4),
@@ -814,10 +1178,10 @@ class _TimelineStep extends StatelessWidget {
                           children: <Widget>[
                             Text(
                               step.title,
-                              style: TextStyle(
+                              style: GoogleFonts.playfairDisplay(
                                 color: colors.onSurface,
                                 fontSize: 17,
-                                fontWeight: FontWeight.w900,
+                                fontWeight: FontWeight.w700,
                               ),
                             ),
                             const SizedBox(height: 5),
@@ -905,10 +1269,10 @@ class _GuideStepHero extends StatelessWidget {
                 const SizedBox(height: 6),
                 Text(
                   step.title,
-                  style: TextStyle(
+                  style: GoogleFonts.playfairDisplay(
                     color: colors.onSurface,
                     fontSize: 22,
-                    fontWeight: FontWeight.w900,
+                    fontWeight: FontWeight.w700,
                   ),
                 ),
                 const SizedBox(height: 6),
@@ -968,10 +1332,10 @@ class _GuideContentCard extends StatelessWidget {
               Expanded(
                 child: Text(
                   title,
-                  style: TextStyle(
+                  style: GoogleFonts.playfairDisplay(
                     color: colors.onSurface,
                     fontSize: 17,
-                    fontWeight: FontWeight.w900,
+                    fontWeight: FontWeight.w700,
                   ),
                 ),
               ),
@@ -1052,10 +1416,10 @@ class _GuideChecklistCard extends StatelessWidget {
               const SizedBox(width: 10),
               Text(
                 'Checklist ringkas',
-                style: TextStyle(
+                style: GoogleFonts.playfairDisplay(
                   color: colors.onSurface,
                   fontSize: 17,
-                  fontWeight: FontWeight.w900,
+                  fontWeight: FontWeight.w700,
                 ),
               ),
             ],
@@ -1157,6 +1521,276 @@ class _GuidePrototypeNotice extends StatelessWidget {
               ),
             ),
           ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Kad memaparkan doa ma'thur (Arab + terjemahan + sumber) berkaitan
+/// langkah/ritual semasa. Teks Arab dipaparkan besar dan lapang dengan
+/// baris (tashkeel) penuh supaya mudah dibaca dan kelihatan elegan.
+class _GuideDuaCard extends StatelessWidget {
+  const _GuideDuaCard({required this.duas, required this.accent});
+
+  final List<GuideDua> duas;
+  final Color accent;
+
+  @override
+  Widget build(BuildContext context) {
+    final HajjColors palette = context.hajjColors;
+    final ColorScheme colors = context.appColorScheme;
+
+    return GlassContainer(
+      borderRadius: 22,
+      padding: const EdgeInsets.all(22),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Row(
+            children: <Widget>[
+              HajjIcon(type: HajjIconType.doa, color: accent, size: 24),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Text(
+                  'Doa Ma\u2019thur',
+                  style: GoogleFonts.playfairDisplay(
+                    color: colors.onSurface,
+                    fontSize: 17,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          for (int i = 0; i < duas.length; i++) ...<Widget>[
+            SizedBox(height: i == 0 ? 18 : 24),
+            if (duas.length > 1) ...<Widget>[
+              Text(
+                duas[i].title.toUpperCase(),
+                style: TextStyle(
+                  color: accent,
+                  fontSize: 11,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: 1.2,
+                ),
+              ),
+              const SizedBox(height: 10),
+            ],
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 22),
+              decoration: BoxDecoration(
+                color: accent.withValues(alpha: 0.07),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: accent.withValues(alpha: 0.18)),
+              ),
+              child: Text(
+                duas[i].arabic,
+                textDirection: TextDirection.rtl,
+                textAlign: TextAlign.center,
+                style: GoogleFonts.amiri(
+                  color: colors.onSurface,
+                  fontSize: 25,
+                  height: 2.0,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+            const SizedBox(height: 14),
+            Text(
+              duas[i].translation,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: colors.onSurface,
+                height: 1.6,
+                fontStyle: FontStyle.italic,
+              ),
+            ),
+            const SizedBox(height: 10),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Icon(
+                  Icons.menu_book_rounded,
+                  size: 13,
+                  color: palette.mutedText,
+                ),
+                const SizedBox(width: 6),
+                Flexible(
+                  child: Text(
+                    duas[i].source,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: palette.mutedText,
+                      fontSize: 11,
+                      height: 1.4,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+/// Kad "Wawasan Mendalam" — perbincangan akademik/teologi/sejarah yang
+/// lebih lanjut berkaitan langkah semasa, bagi memberi nilai tambah
+/// kepada pembaca yang ingin memahami hikmah dan konteks yang lebih luas.
+class _GuideAcademicCard extends StatelessWidget {
+  const _GuideAcademicCard({required this.insight, required this.accent});
+
+  final String insight;
+  final Color accent;
+
+  @override
+  Widget build(BuildContext context) {
+    final HajjColors palette = context.hajjColors;
+    final ColorScheme colors = context.appColorScheme;
+
+    return GlassContainer(
+      borderRadius: 22,
+      padding: const EdgeInsets.all(22),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Row(
+            children: <Widget>[
+              Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: accent.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: accent.withValues(alpha: 0.24)),
+                ),
+                child: Icon(
+                  Icons.auto_stories_rounded,
+                  color: accent,
+                  size: 20,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  'Wawasan Mendalam',
+                  style: GoogleFonts.playfairDisplay(
+                    color: colors.onSurface,
+                    fontSize: 17,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 14),
+          Text(
+            insight,
+            textAlign: TextAlign.justify,
+            style: TextStyle(
+              color: palette.mutedText,
+              height: 1.7,
+              fontSize: 13.5,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Kad soalan kefahaman & pemikiran kritis — mendorong jemaah merenung
+/// dan memahami hikmah di sebalik amalan, bukan sekadar menghafal
+/// langkah demi langkah.
+class _GuideReflectionCard extends StatelessWidget {
+  const _GuideReflectionCard({required this.questions, required this.accent});
+
+  final List<String> questions;
+  final Color accent;
+
+  @override
+  Widget build(BuildContext context) {
+    final HajjColors palette = context.hajjColors;
+    final ColorScheme colors = context.appColorScheme;
+
+    return GlassContainer(
+      borderRadius: 22,
+      padding: const EdgeInsets.all(22),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Row(
+            children: <Widget>[
+              Icon(Icons.psychology_alt_rounded, color: accent, size: 22),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Text(
+                  'Renungan & Muhasabah',
+                  style: GoogleFonts.playfairDisplay(
+                    color: colors.onSurface,
+                    fontSize: 17,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 6),
+          Text(
+            'Soalan untuk membantu anda memahami hikmah di sebalik amalan '
+            'ini dengan lebih mendalam.',
+            style: TextStyle(
+              color: palette.mutedText,
+              fontSize: 12,
+              height: 1.4,
+            ),
+          ),
+          const SizedBox(height: 16),
+          ...List<Widget>.generate(questions.length, (int index) {
+            return Padding(
+              padding: EdgeInsets.only(
+                bottom: index == questions.length - 1 ? 0 : 14,
+              ),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Container(
+                    width: 24,
+                    height: 24,
+                    margin: const EdgeInsets.only(top: 1),
+                    decoration: BoxDecoration(
+                      color: accent.withValues(alpha: 0.14),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Center(
+                      child: Text(
+                        '${index + 1}',
+                        style: TextStyle(
+                          color: accent,
+                          fontSize: 11,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      questions[index],
+                      style: TextStyle(
+                        color: colors.onSurface,
+                        height: 1.5,
+                        fontSize: 13.5,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }),
         ],
       ),
     );
