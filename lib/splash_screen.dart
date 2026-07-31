@@ -342,8 +342,6 @@ class _SplashScreenState extends State<SplashScreen>
         description:
             'HajiPintar membantu anda memahami perjalanan haji '
             'melalui panduan yang tersusun, ringkas dan mudah dirujuk.',
-        tip: 'Mulakan persiapan dengan niat yang ikhlas, '
-             'ilmu yang mencukupi dan latihan yang konsisten.',
         fact:
             'Ibadah haji diwajibkan sekali seumur hidup bagi Muslim '
             'yang memenuhi syarat dan berkemampuan.',
@@ -358,8 +356,6 @@ class _SplashScreenState extends State<SplashScreen>
         description:
             'Akses modul pembelajaran, doa, zikir, kuiz, peta lokasi '
             'serta panduan langkah demi langkah dalam satu aplikasi.',
-        tip: 'Gunakan modul doa, zikir dan kuiz secara konsisten '
-             'sebelum berangkat.',
         fact:
             'Rasulullah SAW bersabda bahawa sebaik-baik doa '
             'ialah doa pada hari Arafah.',
@@ -375,8 +371,6 @@ class _SplashScreenState extends State<SplashScreen>
             'Kandungan HajiPintar disediakan untuk pendidikan dan '
             'rujukan umum. Untuk persoalan hukum atau situasi khusus, '
             'rujuk pembimbing haji dan pihak berautoriti.',
-        tip: 'Simpan nombor pembimbing haji, petugas rombongan '
-             'dan talian kecemasan di tempat yang mudah dicapai.',
         fact:
             'Ibadah haji menghimpunkan umat Islam daripada pelbagai '
             'negara dalam satu tujuan dan pengabdian kepada Allah.',
@@ -408,23 +402,24 @@ class _SplashScreenState extends State<SplashScreen>
                               width: 1,
                             ),
                           ),
-                          child: Image.asset(
-                            'assets/images/app_icon.png',
-                            width: 42,
-                            height: 42,
-                            errorBuilder: (
-                              BuildContext context,
-                              Object error,
-                              StackTrace? stackTrace,
-                            ) {
-                              return HajjIcon(
-                                type: HajjIconType.mosque,
-                                color: palette.gold,
-                                size: 30,
-                                strokeWidth: 2.5,
-                              );
-                            },
-                          ),
+child: Image.asset(
+                             'assets/images/app_icon.png',
+                             width: 42,
+                             height: 42,
+                             fit: BoxFit.contain,
+                             errorBuilder: (
+                               BuildContext context,
+                               Object error,
+                               StackTrace? stackTrace,
+                             ) {
+                               return HajjIcon(
+                                 type: HajjIconType.mosque,
+                                 color: palette.gold,
+                                 size: 30,
+                                 strokeWidth: 2.5,
+                               );
+                             },
+                           ),
                         ),
                         const SizedBox(width: 12),
                         Text(
@@ -570,7 +565,6 @@ class _PengenalanData {
     required this.title,
     required this.titleContent,
     required this.description,
-    required this.tip,
     required this.fact,
     this.arabicQuote,
     this.verse,
@@ -581,7 +575,6 @@ class _PengenalanData {
   final String title;
   final String titleContent;
   final String description;
-  final String tip;
   final String fact;
   final String? arabicQuote;
   final String? verse;
@@ -808,62 +801,21 @@ class _PengenalanPage extends StatelessWidget {
                 ),
               ),
             ),
-            const SizedBox(height: 18),
-            Container(
-              constraints: const BoxConstraints(maxWidth: 500),
-              padding: const EdgeInsets.symmetric(
-                horizontal: 16,
-                vertical: 12,
-              ),
-              decoration: BoxDecoration(
-                color: palette.emerald.withValues(alpha: 0.08),
-                borderRadius: BorderRadius.circular(14),
-                border: Border.all(
-                  color: palette.emerald.withValues(alpha: 0.2),
-                  width: 0.8,
-                ),
-              ),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Padding(
-                    padding: const EdgeInsets.only(top: 2),
-                    child: Icon(
-                      Icons.lightbulb_rounded,
-                      color: palette.gold,
-                      size: 18,
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: Text(
-                      data.tip,
-                      style: TextStyle(
-                        color: Colors.white.withValues(alpha: 0.78),
-                        fontSize: 13.5,
-                        height: 1.55,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 12),
-            Container(
-              constraints: const BoxConstraints(maxWidth: 500),
-              padding: const EdgeInsets.symmetric(
-                horizontal: 16,
-                vertical: 12,
-              ),
-              decoration: BoxDecoration(
-                color: palette.gold.withValues(alpha: 0.08),
-                borderRadius: BorderRadius.circular(14),
-                border: Border.all(
-                  color: palette.gold.withValues(alpha: 0.18),
-                  width: 0.8,
-                ),
-              ),
-              child: Row(
+             Container(
+               constraints: const BoxConstraints(maxWidth: 500),
+               padding: const EdgeInsets.symmetric(
+                 horizontal: 16,
+                 vertical: 12,
+               ),
+               decoration: BoxDecoration(
+                 color: palette.gold.withValues(alpha: 0.08),
+                 borderRadius: BorderRadius.circular(14),
+                 border: Border.all(
+                   color: palette.gold.withValues(alpha: 0.18),
+                   width: 0.8,
+                 ),
+               ),
+               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   Padding(
