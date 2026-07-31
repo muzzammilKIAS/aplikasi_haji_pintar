@@ -307,7 +307,9 @@ class HalamanUtama extends StatelessWidget {
                               'Ringkasan tatacara, tempat, rukun dan wajib.',
                         ),
                         const SizedBox(height: 18),
-                        const HajjJourneyBox(),
+                        HajjJourneyBox(
+                          onOpenGuide: () => _bukaPanduanHaji(context),
+                        ),
                         const SizedBox(height: 40),
                         const SectionTitle(
                           title: 'Kemajuan Anda',
@@ -1103,7 +1105,9 @@ class _FeatureCardState extends State<FeatureCard> {
 }
 
 class HajjJourneyBox extends StatefulWidget {
-  const HajjJourneyBox({super.key});
+  const HajjJourneyBox({required this.onOpenGuide, super.key});
+
+  final VoidCallback onOpenGuide;
 
   @override
   State<HajjJourneyBox> createState() => _HajjJourneyBoxState();
@@ -1119,12 +1123,27 @@ class _HajjJourneyBoxState extends State<HajjJourneyBox> {
     'Wajib',
   ];
 
+  static const List<IconData> tabIcons = <IconData>[
+    Icons.route_rounded,
+    Icons.location_on_rounded,
+    Icons.verified_rounded,
+    Icons.checklist_rounded,
+  ];
+
+  static const List<String> tabDescriptions = <String>[
+    'Susunan utama perjalanan ibadah Haji.',
+    'Lokasi penting yang perlu dikenal pasti.',
+    'Perkara yang menentukan sahnya Haji.',
+    'Amalan wajib yang melengkapkan Haji.',
+  ];
+
   static const List<List<String>> tabContents = <List<String>>[
     <String>[
       'Berniat ihram Haji di miqat.',
       'Berwukuf di Arafah.',
       'Bermalam di Muzdalifah.',
-      'Melontar Jamrah Kubra dan bertahallul.',
+      'Melontar Jamrah Kubra pada 10 Zulhijjah.',
+      'Bercukur atau bergunting untuk tahallul awal.',
       'Melaksanakan Tawaf Ifadah dan Sa’i.',
       'Bermalam di Mina dan melontar jamrah.',
       'Melaksanakan Tawaf Wada’ sebelum meninggalkan Makkah.',
@@ -1356,7 +1375,7 @@ class _HajjJourneyBoxState extends State<HajjJourneyBox> {
           ),
           const SizedBox(height: 6),
           Text(
-            'Pilih kategori untuk melihat maklumat.',
+            tabDescriptions[selectedTab],
             style: TextStyle(color: palette.mutedText),
           ),
           const SizedBox(height: 20),
@@ -1387,7 +1406,7 @@ class _HajjJourneyBoxState extends State<HajjJourneyBox> {
                     ),
                   ),
                   child: Text(
-                    tabTitles[index],
+                    '${tabTitles[index]}  ${tabContents[index].length}',
                     style: TextStyle(
                       color: selected ? palette.onAccent : colors.onSurface,
                       fontWeight: FontWeight.w800,
@@ -1398,6 +1417,36 @@ class _HajjJourneyBoxState extends State<HajjJourneyBox> {
             }),
           ),
           const SizedBox(height: 24),
+          Container(
+            padding: const EdgeInsets.all(14),
+            decoration: BoxDecoration(
+              color: palette.emerald.withValues(alpha: 0.08),
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(
+                color: palette.emerald.withValues(alpha: 0.20),
+              ),
+            ),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Icon(tabIcons[selectedTab], color: palette.emerald, size: 21),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    'Semak ${tabContents[selectedTab].length} perkara '
+                    'utama sebelum meneruskan perjalanan.',
+                    style: TextStyle(
+                      color: colors.onSurface,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w700,
+                      height: 1.45,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 18),
           if (selectedTab == 0) ...<Widget>[
             Material(
               color: Colors.transparent,
@@ -1488,33 +1537,46 @@ class _HajjJourneyBoxState extends State<HajjJourneyBox> {
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      Container(
-                        width: 28,
-                        height: 28,
-                        alignment: Alignment.center,
-                        decoration: BoxDecoration(
-                          color: palette.emerald.withValues(alpha: 0.11),
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                            color: palette.emerald.withValues(alpha: 0.26),
+                      Column(
+                        children: <Widget>[
+                          Container(
+                            width: 28,
+                            height: 28,
+                            alignment: Alignment.center,
+                            decoration: BoxDecoration(
+                              color: palette.emerald.withValues(alpha: 0.11),
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: palette.emerald.withValues(alpha: 0.26),
+                              ),
+                            ),
+                            child: Text(
+                              '${index + 1}',
+                              style: TextStyle(
+                                color: palette.emerald,
+                                fontSize: 11,
+                                fontWeight: FontWeight.w900,
+                              ),
+                            ),
                           ),
-                        ),
-                        child: Text(
-                          '${index + 1}',
-                          style: TextStyle(
-                            color: palette.emerald,
-                            fontSize: 11,
-                            fontWeight: FontWeight.w900,
-                          ),
-                        ),
+                          if (index < tabContents[selectedTab].length - 1)
+                            Container(
+                              width: 1,
+                              height: 28,
+                              color: palette.emerald.withValues(alpha: 0.22),
+                            ),
+                        ],
                       ),
                       const SizedBox(width: 12),
                       Expanded(
-                        child: Text(
-                          tabContents[selectedTab][index],
-                          style: TextStyle(
-                            color: colors.onSurface,
-                            height: 1.5,
+                        child: Padding(
+                          padding: const EdgeInsets.only(top: 4),
+                          child: Text(
+                            tabContents[selectedTab][index],
+                            style: TextStyle(
+                              color: colors.onSurface,
+                              height: 1.5,
+                            ),
                           ),
                         ),
                       ),
@@ -1525,6 +1587,20 @@ class _HajjJourneyBoxState extends State<HajjJourneyBox> {
             ),
           ),
           const SizedBox(height: 10),
+          SizedBox(
+            width: double.infinity,
+            height: 50,
+            child: OutlinedButton.icon(
+              onPressed: widget.onOpenGuide,
+              icon: HajjIcon(
+                type: HajjIconType.guide,
+                color: palette.gold,
+                size: 21,
+              ),
+              label: const Text('Buka Panduan Haji Penuh'),
+            ),
+          ),
+          const SizedBox(height: 16),
           Container(
             padding: const EdgeInsets.all(14),
             decoration: BoxDecoration(
