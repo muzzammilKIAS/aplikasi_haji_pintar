@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hive_ce_flutter/hive_ce_flutter.dart';
 
 import 'app_theme.dart';
+import 'home_dashboard.dart';
 import 'splash_screen.dart';
 import 'theme_controller.dart';
 
@@ -26,13 +27,24 @@ Future<void> main() async {
 
   final ThemeController themeController = ThemeController(settingsBox);
 
-  runApp(AplikasiHajiPintar(themeController: themeController));
+  final bool onboardingCompleted =
+      settingsBox.get('onboarding_completed', defaultValue: false) as bool;
+
+  runApp(AplikasiHajiPintar(
+    themeController: themeController,
+    onboardingCompleted: onboardingCompleted,
+  ));
 }
 
 class AplikasiHajiPintar extends StatelessWidget {
-  const AplikasiHajiPintar({required this.themeController, super.key});
+  const AplikasiHajiPintar({
+    required this.themeController,
+    this.onboardingCompleted = false,
+    super.key,
+  });
 
   final ThemeController themeController;
+  final bool onboardingCompleted;
 
   @override
   Widget build(BuildContext context) {
@@ -45,7 +57,12 @@ class AplikasiHajiPintar extends StatelessWidget {
           theme: AppTheme.light,
           darkTheme: AppTheme.dark,
           themeMode: themeController.themeMode,
-          home: SplashScreen(themeController: themeController),
+          home: onboardingCompleted
+              ? HalamanUtama(themeController: themeController)
+              : SplashScreen(
+                  themeController: themeController,
+                  settingsBox: settingsBox,
+                ),
         );
       },
     );
