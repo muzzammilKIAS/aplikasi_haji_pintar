@@ -1406,7 +1406,7 @@ class _HajjJourneyBoxState extends State<HajjJourneyBox> {
                     ),
                   ),
                   child: Text(
-                    '${tabTitles[index]}  ${tabContents[index].length}',
+                    tabTitles[index],
                     style: TextStyle(
                       color: selected ? palette.onAccent : colors.onSurface,
                       fontWeight: FontWeight.w800,
