@@ -368,7 +368,7 @@ class _SplashScreenState extends State<SplashScreen>
                             ),
                             const SizedBox(height: 12),
                             const Text(
-                              'Semoga beroleh Haji yang Mabrur',
+                              'Semoga mendapat Haji Mabrur',
                               style: TextStyle(
                                 color: Colors.white70,
                                 fontSize: 16,
