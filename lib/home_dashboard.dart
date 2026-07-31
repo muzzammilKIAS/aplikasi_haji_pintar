@@ -1467,29 +1467,18 @@ class _HajjJourneyBoxState extends State<HajjJourneyBox> {
                     children: <Widget>[
                       ClipRRect(
                         borderRadius: BorderRadius.circular(13),
-                        child: Image.asset(
-                          'assets/images/journey.jpg',
+                        child: SizedBox(
                           width: 100,
                           height: 72,
-                          fit: BoxFit.cover,
-                          errorBuilder:
-                              (
-                                BuildContext context,
-                                Object error,
-                                StackTrace? stackTrace,
-                              ) {
-                                return Container(
-                                  width: 100,
-                                  height: 72,
-                                  alignment: Alignment.center,
-                                  color: palette.softSurface,
-                                  child: HajjIcon(
-                                    type: HajjIconType.guide,
-                                    color: palette.gold,
-                                    size: 28,
-                                  ),
-                                );
-                              },
+                          child: ClipRect(
+                            child: FittedBox(
+                              fit: BoxFit.cover,
+                              child: SizedBox(
+                                width: 390,
+                                child: HajjJourneyInfographic(compact: true),
+                              ),
+                            ),
+                          ),
                         ),
                       ),
                       const SizedBox(width: 15),
