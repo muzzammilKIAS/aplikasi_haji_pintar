@@ -342,9 +342,6 @@ class _SplashScreenState extends State<SplashScreen>
         description:
             'HajiPintar membantu anda memahami perjalanan haji '
             'melalui panduan yang tersusun, ringkas dan mudah dirujuk.',
-        fact:
-            'Ibadah haji diwajibkan sekali seumur hidup bagi Muslim '
-            'yang memenuhi syarat dan berkemampuan.',
       ),
       _PengenalanData(
         icon: HajjIconType.learning,
@@ -356,9 +353,6 @@ class _SplashScreenState extends State<SplashScreen>
         description:
             'Akses modul pembelajaran, doa, zikir, kuiz, peta lokasi '
             'serta panduan langkah demi langkah dalam satu aplikasi.',
-        fact:
-            'Rasulullah SAW bersabda bahawa sebaik-baik doa '
-            'ialah doa pada hari Arafah.',
       ),
       _PengenalanData(
         icon: HajjIconType.rukun,
@@ -371,9 +365,6 @@ class _SplashScreenState extends State<SplashScreen>
             'Kandungan HajiPintar disediakan untuk pendidikan dan '
             'rujukan umum. Untuk persoalan hukum atau situasi khusus, '
             'rujuk pembimbing haji dan pihak berautoriti.',
-        fact:
-            'Ibadah haji menghimpunkan umat Islam daripada pelbagai '
-            'negara dalam satu tujuan dan pengabdian kepada Allah.',
       ),
     ];
 
@@ -391,35 +382,10 @@ class _SplashScreenState extends State<SplashScreen>
                 child: Column(
                   children: <Widget>[
                     _buildIntroGlow(palette),
-                    Row(
+Row(
                       children: <Widget>[
-                        Container(
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                              color: palette.gold.withValues(alpha: 0.3),
-                              width: 1,
-                            ),
-                          ),
-child: Image.asset(
-                             'assets/images/app_icon.png',
-                             width: 42,
-                             height: 42,
-                             fit: BoxFit.contain,
-                             errorBuilder: (
-                               BuildContext context,
-                               Object error,
-                               StackTrace? stackTrace,
-                             ) {
-                               return HajjIcon(
-                                 type: HajjIconType.mosque,
-                                 color: palette.gold,
-                                 size: 30,
-                                 strokeWidth: 2.5,
-                               );
-                             },
-                           ),
+                        HajiPintarCircularLogo(
+                          size: 56,
                         ),
                         const SizedBox(width: 12),
                         Text(
@@ -565,7 +531,6 @@ class _PengenalanData {
     required this.title,
     required this.titleContent,
     required this.description,
-    required this.fact,
     this.arabicQuote,
     this.verse,
     this.verseRef,
@@ -575,7 +540,6 @@ class _PengenalanData {
   final String title;
   final String titleContent;
   final String description;
-  final String fact;
   final String? arabicQuote;
   final String? verse;
   final String? verseRef;
@@ -781,7 +745,7 @@ class _PengenalanPage extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 14),
-            Container(
+Container(
               constraints: const BoxConstraints(maxWidth: 500),
               padding: const EdgeInsets.symmetric(
                 horizontal: 20,
@@ -799,45 +763,6 @@ class _PengenalanPage extends StatelessWidget {
                   fontSize: 15.5,
                   height: 1.65,
                 ),
-              ),
-            ),
-             Container(
-               constraints: const BoxConstraints(maxWidth: 500),
-               padding: const EdgeInsets.symmetric(
-                 horizontal: 16,
-                 vertical: 12,
-               ),
-               decoration: BoxDecoration(
-                 color: palette.gold.withValues(alpha: 0.08),
-                 borderRadius: BorderRadius.circular(14),
-                 border: Border.all(
-                   color: palette.gold.withValues(alpha: 0.18),
-                   width: 0.8,
-                 ),
-               ),
-               child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Padding(
-                    padding: const EdgeInsets.only(top: 2),
-                    child: Icon(
-                      Icons.emoji_objects_rounded,
-                      color: palette.emerald,
-                      size: 18,
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: Text(
-                      data.fact,
-                      style: TextStyle(
-                        color: Colors.white.withValues(alpha: 0.72),
-                        fontSize: 13.5,
-                        height: 1.55,
-                      ),
-                    ),
-                  ),
-                ],
               ),
             ),
           ],
@@ -867,6 +792,39 @@ class _IntroSpark extends StatelessWidget {
             blurRadius: 10,
           ),
         ],
+      ),
+    );
+  }
+}
+
+class HajiPintarCircularLogo extends StatelessWidget {
+  const HajiPintarCircularLogo({
+    super.key,
+    this.size = 120,
+  });
+
+  final double size;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: size,
+      height: size,
+      padding: EdgeInsets.all(size * 0.12),
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: Colors.white,
+        border: Border.all(
+          color: context.hajjColors.gold.withValues(alpha: 0.5),
+          width: 2,
+        ),
+      ),
+      child: Center(
+        child: Image.asset(
+          'assets/images/app_icon.png',
+          fit: BoxFit.contain,
+          alignment: Alignment.center,
+        ),
       ),
     );
   }
