@@ -9,9 +9,14 @@ import 'certificate_screen.dart';
 import 'islamic_icons.dart';
 
 class FinalAssessmentScreen extends StatefulWidget {
-  const FinalAssessmentScreen({required this.assessmentBox, super.key});
+  const FinalAssessmentScreen({
+    required this.assessmentBox,
+    required this.certificatesBox,
+    super.key,
+  });
 
   final Box<dynamic> assessmentBox;
+  final Box<dynamic> certificatesBox;
 
   @override
   State<FinalAssessmentScreen> createState() => _FinalAssessmentScreenState();
@@ -383,16 +388,50 @@ class _FinalAssessmentScreenState extends State<FinalAssessmentScreen> {
     final int previousBest = bestScore;
     final int newAttempts = attempts + 1;
     final bool finalPassed = finalScore >= passingScore;
+    final String achievementLevel = _kenalTahapPencapaian(finalScore);
+    final String examCompletedAt = DateTime.now().toIso8601String();
 
-    await widget.assessmentBox.putAll(<String, dynamic>{
+    final Map<String, dynamic> dataToSave = <String, dynamic>{
       'last_score': finalScore,
       'best_score': math.max(previousBest, finalScore),
       'attempts': newAttempts,
       'passed':
           finalPassed ||
           widget.assessmentBox.get('passed', defaultValue: false) == true,
-      'completed_at': DateTime.now().toIso8601String(),
-    });
+      'completed_at': examCompletedAt,
+      'achievement_level': achievementLevel,
+      'exam_completed_at': examCompletedAt,
+    };
+
+    if (finalPassed) {
+      final dynamic existingCertificate =
+          widget.assessmentBox.get('certificate_number');
+
+      if (existingCertificate == null || (existingCertificate as String).isEmpty) {
+        final String certificateNumber = await _janaNomborSijil();
+        final String certificateUuid =
+            '${DateTime.now().millisecondsSinceEpoch}-${math.Random().nextInt(9999).toString().padLeft(4, '0')}';
+
+        dataToSave['certificate_number'] = certificateNumber;
+        dataToSave['certificate_uuid'] = certificateUuid;
+        dataToSave['certificate_issued_at'] = examCompletedAt;
+
+        await widget.certificatesBox.put(
+          certificateUuid,
+          <String, dynamic>{
+            'uuid': certificateUuid,
+            'certificate_number': certificateNumber,
+            'participant_name': '',
+            'score': finalScore,
+            'achievement_level': achievementLevel,
+            'exam_completed_at': examCompletedAt,
+            'issued_at': examCompletedAt,
+          },
+        );
+      }
+    }
+
+    await widget.assessmentBox.putAll(dataToSave);
 
     if (!mounted) {
       return;
@@ -403,6 +442,30 @@ class _FinalAssessmentScreenState extends State<FinalAssessmentScreen> {
       score = finalScore;
       showResult = true;
     });
+  }
+
+  Future<String> _janaNomborSijil() async {
+    final String tahun = DateTime.now().year.toString();
+    final String kunciAkaun = 'certificate_counter_$tahun';
+
+    final dynamic nilaiSediaAda = await widget.certificatesBox.get(kunciAkaun);
+    final int bilSediaAda = nilaiSediaAda is int ? nilaiSediaAda : 0;
+    final int bilSeterusnya = bilSediaAda + 1;
+
+    await widget.certificatesBox.put(kunciAkaun, bilSeterusnya);
+
+    return 'HP-$tahun-${bilSeterusnya.toString().padLeft(4, '0')}';
+  }
+
+  String _kenalTahapPencapaian(int score) {
+    if (score >= 95) {
+      return 'CEMERLANG';
+    } else if (score >= 90) {
+      return 'SANGAT BAIK';
+    } else if (score >= 80) {
+      return 'LULUS';
+    }
+    return 'TIDAK LULUS';
   }
 
   void _retryAssessment() {
@@ -740,6 +803,31 @@ class _FinalAssessmentScreenState extends State<FinalAssessmentScreen> {
                       textAlign: TextAlign.center,
                       style: TextStyle(color: palette.mutedText, height: 1.5),
                     ),
+                    if (passed) ...<Widget>[
+                      const SizedBox(height: 10),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 14,
+                          vertical: 8,
+                        ),
+                        decoration: BoxDecoration(
+                          color: palette.gold.withValues(alpha: 0.11),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: palette.gold.withValues(alpha: 0.28),
+                          ),
+                        ),
+                        child: Text(
+                          'Tahap Pencapaian: '
+                          '${widget.assessmentBox.get('achievement_level', defaultValue: 'LULUS')}',
+                          style: TextStyle(
+                            color: palette.gold,
+                            fontWeight: FontWeight.w800,
+                            letterSpacing: 0.4,
+                          ),
+                        ),
+                      ),
+                    ],
                     const SizedBox(height: 24),
                     Text(
                       '$score%',
@@ -845,16 +933,41 @@ class _FinalAssessmentScreenState extends State<FinalAssessmentScreen> {
                           builder: (_) {
                             return CertificateScreen(
                               assessmentBox: widget.assessmentBox,
+                              certificatesBox: widget.certificatesBox,
                               score: score,
                             );
                           },
                         ),
                       );
                     },
-                    icon: const Icon(Icons.workspace_premium_rounded),
-                    label: const Text('Jana Sijil PDF'),
+                    icon: const Icon(Icons.visibility_rounded),
+                    label: const Text('Lihat Sijil'),
                   ),
                 ),
+                if (passed) ...<Widget>[
+                  const SizedBox(height: 12),
+                  SizedBox(
+                    width: double.infinity,
+                    height: 54,
+                    child: OutlinedButton.icon(
+                      onPressed: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute<void>(
+                            builder: (_) {
+                              return CertificateScreen(
+                                assessmentBox: widget.assessmentBox,
+                                certificatesBox: widget.certificatesBox,
+                                score: score,
+                              );
+                            },
+                          ),
+                        );
+                      },
+                      icon: const Icon(Icons.download_rounded),
+                      label: const Text('Muat Turun Sijil'),
+                    ),
+                  ),
+                ],
               ],
               const SizedBox(height: 16),
               SizedBox(

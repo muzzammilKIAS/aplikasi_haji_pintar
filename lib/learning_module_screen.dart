@@ -10,9 +10,14 @@ import 'interactive_ihram_module.dart';
 import 'interactive_learning_module.dart';
 
 class LearningModuleScreen extends StatelessWidget {
-  const LearningModuleScreen({required this.assessmentBox, super.key});
+  const LearningModuleScreen({
+    required this.assessmentBox,
+    required this.certificatesBox,
+    super.key,
+  });
 
   final Box<dynamic> assessmentBox;
+  final Box<dynamic> certificatesBox;
 
   static const List<LearningModuleData> modules = <LearningModuleData>[
     LearningModuleData(
@@ -525,9 +530,10 @@ class LearningModuleScreen extends StatelessWidget {
                                         Navigator.of(context).push(
                                           MaterialPageRoute<void>(
                                             builder: (_) {
-                                              return FinalAssessmentScreen(
-                                                assessmentBox: assessmentBox,
-                                              );
+                                               return FinalAssessmentScreen(
+                                                 assessmentBox: assessmentBox,
+                                                 certificatesBox: certificatesBox,
+                                               );
                                             },
                                           ),
                                         );

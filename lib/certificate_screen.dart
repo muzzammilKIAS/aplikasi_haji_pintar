@@ -8,16 +8,19 @@ import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
 
 import 'app_theme.dart';
+import 'certificate_constants.dart';
 import 'shared_widgets.dart';
 
 class CertificateScreen extends StatefulWidget {
   const CertificateScreen({
     required this.assessmentBox,
+    required this.certificatesBox,
     required this.score,
     super.key,
   });
 
   final Box<dynamic> assessmentBox;
+  final Box<dynamic> certificatesBox;
   final int score;
 
   @override
@@ -59,6 +62,12 @@ class _CertificateScreenState extends State<CertificateScreen> {
     nameController = TextEditingController(
       text: savedName is String ? savedName : '',
     );
+
+    nameController.addListener(() {
+      if (mounted) {
+        setState(() {});
+      }
+    });
   }
 
   @override
@@ -152,457 +161,121 @@ class _CertificateScreenState extends State<CertificateScreen> {
       subject: 'Sijil pencapaian pembelajaran kendiri',
     );
 
-    // Font serif (Playfair Display) untuk tajuk/nama, dan sans (Plus Jakarta
-    // Sans) untuk teks badan — sepadan dengan tipografi aplikasi. Jika
-    // muat turun font Google Fonts gagal (tiada internet semasa jana PDF),
-    // kembali guna fon lalai supaya sijil tetap boleh dijana.
-    pw.Font? serifBold;
-    pw.Font? serifRegular;
-    pw.Font? sansRegular;
-    pw.Font? sansBold;
+    final ByteData templateData = await rootBundle.load(
+      'assets/images/sijil-pencapaian-hajipintar.png',
+    );
 
-    try {
-      serifBold = await PdfGoogleFonts.playfairDisplayBold();
-      serifRegular = await PdfGoogleFonts.playfairDisplayRegular();
-      sansRegular = await PdfGoogleFonts.plusJakartaSansRegular();
-      sansBold = await PdfGoogleFonts.plusJakartaSansBold();
-    } catch (_) {
-      serifBold = null;
-      serifRegular = null;
-      sansRegular = null;
-      sansBold = null;
-    }
+    final ByteData playfairBoldData = await rootBundle.load(
+      'assets/fonts/PlayfairDisplay-Bold.ttf',
+    );
+    final ByteData jakartaBoldData = await rootBundle.load(
+      'assets/fonts/PlusJakartaSans-Bold.ttf',
+    );
 
-    // Logo aplikasi sebenar (assets/images/app_icon.png, sama fail yang
-    // digunakan untuk ikon apps). Jika tiada / gagal dimuat, kembali guna
-    // monogram "HP" supaya sijil tetap lengkap.
-    pw.MemoryImage? logoImage;
-    try {
-      final ByteData logoData = await rootBundle.load(
-        'assets/images/app_icon.png',
-      );
-      logoImage = pw.MemoryImage(logoData.buffer.asUint8List());
-    } catch (_) {
-      logoImage = null;
-    }
+    final pw.Font playfairBold = pw.Font.ttf(playfairBoldData);
+    final pw.Font jakartaBold = pw.Font.ttf(jakartaBoldData);
 
-    const PdfColor ivory = PdfColor.fromInt(0xFFFBF7EE);
-    const PdfColor white = PdfColor.fromInt(0xFFFFFFFF);
-    const PdfColor teal = PdfColor.fromInt(0xFF0E5C4F);
-    const PdfColor tealSoft = PdfColor.fromInt(0xFFE4F0EB);
-    const PdfColor gold = PdfColor.fromInt(0xFFAD7B27);
-    const PdfColor goldSoft = PdfColor.fromInt(0xFFF3EAD8);
-    const PdfColor text = PdfColor.fromInt(0xFF25332E);
-    const PdfColor muted = PdfColor.fromInt(0xFF687A73);
-    const PdfColor goldFaint = PdfColor.fromInt(0xFFDCC79A);
-    const PdfColor tealFaint = PdfColor.fromInt(0xFF9AB8B0);
+    final pw.MemoryImage templateImage = pw.MemoryImage(
+      templateData.buffer.asUint8List(),
+    );
 
-    pw.TextStyle serif({
-      double size = 12,
-      PdfColor color = text,
-      double letterSpacing = 0,
-    }) {
-      return pw.TextStyle(
-        font: serifBold,
-        fontFallback: serifRegular != null
-            ? <pw.Font>[serifRegular]
-            : <pw.Font>[],
-        fontWeight: pw.FontWeight.bold,
-        fontSize: size,
-        color: color,
-        letterSpacing: letterSpacing,
-      );
-    }
+    final String name = data.name.toUpperCase();
+    final String date = _formatDate(data.issuedAt);
+    final String certNumber = data.certificateNumber;
 
-    pw.TextStyle sans({
-      double size = 10,
-      PdfColor color = text,
-      bool bold = false,
-      double letterSpacing = 0,
-      double? lineSpacing,
-    }) {
-      return pw.TextStyle(
-        font: bold ? sansBold : sansRegular,
-        fontWeight: bold ? pw.FontWeight.bold : pw.FontWeight.normal,
-        fontSize: size,
-        color: color,
-        letterSpacing: letterSpacing,
-        lineSpacing: lineSpacing,
-      );
-    }
+    const double pageWidth = 297.0 * PdfPageFormat.mm;
+    const double pageHeight = 210.0 * PdfPageFormat.mm;
+    const double scaleX = pageWidth / CertificateCoordinates.templateWidth;
+    const double scaleY = pageHeight / CertificateCoordinates.templateHeight;
 
-    // Pembahagi hiasan pendek: garis - berlian kecil - garis. Padanan
-    // dengan `HajjOrnamentDivider` yang digunakan dalam UI aplikasi supaya
-    // sijil dan aplikasi berkongsi satu bahasa reka bentuk.
-    pw.Widget ornamentDivider({double width = 150}) {
-      return pw.Row(
-        mainAxisAlignment: pw.MainAxisAlignment.center,
-        children: <pw.Widget>[
-          pw.Container(width: width, height: 1, color: gold),
-          pw.Container(
-            margin: const pw.EdgeInsets.symmetric(horizontal: 7),
-            width: 5,
-            height: 5,
-            decoration: const pw.BoxDecoration(
-              color: gold,
-              shape: pw.BoxShape.circle,
-            ),
-          ),
-          pw.Container(width: width, height: 1, color: gold),
-        ],
-      );
-    }
-
-    // Bulatan hiasan kecil di setiap penjuru bingkai dalam — sentuhan
-    // "permata" yang halus, lazim pada sijil bergaya klasik/Islamik.
-    pw.Widget cornerJewel() {
-      return pw.Container(
-        width: 7,
-        height: 7,
-        decoration: const pw.BoxDecoration(
-          color: gold,
-          shape: pw.BoxShape.circle,
-        ),
-      );
-    }
+    final double nameSize = CertificateCoordinates.nameFontSizeForLength(
+      name.length,
+    );
 
     document.addPage(
       pw.Page(
         pageFormat: PdfPageFormat.a4.landscape,
-        margin: const pw.EdgeInsets.all(16),
+        margin: pw.EdgeInsets.zero,
         build: (pw.Context context) {
           return pw.Stack(
             children: <pw.Widget>[
-              // Bingkai berlapis tiga: emas tebal (luar) → putih → emas
-              // nipis (dalam) — memberi kesan "kertas rasmi" yang lebih
-              // bertaraf berbanding satu garis sempadan sahaja.
-              pw.Container(
-                decoration: pw.BoxDecoration(
-                  color: ivory,
-                  border: pw.Border.all(color: gold, width: 2.6),
-                ),
-                padding: const pw.EdgeInsets.all(9),
+              pw.Positioned.fill(
+                child: pw.Image(templateImage, fit: pw.BoxFit.cover),
+              ),
+              // Nama peserta — text-anchor middle, dominant-baseline middle.
+              pw.Positioned(
+                top: CertificateCoordinates.nameY * scaleY - nameSize * scaleY * 0.4,
+                left: CertificateCoordinates.nameX * scaleX - 200 * scaleX,
                 child: pw.Container(
-                  decoration: pw.BoxDecoration(
-                    color: white,
-                    border: pw.Border.all(color: teal, width: 1.1),
-                  ),
-                  padding: const pw.EdgeInsets.all(5),
-                  child: pw.Container(
-                    decoration: pw.BoxDecoration(
-                      border: pw.Border.all(color: goldFaint, width: 0.6),
-                    ),
-                    padding: const pw.EdgeInsets.symmetric(
-                      horizontal: 40,
-                      vertical: 26,
-                    ),
-                    child: pw.Column(
-                      crossAxisAlignment: pw.CrossAxisAlignment.center,
-                      children: <pw.Widget>[
-                        pw.Row(
-                          mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
-                          crossAxisAlignment: pw.CrossAxisAlignment.center,
-                          children: <pw.Widget>[
-                            pw.Row(
-                              children: <pw.Widget>[
-                                pw.Container(
-                                  width: 50,
-                                  height: 50,
-                                  alignment: pw.Alignment.center,
-                                  decoration: pw.BoxDecoration(
-                                    color: logoImage != null ? white : teal,
-                                    shape: pw.BoxShape.circle,
-                                    border: pw.Border.all(
-                                      color: gold,
-                                      width: 1.3,
-                                    ),
-                                  ),
-                                  child: logoImage != null
-                                      ? pw.ClipRRect(
-                                          horizontalRadius: 25,
-                                          verticalRadius: 25,
-                                          child: pw.Image(
-                                            logoImage,
-                                            width: 42,
-                                            height: 42,
-                                            fit: pw.BoxFit.cover,
-                                          ),
-                                        )
-                                      : pw.Text(
-                                          'HP',
-                                          style: serif(size: 18, color: white),
-                                        ),
-                                ),
-                                pw.SizedBox(width: 13),
-                                pw.Column(
-                                  crossAxisAlignment:
-                                      pw.CrossAxisAlignment.start,
-                                  children: <pw.Widget>[
-                                    pw.Text(
-                                      'HAJI PINTAR',
-                                      style: serif(
-                                        size: 17,
-                                        color: teal,
-                                        letterSpacing: 2,
-                                      ),
-                                    ),
-                                    pw.SizedBox(height: 3),
-                                    pw.Text(
-                                      'Pembelajaran Kendiri Haji & Umrah',
-                                      style: sans(size: 9, color: muted),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                            pw.Container(
-                              padding: const pw.EdgeInsets.symmetric(
-                                horizontal: 14,
-                                vertical: 8,
-                              ),
-                              decoration: pw.BoxDecoration(
-                                color: goldSoft,
-                                borderRadius: pw.BorderRadius.circular(24),
-                                border: pw.Border.all(color: gold, width: 0.8),
-                              ),
-                              child: pw.Text(
-                                'MARKAH ${data.score}%',
-                                style: sans(
-                                  size: 10,
-                                  color: gold,
-                                  bold: true,
-                                  letterSpacing: 0.6,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        pw.SizedBox(height: 22),
-                        ornamentDivider(width: 46),
-                        pw.SizedBox(height: 16),
-                        pw.Text(
-                          'SIJIL PENCAPAIAN',
-                          textAlign: pw.TextAlign.center,
-                          style: serif(size: 32, color: teal, letterSpacing: 3),
-                        ),
-                        pw.SizedBox(height: 6),
-                        pw.Text(
-                          'PROGRAM PEMBELAJARAN KENDIRI ASAS IBADAH HAJI',
-                          textAlign: pw.TextAlign.center,
-                          style: sans(
-                            size: 11,
-                            color: gold,
-                            bold: true,
-                            letterSpacing: 1.6,
-                          ),
-                        ),
-                        pw.SizedBox(height: 20),
-                        pw.Text(
-                          'Dengan ini diperakui bahawa',
-                          style: sans(size: 11.5, color: muted),
-                        ),
-                        pw.SizedBox(height: 10),
-                        pw.Container(
-                          width: 580,
-                          padding: const pw.EdgeInsets.symmetric(
-                            horizontal: 12,
-                          ),
-                          child: pw.FittedBox(
-                            fit: pw.BoxFit.scaleDown,
-                            child: pw.Text(
-                              data.name,
-                              style: serif(size: 34, color: text),
-                            ),
-                          ),
-                        ),
-                        pw.SizedBox(height: 8),
-                        pw.Column(
-                          children: <pw.Widget>[
-                            pw.Container(width: 460, height: 1.4, color: gold),
-                            pw.SizedBox(height: 2),
-                            pw.Container(width: 460, height: 0.6, color: gold),
-                          ],
-                        ),
-                        pw.SizedBox(height: 16),
-                        pw.Container(
-                          width: 620,
-                          child: pw.Text(
-                            'telah berjaya menamatkan program pembelajaran '
-                            'kendiri dan memperoleh markah sekurang-kurangnya '
-                            '80 peratus dalam Penilaian Akhir Asas Ibadah Haji.',
-                            textAlign: pw.TextAlign.center,
-                            style: sans(size: 11, color: text, lineSpacing: 3),
-                          ),
-                        ),
-                        pw.SizedBox(height: 18),
-                        pw.Container(
-                          padding: const pw.EdgeInsets.symmetric(
-                            horizontal: 20,
-                            vertical: 11,
-                          ),
-                          decoration: pw.BoxDecoration(
-                            color: tealSoft,
-                            borderRadius: pw.BorderRadius.circular(9),
-                            border: pw.Border.all(color: teal, width: 0.8),
-                          ),
-                          child: pw.Row(
-                            mainAxisSize: pw.MainAxisSize.min,
-                            mainAxisAlignment: pw.MainAxisAlignment.center,
-                            children: <pw.Widget>[
-                              pw.Text(
-                                'STATUS  ',
-                                style: sans(size: 9, color: muted),
-                              ),
-                              pw.Text(
-                                'LULUS',
-                                style: sans(
-                                  size: 12,
-                                  color: teal,
-                                  bold: true,
-                                  letterSpacing: 0.8,
-                                ),
-                              ),
-                              pw.SizedBox(width: 14),
-                              pw.Container(
-                                width: 1,
-                                height: 16,
-                                color: tealFaint,
-                              ),
-                              pw.SizedBox(width: 14),
-                              pw.Text(
-                                '${data.score}%',
-                                style: sans(size: 12, color: teal, bold: true),
-                              ),
-                            ],
-                          ),
-                        ),
-                        pw.Spacer(),
-                        pw.Row(
-                          crossAxisAlignment: pw.CrossAxisAlignment.end,
-                          children: <pw.Widget>[
-                            pw.Expanded(
-                              child: pw.Column(
-                                crossAxisAlignment: pw.CrossAxisAlignment.start,
-                                children: <pw.Widget>[
-                                  pw.Text(
-                                    'TARIKH DIKELUARKAN',
-                                    style: sans(
-                                      size: 7.5,
-                                      color: muted,
-                                      letterSpacing: 0.8,
-                                    ),
-                                  ),
-                                  pw.SizedBox(height: 5),
-                                  pw.Text(
-                                    _formatDate(data.issuedAt),
-                                    style: sans(
-                                      size: 10.5,
-                                      color: text,
-                                      bold: true,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            // "Meterai" pengesahan di tengah — cincin emas
-                            // berlapis dengan label SAH, gantian kepada
-                            // tandatangan fizikal untuk sijil digital.
-                            pw.Column(
-                              children: <pw.Widget>[
-                                pw.Container(
-                                  width: 60,
-                                  height: 60,
-                                  alignment: pw.Alignment.center,
-                                  decoration: pw.BoxDecoration(
-                                    shape: pw.BoxShape.circle,
-                                    color: goldSoft,
-                                    border: pw.Border.all(
-                                      color: gold,
-                                      width: 1.4,
-                                    ),
-                                  ),
-                                  child: pw.Container(
-                                    width: 48,
-                                    height: 48,
-                                    alignment: pw.Alignment.center,
-                                    decoration: pw.BoxDecoration(
-                                      shape: pw.BoxShape.circle,
-                                      border: pw.Border.all(
-                                        color: gold,
-                                        width: 0.6,
-                                      ),
-                                    ),
-                                    child: pw.Text(
-                                      'SAH',
-                                      style: serif(size: 12, color: gold),
-                                    ),
-                                  ),
-                                ),
-                                pw.SizedBox(height: 6),
-                                pw.Text(
-                                  'Program Haji Pintar',
-                                  style: sans(
-                                    size: 8.5,
-                                    color: text,
-                                    bold: true,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            pw.Expanded(
-                              child: pw.Column(
-                                crossAxisAlignment: pw.CrossAxisAlignment.end,
-                                children: <pw.Widget>[
-                                  pw.Text(
-                                    'NO. SIJIL',
-                                    style: sans(
-                                      size: 7.5,
-                                      color: muted,
-                                      letterSpacing: 0.8,
-                                    ),
-                                  ),
-                                  pw.SizedBox(height: 5),
-                                  pw.Text(
-                                    data.certificateNumber,
-                                    style: sans(
-                                      size: 10.5,
-                                      color: text,
-                                      bold: true,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                        pw.SizedBox(height: 14),
-                        pw.Container(
-                          width: double.infinity,
-                          padding: const pw.EdgeInsets.only(top: 8),
-                          decoration: const pw.BoxDecoration(
-                            border: pw.Border(
-                              top: pw.BorderSide(color: goldSoft, width: 1),
-                            ),
-                          ),
-                          child: pw.Text(
-                            'Sijil ini ialah sijil pencapaian yang dijana '
-                            'oleh Aplikasi Haji Pintar dan bukan sijil rasmi '
-                            'mana-mana pihak berkuasa atau agensi pengelola '
-                            'Haji.',
-                            textAlign: pw.TextAlign.center,
-                            style: sans(size: 6.5, color: muted),
-                          ),
-                        ),
-                      ],
+                  width: 400 * scaleX,
+                  alignment: pw.Alignment.center,
+                  child: pw.Text(
+                    name,
+                    textAlign: pw.TextAlign.center,
+                    style: pw.TextStyle(
+                      font: playfairBold,
+                      fontSize: nameSize * scaleY,
+                      color: const PdfColor.fromInt(0xFF006B57),
                     ),
                   ),
                 ),
               ),
-              // Permata hiasan pada keempat-empat penjuru bingkai dalam.
-              pw.Positioned(top: 20, left: 20, child: cornerJewel()),
-              pw.Positioned(top: 20, right: 20, child: cornerJewel()),
-              pw.Positioned(bottom: 20, left: 20, child: cornerJewel()),
-              pw.Positioned(bottom: 20, right: 20, child: cornerJewel()),
+              // Tahap pencapaian — text-anchor start.
+              pw.Positioned(
+                top: CertificateCoordinates.achievementY * scaleY -
+                    CertificateCoordinates.achievementFontSize * scaleY * 0.4,
+                left: CertificateCoordinates.achievementX * scaleX,
+                child: pw.Text(
+                  data.score >= 95
+                      ? 'CEMERLANG'
+                      : data.score >= 90
+                          ? 'SANGAT BAIK'
+                          : 'LULUS',
+                  style: pw.TextStyle(
+                    font: playfairBold,
+                    fontSize: CertificateCoordinates.achievementFontSize * scaleY,
+                    color: const PdfColor.fromInt(0xFFB46A16),
+                  ),
+                ),
+              ),
+              // Tarikh — text-anchor middle.
+              pw.Positioned(
+                top: CertificateCoordinates.dateY * scaleY -
+                    CertificateCoordinates.dateFontSize * scaleY * 0.4,
+                left: CertificateCoordinates.dateX * scaleX - 80 * scaleX,
+                child: pw.Container(
+                  width: 160 * scaleX,
+                  alignment: pw.Alignment.center,
+                  child: pw.Text(
+                    date,
+                    textAlign: pw.TextAlign.center,
+                    style: pw.TextStyle(
+                      font: jakartaBold,
+                      fontSize: CertificateCoordinates.dateFontSize * scaleY,
+                      color: const PdfColor.fromInt(0xFF16231F),
+                    ),
+                  ),
+                ),
+              ),
+              // Nombor sijil — text-anchor middle.
+              pw.Positioned(
+                top: CertificateCoordinates.certificateNumberY * scaleY -
+                    CertificateCoordinates.certificateNumberFontSize * scaleY * 0.4,
+                left: CertificateCoordinates.certificateNumberX * scaleX - 80 * scaleX,
+                child: pw.Container(
+                  width: 160 * scaleX,
+                  alignment: pw.Alignment.center,
+                  child: pw.Text(
+                    certNumber,
+                    textAlign: pw.TextAlign.center,
+                    style: pw.TextStyle(
+                      font: jakartaBold,
+                      fontSize: CertificateCoordinates.certificateNumberFontSize * scaleY,
+                      color: const PdfColor.fromInt(0xFF16231F),
+                    ),
+                  ),
+                ),
+              ),
             ],
           );
         },
@@ -820,6 +493,19 @@ class _CertificateScreenState extends State<CertificateScreen> {
                       ),
                     ),
                     const SizedBox(height: 16),
+                    _CertificatePreview(
+                      name: nameController.text.trim().toUpperCase(),
+                      achievementLevel: widget.assessmentBox.get(
+                        'achievement_level',
+                        defaultValue: 'LULUS',
+                      ),
+                      date: _formatDate(DateTime.now()),
+                      certificateNumber: widget.assessmentBox.get(
+                        'certificate_number',
+                        defaultValue: '',
+                      ),
+                    ),
+                    const SizedBox(height: 24),
                     Container(
                       width: double.infinity,
                       padding: const EdgeInsets.all(22),
@@ -994,6 +680,152 @@ class _CertificateScreenState extends State<CertificateScreen> {
                 ),
               ),
             ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _CertificatePreview extends StatelessWidget {
+  const _CertificatePreview({
+    required this.name,
+    required this.achievementLevel,
+    required this.date,
+    required this.certificateNumber,
+  });
+
+  final String name;
+  final String achievementLevel;
+  final String date;
+  final String certificateNumber;
+
+  @override
+  Widget build(BuildContext context) {
+    return AspectRatio(
+      aspectRatio: CertificateCoordinates.templateWidth /
+          CertificateCoordinates.templateHeight,
+      child: Container(
+        width: double.infinity,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: context.hajjColors.gold.withValues(alpha: 0.20),
+          ),
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(16),
+          child: LayoutBuilder(
+            builder: (BuildContext context, BoxConstraints constraints) {
+              final double width = constraints.maxWidth;
+              final double height = constraints.maxHeight;
+
+              return Stack(
+                fit: StackFit.expand,
+                children: <Widget>[
+                  Image.asset(
+                    'assets/images/sijil-pencapaian-hajipintar.png',
+                    fit: BoxFit.contain,
+                  ),
+                  // Nama peserta — text-anchor middle, dominant-baseline middle.
+                  if (name.isNotEmpty)
+                    Positioned(
+                      left: width * CertificateCoordinates.nameX /
+                              CertificateCoordinates.templateWidth -
+                          350,
+                      top: height * CertificateCoordinates.nameY /
+                              CertificateCoordinates.templateHeight -
+                          CertificateCoordinates.nameFontSizeForLength(
+                                name.length,
+                              ) /
+                              2,
+                      child: SizedBox(
+                        width: 700,
+                        child: Text(
+                          name,
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontFamily: CertificateCoordinates.nameFontFamily,
+                            fontSize: CertificateCoordinates
+                                .nameFontSizeForLength(name.length),
+                            fontWeight: FontWeight.w700,
+                            color: const Color(0xFF006B57),
+                            height: 1.0,
+                          ),
+                        ),
+                      ),
+                    ),
+                  // Tahap pencapaian — text-anchor start, dominant-baseline middle.
+                  Positioned(
+                    left: width * CertificateCoordinates.achievementX /
+                        CertificateCoordinates.templateWidth,
+                    top: height * CertificateCoordinates.achievementY /
+                            CertificateCoordinates.templateHeight -
+                        CertificateCoordinates.achievementFontSize / 2,
+                    child: Text(
+                      achievementLevel,
+                      style: const TextStyle(
+                        fontFamily: CertificateCoordinates
+                            .achievementFontFamily,
+                        fontSize: CertificateCoordinates
+                            .achievementFontSize,
+                        fontWeight: FontWeight.w700,
+                        color: Color(0xFFB46A16),
+                        height: 1.0,
+                      ),
+                    ),
+                  ),
+                  // Tarikh — text-anchor middle, dominant-baseline middle.
+                  Positioned(
+                    left: width * CertificateCoordinates.dateX /
+                            CertificateCoordinates.templateWidth -
+                        120,
+                    top: height * CertificateCoordinates.dateY /
+                            CertificateCoordinates.templateHeight -
+                        CertificateCoordinates.dateFontSize / 2,
+                    child: SizedBox(
+                      width: 240,
+                      child: Text(
+                        date,
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          fontFamily: CertificateCoordinates.dateFontFamily,
+                          fontSize: CertificateCoordinates.dateFontSize,
+                          fontWeight: FontWeight.w500,
+                          color: Color(0xFF16231F),
+                          height: 1.0,
+                        ),
+                      ),
+                    ),
+                  ),
+                  // Nombor sijil — text-anchor middle, dominant-baseline middle.
+                  Positioned(
+                    left: width * CertificateCoordinates.certificateNumberX /
+                            CertificateCoordinates.templateWidth -
+                        120,
+                    top: height * CertificateCoordinates.certificateNumberY /
+                            CertificateCoordinates.templateHeight -
+                        CertificateCoordinates.certificateNumberFontSize / 2,
+                    child: SizedBox(
+                      width: 240,
+                      child: Text(
+                        certificateNumber,
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          fontFamily: CertificateCoordinates
+                              .certificateNumberFontFamily,
+                          fontSize: CertificateCoordinates
+                              .certificateNumberFontSize,
+                          fontWeight: FontWeight.w600,
+                          color: Color(0xFF16231F),
+                          height: 1.0,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              );
+            },
           ),
         ),
       ),

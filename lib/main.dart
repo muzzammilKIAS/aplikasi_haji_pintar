@@ -13,6 +13,7 @@ late Box<dynamic> saiBox;
 late Box<dynamic> settingsBox;
 late Box<dynamic> guideBox;
 late Box<dynamic> assessmentBox;
+late Box<dynamic> certificatesBox;
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -24,6 +25,7 @@ Future<void> main() async {
   settingsBox = await Hive.openBox<dynamic>('app_settings');
   guideBox = await Hive.openBox<dynamic>('hajj_guide_progress');
   assessmentBox = await Hive.openBox<dynamic>('hajj_assessment_progress');
+  certificatesBox = await Hive.openBox<dynamic>('hajj_certificates');
 
   final ThemeController themeController = ThemeController(settingsBox);
 

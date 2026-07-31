@@ -5,13 +5,13 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:hijri/hijri_calendar.dart';
 
 import 'app_theme.dart';
-import 'certificate_screen.dart';
 import 'final_assessment_screen.dart';
 import 'hajj_guide_screen.dart';
 import 'hajj_journey_viewer.dart';
 import 'islamic_icons.dart';
 import 'learning_module_screen.dart';
 import 'main.dart';
+import 'my_certificates_screen.dart';
 import 'offline_map_screen.dart';
 import 'sai_counter_screen.dart';
 import 'shared_widgets.dart';
@@ -154,7 +154,10 @@ class HalamanUtama extends StatelessWidget {
     Navigator.of(context).push(
       MaterialPageRoute<void>(
         builder: (_) {
-          return LearningModuleScreen(assessmentBox: assessmentBox);
+          return LearningModuleScreen(
+            assessmentBox: assessmentBox,
+            certificatesBox: certificatesBox,
+          );
         },
       ),
     );
@@ -164,21 +167,23 @@ class HalamanUtama extends StatelessWidget {
     Navigator.of(context).push(
       MaterialPageRoute<void>(
         builder: (_) {
-          return FinalAssessmentScreen(assessmentBox: assessmentBox);
+          return FinalAssessmentScreen(
+            assessmentBox: assessmentBox,
+            certificatesBox: certificatesBox,
+          );
         },
       ),
     );
   }
 
-  void _bukaSijil(BuildContext context) {
-    final dynamic savedScore = assessmentBox.get('best_score', defaultValue: 0);
-
-    final int score = savedScore is int ? savedScore : 0;
-
+  void _bukaSijilSaya(BuildContext context) {
     Navigator.of(context).push(
       MaterialPageRoute<void>(
         builder: (_) {
-          return CertificateScreen(assessmentBox: assessmentBox, score: score);
+          return MyCertificatesScreen(
+            certificatesBox: certificatesBox,
+            assessmentBox: assessmentBox,
+          );
         },
       ),
     );
@@ -326,7 +331,7 @@ class HalamanUtama extends StatelessWidget {
                                 true;
 
                             if (passed) {
-                              _bukaSijil(context);
+                              _bukaSijilSaya(context);
                             } else {
                               _bukaPenilaianAkhir(context);
                             }
@@ -1916,9 +1921,11 @@ class AssessmentPanel extends StatelessWidget {
             child: FilledButton.icon(
               onPressed: onTap,
               icon: Icon(
-                passed ? Icons.workspace_premium_rounded : Icons.quiz_rounded,
+                passed
+                    ? Icons.workspace_premium_rounded
+                    : Icons.quiz_rounded,
               ),
-              label: Text(passed ? 'Lihat Sijil' : 'Mula Penilaian'),
+              label: Text(passed ? 'Sijil Saya' : 'Mula Penilaian'),
             ),
           );
 
