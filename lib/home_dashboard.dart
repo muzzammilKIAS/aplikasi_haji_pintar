@@ -1250,8 +1250,8 @@ class _HajjJourneyBoxState extends State<HajjJourneyBox> {
   Widget _buildImageSection(BuildContext context, bool mobile) {
     final HajjColors palette = context.hajjColors;
 
-    return SizedBox(
-      height: mobile ? 260 : 500,
+    return AspectRatio(
+      aspectRatio: 3 / 4,
       child: Stack(
         fit: StackFit.expand,
         children: <Widget>[
