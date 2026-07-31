@@ -1362,262 +1362,302 @@ class _HajjJourneyBoxState extends State<HajjJourneyBox> {
 
     return Padding(
       padding: const EdgeInsets.all(26),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Text(
-            'Panduan Perjalanan',
-            style: GoogleFonts.playfairDisplay(
-              color: colors.onSurface,
-              fontSize: 23,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-          const SizedBox(height: 6),
-          Text(
-            tabDescriptions[selectedTab],
-            style: TextStyle(color: palette.mutedText),
-          ),
-          const SizedBox(height: 20),
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: List<Widget>.generate(tabTitles.length, (int index) {
-              final bool selected = selectedTab == index;
+      child: LayoutBuilder(
+        builder: (BuildContext context, BoxConstraints constraints) {
+          final bool wide = constraints.maxWidth >= 620;
+          final double previewWidth = wide ? 180 : 100;
+          final double previewHeight = wide ? 118 : 72;
 
-              return InkWell(
-                onTap: () {
-                  setState(() {
-                    selectedTab = index;
-                  });
-                },
-                borderRadius: BorderRadius.circular(50),
-                child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 200),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 10,
-                  ),
-                  decoration: BoxDecoration(
-                    color: selected ? palette.emerald : palette.glassSurface,
-                    borderRadius: BorderRadius.circular(50),
-                    border: Border.all(
-                      color: selected ? palette.emerald : palette.glassBorder,
-                    ),
-                  ),
-                  child: Text(
-                    tabTitles[index],
-                    style: TextStyle(
-                      color: selected ? palette.onAccent : colors.onSurface,
-                      fontWeight: FontWeight.w800,
-                    ),
-                  ),
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Text(
+                'Panduan Perjalanan',
+                style: GoogleFonts.playfairDisplay(
+                  color: colors.onSurface,
+                  fontSize: 23,
+                  fontWeight: FontWeight.w700,
                 ),
-              );
-            }),
-          ),
-          const SizedBox(height: 24),
-          Container(
-            padding: const EdgeInsets.all(14),
-            decoration: BoxDecoration(
-              color: palette.emerald.withValues(alpha: 0.08),
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(
-                color: palette.emerald.withValues(alpha: 0.20),
               ),
-            ),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Icon(tabIcons[selectedTab], color: palette.emerald, size: 21),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: Text(
-                    'Semak ${tabContents[selectedTab].length} perkara '
-                    'utama sebelum meneruskan perjalanan.',
-                    style: TextStyle(
-                      color: colors.onSurface,
-                      fontSize: 12,
-                      fontWeight: FontWeight.w700,
-                      height: 1.45,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 18),
-          if (selectedTab == 0) ...<Widget>[
-            Material(
-              color: Colors.transparent,
-              child: InkWell(
-                onTap: _bukaInfografikTatacara,
-                borderRadius: BorderRadius.circular(18),
-                child: Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(14),
-                  decoration: BoxDecoration(
-                    color: palette.gold.withValues(alpha: 0.09),
-                    borderRadius: BorderRadius.circular(18),
-                    border: Border.all(
-                      color: palette.gold.withValues(alpha: 0.26),
-                    ),
-                  ),
-                  child: Row(
-                    children: <Widget>[
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(13),
-                        child: SizedBox(
-                          width: 100,
-                          height: 72,
-                          child: ClipRect(
-                            child: FittedBox(
-                              fit: BoxFit.cover,
-                              child: SizedBox(
-                                width: 390,
-                                child: HajjJourneyInfographic(compact: true),
-                              ),
-                            ),
-                          ),
+              const SizedBox(height: 6),
+              Text(
+                tabDescriptions[selectedTab],
+                style: TextStyle(color: palette.mutedText),
+              ),
+              const SizedBox(height: 20),
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: List<Widget>.generate(tabTitles.length, (int index) {
+                  final bool selected = selectedTab == index;
+
+                  return InkWell(
+                    onTap: () {
+                      setState(() {
+                        selectedTab = index;
+                      });
+                    },
+                    borderRadius: BorderRadius.circular(50),
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 200),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 10,
+                      ),
+                      decoration: BoxDecoration(
+                        color: selected
+                            ? palette.emerald
+                            : palette.glassSurface,
+                        borderRadius: BorderRadius.circular(50),
+                        border: Border.all(
+                          color: selected
+                              ? palette.emerald
+                              : palette.glassBorder,
                         ),
                       ),
-                      const SizedBox(width: 15),
-                      Expanded(
-                        child: Column(
+                      child: Text(
+                        tabTitles[index],
+                        style: TextStyle(
+                          color: selected ? palette.onAccent : colors.onSurface,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                    ),
+                  );
+                }),
+              ),
+              const SizedBox(height: 24),
+              Container(
+                padding: const EdgeInsets.all(14),
+                decoration: BoxDecoration(
+                  color: palette.emerald.withValues(alpha: 0.08),
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(
+                    color: palette.emerald.withValues(alpha: 0.20),
+                  ),
+                ),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Icon(
+                      tabIcons[selectedTab],
+                      color: palette.emerald,
+                      size: 21,
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Text(
+                        'Semak ${tabContents[selectedTab].length} perkara '
+                        'utama sebelum meneruskan perjalanan.',
+                        style: TextStyle(
+                          color: colors.onSurface,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w700,
+                          height: 1.45,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 18),
+              if (selectedTab == 0) ...<Widget>[
+                Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    onTap: _bukaInfografikTatacara,
+                    borderRadius: BorderRadius.circular(18),
+                    child: Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(14),
+                      decoration: BoxDecoration(
+                        color: palette.gold.withValues(alpha: 0.09),
+                        borderRadius: BorderRadius.circular(18),
+                        border: Border.all(
+                          color: palette.gold.withValues(alpha: 0.26),
+                        ),
+                      ),
+                      child: Row(
+                        children: <Widget>[
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(13),
+                            child: Image.asset(
+                              'assets/images/journey.jpg',
+                              width: previewWidth,
+                              height: previewHeight,
+                              fit: BoxFit.cover,
+                              errorBuilder:
+                                  (
+                                    BuildContext context,
+                                    Object error,
+                                    StackTrace? stackTrace,
+                                  ) {
+                                    return Container(
+                                      width: previewWidth,
+                                      height: previewHeight,
+                                      alignment: Alignment.center,
+                                      color: palette.softSurface,
+                                      child: HajjIcon(
+                                        type: HajjIconType.guide,
+                                        color: palette.gold,
+                                        size: 28,
+                                      ),
+                                    );
+                                  },
+                            ),
+                          ),
+                          const SizedBox(width: 15),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                Text(
+                                  'Lihat Infografik Tatacara Haji',
+                                  style: TextStyle(
+                                    color: colors.onSurface,
+                                    fontWeight: FontWeight.w900,
+                                  ),
+                                ),
+                                const SizedBox(height: 5),
+                                Text(
+                                  'Tekan untuk buka, zoom dan gerakkan gambar.',
+                                  style: TextStyle(
+                                    color: palette.mutedText,
+                                    fontSize: 12,
+                                    height: 1.4,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(width: 10),
+                          Icon(Icons.open_in_full_rounded, color: palette.gold),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 20),
+              ],
+              AnimatedSwitcher(
+                duration: const Duration(milliseconds: 220),
+                child: Column(
+                  key: ValueKey<int>(selectedTab),
+                  children: List<Widget>.generate(
+                    tabContents[selectedTab].length,
+                    (int index) {
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 12),
+                        child: Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
-                            Text(
-                              'Lihat Infografik Tatacara Haji',
-                              style: TextStyle(
-                                color: colors.onSurface,
-                                fontWeight: FontWeight.w900,
-                              ),
+                            Column(
+                              children: <Widget>[
+                                Container(
+                                  width: 28,
+                                  height: 28,
+                                  alignment: Alignment.center,
+                                  decoration: BoxDecoration(
+                                    color: palette.emerald.withValues(
+                                      alpha: 0.11,
+                                    ),
+                                    shape: BoxShape.circle,
+                                    border: Border.all(
+                                      color: palette.emerald.withValues(
+                                        alpha: 0.26,
+                                      ),
+                                    ),
+                                  ),
+                                  child: Text(
+                                    '${index + 1}',
+                                    style: TextStyle(
+                                      color: palette.emerald,
+                                      fontSize: 11,
+                                      fontWeight: FontWeight.w900,
+                                    ),
+                                  ),
+                                ),
+                                if (index < tabContents[selectedTab].length - 1)
+                                  Container(
+                                    width: 1,
+                                    height: 28,
+                                    color: palette.emerald.withValues(
+                                      alpha: 0.22,
+                                    ),
+                                  ),
+                              ],
                             ),
-                            const SizedBox(height: 5),
-                            Text(
-                              'Tekan untuk buka, zoom dan gerakkan gambar.',
-                              style: TextStyle(
-                                color: palette.mutedText,
-                                fontSize: 12,
-                                height: 1.4,
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Padding(
+                                padding: const EdgeInsets.only(top: 4),
+                                child: Text(
+                                  tabContents[selectedTab][index],
+                                  style: TextStyle(
+                                    color: colors.onSurface,
+                                    height: 1.5,
+                                  ),
+                                ),
                               ),
                             ),
                           ],
                         ),
-                      ),
-                      const SizedBox(width: 10),
-                      Icon(Icons.open_in_full_rounded, color: palette.gold),
-                    ],
+                      );
+                    },
                   ),
                 ),
               ),
-            ),
-            const SizedBox(height: 20),
-          ],
-          AnimatedSwitcher(
-            duration: const Duration(milliseconds: 220),
-            child: Column(
-              key: ValueKey<int>(selectedTab),
-              children: List<Widget>.generate(tabContents[selectedTab].length, (
-                int index,
-              ) {
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 12),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Column(
-                        children: <Widget>[
-                          Container(
-                            width: 28,
-                            height: 28,
-                            alignment: Alignment.center,
-                            decoration: BoxDecoration(
-                              color: palette.emerald.withValues(alpha: 0.11),
-                              shape: BoxShape.circle,
-                              border: Border.all(
-                                color: palette.emerald.withValues(alpha: 0.26),
-                              ),
-                            ),
-                            child: Text(
-                              '${index + 1}',
-                              style: TextStyle(
-                                color: palette.emerald,
-                                fontSize: 11,
-                                fontWeight: FontWeight.w900,
-                              ),
-                            ),
-                          ),
-                          if (index < tabContents[selectedTab].length - 1)
-                            Container(
-                              width: 1,
-                              height: 28,
-                              color: palette.emerald.withValues(alpha: 0.22),
-                            ),
-                        ],
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.only(top: 4),
-                          child: Text(
-                            tabContents[selectedTab][index],
-                            style: TextStyle(
-                              color: colors.onSurface,
-                              height: 1.5,
-                            ),
-                          ),
+              const SizedBox(height: 10),
+              SizedBox(
+                width: double.infinity,
+                height: 50,
+                child: OutlinedButton.icon(
+                  onPressed: widget.onOpenGuide,
+                  icon: HajjIcon(
+                    type: HajjIconType.guide,
+                    color: palette.gold,
+                    size: 21,
+                  ),
+                  label: const Text('Buka Panduan Haji Penuh'),
+                ),
+              ),
+              const SizedBox(height: 16),
+              Container(
+                padding: const EdgeInsets.all(14),
+                decoration: BoxDecoration(
+                  color: palette.gold.withValues(alpha: 0.08),
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(
+                    color: palette.gold.withValues(alpha: 0.20),
+                  ),
+                ),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Icon(
+                      Icons.info_outline_rounded,
+                      color: palette.gold,
+                      size: 20,
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Text(
+                        'Kandungan ini ialah ringkasan prototaip. '
+                        'Semak kandungan akhir bersama pembimbing '
+                        'Haji atau panel syariah.',
+                        style: TextStyle(
+                          color: palette.mutedText,
+                          fontSize: 12,
+                          height: 1.5,
                         ),
                       ),
-                    ],
-                  ),
-                );
-              }),
-            ),
-          ),
-          const SizedBox(height: 10),
-          SizedBox(
-            width: double.infinity,
-            height: 50,
-            child: OutlinedButton.icon(
-              onPressed: widget.onOpenGuide,
-              icon: HajjIcon(
-                type: HajjIconType.guide,
-                color: palette.gold,
-                size: 21,
-              ),
-              label: const Text('Buka Panduan Haji Penuh'),
-            ),
-          ),
-          const SizedBox(height: 16),
-          Container(
-            padding: const EdgeInsets.all(14),
-            decoration: BoxDecoration(
-              color: palette.gold.withValues(alpha: 0.08),
-              borderRadius: BorderRadius.circular(14),
-              border: Border.all(color: palette.gold.withValues(alpha: 0.20)),
-            ),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Icon(Icons.info_outline_rounded, color: palette.gold, size: 20),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: Text(
-                    'Kandungan ini ialah ringkasan prototaip. '
-                    'Semak kandungan akhir bersama pembimbing '
-                    'Haji atau panel syariah.',
-                    style: TextStyle(
-                      color: palette.mutedText,
-                      fontSize: 12,
-                      height: 1.5,
                     ),
-                  ),
+                  ],
                 ),
-              ],
-            ),
-          ),
-        ],
+              ),
+            ],
+          );
+        },
       ),
     );
   }

@@ -10,306 +10,6 @@ class HajjJourneyViewer extends StatefulWidget {
   State<HajjJourneyViewer> createState() => _HajjJourneyViewerState();
 }
 
-class HajjJourneyInfographic extends StatelessWidget {
-  const HajjJourneyInfographic({this.compact = false, super.key});
-
-  final bool compact;
-
-  @override
-  Widget build(BuildContext context) {
-    final HajjColors palette = context.hajjColors;
-    final ColorScheme colors = context.appColorScheme;
-
-    final List<_JourneyStep> steps = <_JourneyStep>[
-      const _JourneyStep(
-        number: '01',
-        title: 'Ihram & Miqat',
-        subtitle: 'Niat dan larangan ihram',
-        icon: Icons.accessibility_new_rounded,
-      ),
-      const _JourneyStep(
-        number: '02',
-        title: 'Arafah',
-        subtitle: 'Wukuf pada 9 Zulhijjah',
-        icon: Icons.landscape_rounded,
-      ),
-      const _JourneyStep(
-        number: '03',
-        title: 'Muzdalifah',
-        subtitle: 'Mabit dan kumpul batu',
-        icon: Icons.nights_stay_rounded,
-      ),
-      const _JourneyStep(
-        number: '04',
-        title: 'Mina',
-        subtitle: 'Melontar mengikut tertib',
-        icon: Icons.route_rounded,
-      ),
-      const _JourneyStep(
-        number: '05',
-        title: 'Makkah',
-        subtitle: 'Tawaf Ifadah dan Sa’i',
-        icon: Icons.mosque_rounded,
-      ),
-    ];
-
-    return Container(
-      padding: EdgeInsets.all(compact ? 16 : 28),
-      decoration: BoxDecoration(
-        color: palette.glassSurface,
-        borderRadius: BorderRadius.circular(compact ? 18 : 28),
-        border: Border.all(color: palette.glassBorder),
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Text(
-            'PERJALANAN HAJI',
-            style: TextStyle(
-              color: palette.gold,
-              fontSize: compact ? 11 : 13,
-              fontWeight: FontWeight.w900,
-              letterSpacing: 1.5,
-            ),
-          ),
-          const SizedBox(height: 6),
-          Text(
-            'Turutan utama ibadah',
-            style: TextStyle(
-              color: colors.onSurface,
-              fontSize: compact ? 18 : 25,
-              fontWeight: FontWeight.w800,
-            ),
-          ),
-          SizedBox(height: compact ? 16 : 24),
-          for (int i = 0; i < steps.length; i++)
-            _JourneyStepTile(
-              step: steps[i],
-              compact: compact,
-              isLast: i == steps.length - 1,
-            ),
-          SizedBox(height: compact ? 12 : 20),
-          _JamaratOrderCard(compact: compact),
-        ],
-      ),
-    );
-  }
-}
-
-class _JourneyStep {
-  const _JourneyStep({
-    required this.number,
-    required this.title,
-    required this.subtitle,
-    required this.icon,
-  });
-
-  final String number;
-  final String title;
-  final String subtitle;
-  final IconData icon;
-}
-
-class _JourneyStepTile extends StatelessWidget {
-  const _JourneyStepTile({
-    required this.step,
-    required this.compact,
-    required this.isLast,
-  });
-
-  final _JourneyStep step;
-  final bool compact;
-  final bool isLast;
-
-  @override
-  Widget build(BuildContext context) {
-    final HajjColors palette = context.hajjColors;
-    final ColorScheme colors = context.appColorScheme;
-    final double size = compact ? 38 : 48;
-
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        SizedBox(
-          width: size,
-          child: Column(
-            children: <Widget>[
-              Container(
-                width: size,
-                height: size,
-                alignment: Alignment.center,
-                decoration: BoxDecoration(
-                  color: palette.emerald.withValues(alpha: 0.12),
-                  shape: BoxShape.circle,
-                  border: Border.all(
-                    color: palette.emerald.withValues(alpha: 0.34),
-                  ),
-                ),
-                child: Icon(
-                  step.icon,
-                  color: palette.emerald,
-                  size: size * 0.48,
-                ),
-              ),
-              if (!isLast)
-                Container(
-                  width: 2,
-                  height: compact ? 30 : 38,
-                  color: palette.emerald.withValues(alpha: 0.24),
-                ),
-            ],
-          ),
-        ),
-        SizedBox(width: compact ? 12 : 16),
-        Expanded(
-          child: Padding(
-            padding: EdgeInsets.only(top: compact ? 3 : 7),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Text(
-                  '${step.number}  ${step.title}',
-                  style: TextStyle(
-                    color: colors.onSurface,
-                    fontSize: compact ? 13 : 17,
-                    fontWeight: FontWeight.w800,
-                  ),
-                ),
-                const SizedBox(height: 3),
-                Text(
-                  step.subtitle,
-                  style: TextStyle(
-                    color: palette.mutedText,
-                    fontSize: compact ? 11 : 13,
-                    height: 1.35,
-                  ),
-                ),
-                SizedBox(height: compact ? 12 : 17),
-              ],
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _JamaratOrderCard extends StatelessWidget {
-  const _JamaratOrderCard({required this.compact});
-
-  final bool compact;
-
-  @override
-  Widget build(BuildContext context) {
-    final HajjColors palette = context.hajjColors;
-    final ColorScheme colors = context.appColorScheme;
-
-    return Container(
-      width: double.infinity,
-      padding: EdgeInsets.all(compact ? 13 : 18),
-      decoration: BoxDecoration(
-        color: palette.gold.withValues(alpha: 0.10),
-        borderRadius: BorderRadius.circular(compact ? 15 : 20),
-        border: Border.all(color: palette.gold.withValues(alpha: 0.28)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Row(
-            children: <Widget>[
-              Icon(Icons.warning_amber_rounded, color: palette.gold, size: 20),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Text(
-                  'Turutan melontar di Mina',
-                  style: TextStyle(
-                    color: colors.onSurface,
-                    fontSize: compact ? 12 : 15,
-                    fontWeight: FontWeight.w900,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 10),
-          Wrap(
-            spacing: 6,
-            runSpacing: 6,
-            children: <Widget>[
-              _JamaratChip(number: '1', label: 'Ula', compact: compact),
-              _JamaratArrow(compact: compact),
-              _JamaratChip(number: '2', label: 'Wusta', compact: compact),
-              _JamaratArrow(compact: compact),
-              _JamaratChip(number: '3', label: 'Kubra', compact: compact),
-            ],
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'Hari Tasyrik: 7 batu pada setiap jamrah, mengikut tertib.',
-            style: TextStyle(
-              color: palette.mutedText,
-              fontSize: compact ? 10 : 12,
-              height: 1.4,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _JamaratChip extends StatelessWidget {
-  const _JamaratChip({
-    required this.number,
-    required this.label,
-    required this.compact,
-  });
-
-  final String number;
-  final String label;
-  final bool compact;
-
-  @override
-  Widget build(BuildContext context) {
-    final HajjColors palette = context.hajjColors;
-    return Container(
-      padding: EdgeInsets.symmetric(
-        horizontal: compact ? 8 : 11,
-        vertical: compact ? 6 : 8,
-      ),
-      decoration: BoxDecoration(
-        color: palette.emerald.withValues(alpha: 0.12),
-        borderRadius: BorderRadius.circular(50),
-        border: Border.all(color: palette.emerald.withValues(alpha: 0.30)),
-      ),
-      child: Text(
-        '$number  $label',
-        style: TextStyle(
-          color: palette.emerald,
-          fontSize: compact ? 10 : 12,
-          fontWeight: FontWeight.w900,
-        ),
-      ),
-    );
-  }
-}
-
-class _JamaratArrow extends StatelessWidget {
-  const _JamaratArrow({required this.compact});
-
-  final bool compact;
-
-  @override
-  Widget build(BuildContext context) {
-    return Icon(
-      Icons.arrow_forward_rounded,
-      color: context.hajjColors.gold,
-      size: compact ? 14 : 18,
-    );
-  }
-}
-
 class _HajjJourneyViewerState extends State<HajjJourneyViewer>
     with SingleTickerProviderStateMixin {
   final TransformationController transformationController =
@@ -517,9 +217,29 @@ class _HajjJourneyViewerState extends State<HajjJourneyViewer>
                 panEnabled: true,
                 scaleEnabled: true,
                 child: Center(
-                  child: SingleChildScrollView(
-                    padding: const EdgeInsets.all(18),
-                    child: HajjJourneyInfographic(),
+                  child: Image.asset(
+                    'assets/images/journey.jpg',
+                    fit: BoxFit.contain,
+                    filterQuality: FilterQuality.high,
+                    errorBuilder:
+                        (
+                          BuildContext context,
+                          Object error,
+                          StackTrace? stackTrace,
+                        ) {
+                          return Center(
+                            child: Text(
+                              'Gambar tidak ditemui.\n'
+                              'Pastikan fail berada di '
+                              'assets/images/journey.jpg',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                color: colors.onSurface,
+                                height: 1.5,
+                              ),
+                            ),
+                          );
+                        },
                   ),
                 ),
               ),
