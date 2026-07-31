@@ -22,6 +22,9 @@ enum HajjIconType {
   mina,
   tahallul,
   tawafWada,
+  quran,
+  crescent,
+  star,
 }
 
 class HajjIcon extends StatelessWidget {
@@ -98,6 +101,15 @@ class HajjIcon extends StatelessWidget {
 
       case HajjIconType.tawafWada:
         return Icons.waving_hand_rounded;
+
+      case HajjIconType.quran:
+        return Icons.menu_book_rounded;
+
+      case HajjIconType.crescent:
+        return Icons.wb_twilight_rounded;
+
+      case HajjIconType.star:
+        return Icons.star_rounded;
     }
   }
 
@@ -158,6 +170,22 @@ class HajjIcon extends StatelessWidget {
         width: size,
         height: size,
         child: CustomPaint(painter: _IhramPainter(color: color)),
+      );
+    }
+
+    if (type == HajjIconType.quran) {
+      return SizedBox(
+        width: size,
+        height: size,
+        child: CustomPaint(painter: _QuranPainter(color: color)),
+      );
+    }
+
+    if (type == HajjIconType.crescent) {
+      return SizedBox(
+        width: size,
+        height: size,
+        child: CustomPaint(painter: _CrescentPainter(color: color)),
       );
     }
 
@@ -587,6 +615,146 @@ class _IhramPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant _IhramPainter oldDelegate) {
+    return oldDelegate.color != color;
+  }
+}
+
+/// Melukis Al-Quran terbuka dengan halaman bergerinda dan
+/// cahaya wau — lebih bermakna berbanding ikon buku generik.
+class _QuranPainter extends CustomPainter {
+  _QuranPainter({required this.color});
+
+  final Color color;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final double s = size.shortestSide;
+    final Paint isi = Paint()..color = color;
+    final Paint terang = Paint()..color = color.withValues(alpha: 0.5);
+
+    // Bakul buku
+    final Rect buku = Rect.fromCenter(
+      center: Offset(size.width / 2, size.height / 2),
+      width: s * 0.65,
+      height: s * 0.85,
+    );
+    canvas.drawRRect(
+      RRect.fromRectAndRadius(buku, Radius.circular(s * 0.06)),
+      isi,
+    );
+
+    // Halaman kiri
+    final Rect halamanKiri = Rect.fromLTWH(
+      buku.left + s * 0.08,
+      buku.top + s * 0.06,
+      buku.width * 0.42,
+      buku.height - s * 0.12,
+    );
+    canvas.drawRRect(
+      RRect.fromRectAndRadius(halamanKiri, Radius.circular(s * 0.03)),
+      terang,
+    );
+
+    // Halaman kanan
+    final Rect halamanKanan = Rect.fromLTWH(
+      buku.left + buku.width * 0.50,
+      buku.top + s * 0.06,
+      buku.width * 0.42,
+      buku.height - s * 0.12,
+    );
+    canvas.drawRRect(
+      RRect.fromRectAndRadius(halamanKanan, Radius.circular(s * 0.03)),
+      terang,
+    );
+
+    // Garis wau di atas buku ( dekorasi Islam )
+    final double wauY = buku.top - s * 0.06;
+    final Paint wau = Paint()
+      ..color = color.withValues(alpha: 0.9)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = s * 0.04
+      ..strokeCap = StrokeCap.round;
+
+    canvas.drawArc(
+      Rect.fromCenter(
+        center: Offset(size.width / 2, wauY + s * 0.04),
+        width: s * 0.3,
+        height: s * 0.15,
+      ),
+      math.pi,
+      math.pi,
+      false,
+      wau,
+    );
+
+    // Cahaya kecil di atas wau
+    final Paint cahaya = Paint()..color = color.withValues(alpha: 0.6);
+    canvas.drawCircle(Offset(size.width / 2, wauY - s * 0.02), s * 0.04, cahaya);
+  }
+
+  @override
+  bool shouldRepaint(covariant _QuranPainter oldDelegate) {
+    return oldDelegate.color != color;
+  }
+}
+
+/// Melukis bulan sabit (hilal) yang lebih khas berbanding ikon
+/// generik — bentuk melengkung yang jelas dan cantik.
+class _CrescentPainter extends CustomPainter {
+  _CrescentPainter({required this.color});
+
+  final Color color;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final double s = size.shortestSide;
+    final Offset pusat = Offset(size.width / 2, size.height / 2);
+
+    final Paint bulan = Paint()..color = color;
+
+    final double jejari = s * 0.38;
+    final double gap = s * 0.10;
+
+    final Path outer = Path()
+      ..addOval(
+        Rect.fromCircle(center: pusat, radius: jejari),
+      );
+
+    final Path inner = Path()
+      ..addOval(
+        Rect.fromCircle(
+          center: Offset(pusat.dx + gap, pusat.dy - gap * 0.3),
+          radius: jejari * 0.85,
+        ),
+      );
+
+    final Path sabit = Path.combine(
+      PathOperation.difference,
+      outer,
+      inner,
+    );
+
+    canvas.drawPath(sabit, bulan);
+
+    // Garis bawah sabit (refleksi halus)
+    canvas.drawArc(
+      Rect.fromCenter(
+        center: Offset(pusat.dx, pusat.dy + jejari * 0.6),
+        width: jejari * 1.4,
+        height: jejari * 0.4,
+      ),
+      0,
+      math.pi,
+      false,
+      Paint()
+        ..color = color.withValues(alpha: 0.25)
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = s * 0.02,
+    );
+  }
+
+  @override
+  bool shouldRepaint(covariant _CrescentPainter oldDelegate) {
     return oldDelegate.color != color;
   }
 }

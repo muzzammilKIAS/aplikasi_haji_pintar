@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'app_theme.dart';
 import 'package:audioplayers/audioplayers.dart';
@@ -5,7 +7,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'dart:ui';
 
 import 'theme_controller.dart';
-import 'home_dashboard.dart'; // Untuk memanggil HalamanUtama
+import 'home_dashboard.dart';
 import 'islamic_icons.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -22,9 +24,14 @@ class _SplashScreenState extends State<SplashScreen>
   final AudioPlayer _audioPlayer = AudioPlayer();
   late AnimationController _animationController;
   late AnimationController _introAnimationController;
+  late AnimationController _crescentAnimationController;
+  late AnimationController _orbitAnimationController;
   late Animation<double> _fadeAnimation;
   late Animation<double> _introScaleAnimation;
   late Animation<Offset> _introSlideAnimation;
+  late Animation<double> _crescentRotation;
+  late Animation<double> _orbitRotation;
+  late Animation<double> _glowPulse;
   late final PageController _introPageController;
 
   bool _sudahMula = false;
@@ -42,6 +49,7 @@ class _SplashScreenState extends State<SplashScreen>
     _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(parent: _animationController, curve: Curves.easeIn),
     );
+
     _introAnimationController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 650),
@@ -58,6 +66,36 @@ class _SplashScreenState extends State<SplashScreen>
       begin: const Offset(0, 0.08),
       end: Offset.zero,
     ).animate(introCurve);
+
+    _crescentAnimationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 8000),
+    )..repeat();
+    _crescentRotation = Tween<double>(begin: 0, end: 2 * math.pi).animate(
+      CurvedAnimation(
+        parent: _crescentAnimationController,
+        curve: Curves.linear,
+      ),
+    );
+
+    _orbitAnimationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 4000),
+    )..repeat();
+    _orbitRotation = Tween<double>(begin: 0, end: 2 * math.pi).animate(
+      CurvedAnimation(
+        parent: _orbitAnimationController,
+        curve: Curves.linear,
+      ),
+    );
+
+    _glowPulse = Tween<double>(begin: 0.85, end: 1.15).animate(
+      CurvedAnimation(
+        parent: _animationController,
+        curve: Curves.easeInOutSine,
+      ),
+    );
+
     _introPageController = PageController();
   }
 
@@ -102,6 +140,8 @@ class _SplashScreenState extends State<SplashScreen>
     _audioPlayer.dispose();
     _animationController.dispose();
     _introAnimationController.dispose();
+    _crescentAnimationController.dispose();
+    _orbitAnimationController.dispose();
     _introPageController.dispose();
     super.dispose();
   }
@@ -139,7 +179,6 @@ class _SplashScreenState extends State<SplashScreen>
     return Stack(
       fit: StackFit.expand,
       children: <Widget>[
-        // Gambar latar belakang
         Image.asset(
           'assets/images/muka_depan.jpg',
           fit: BoxFit.cover,
@@ -147,25 +186,106 @@ class _SplashScreenState extends State<SplashScreen>
             return Container(color: palette.gradientStart);
           },
         ),
-        // Lapisan gelap transparan
         Container(color: Colors.black.withValues(alpha: 0.40)),
-        // Wordmark jenama di bahagian atas skrin
+        Positioned(
+          top: 8,
+          right: 16,
+          child: RotationTransition(
+            turns: _crescentRotation,
+            child: Container(
+              padding: const EdgeInsets.all(6),
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.black.withValues(alpha: 0.25),
+              ),
+              child: HajjIcon(
+                type: HajjIconType.crescent,
+                color: palette.gold.withValues(alpha: 0.85),
+                size: 20,
+                strokeWidth: 3,
+              ),
+            ),
+          ),
+        ),
+        Positioned(
+          top: 60,
+          left: 20,
+          child: Opacity(
+            opacity: 0.30,
+            child: Transform.rotate(
+              angle: -0.3,
+              child: HajjIcon(
+                type: HajjIconType.star,
+                color: palette.gold,
+                size: 16,
+                strokeWidth: 2.5,
+              ),
+            ),
+          ),
+        ),
+        Positioned(
+          top: 50,
+          right: 40,
+          child: Opacity(
+            opacity: 0.22,
+            child: Transform.rotate(
+              angle: 0.5,
+              child: HajjIcon(
+                type: HajjIconType.star,
+                color: palette.gold,
+                size: 12,
+                strokeWidth: 2,
+              ),
+            ),
+          ),
+        ),
         SafeArea(
           child: Align(
             alignment: const Alignment(0, -0.62),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
-                Icon(
-                  Icons.mosque_rounded,
-                  color: palette.gold,
-                  size: 34,
-                  shadows: <Shadow>[
-                    Shadow(
-                      color: palette.gold.withValues(alpha: 0.5),
-                      blurRadius: 18,
+                ScaleTransition(
+                  scale: _glowPulse,
+                  child: Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      boxShadow: <BoxShadow>[
+                        BoxShadow(
+                          color: palette.gold.withValues(alpha: 0.35),
+                          blurRadius: 30,
+                          spreadRadius: 8,
+                        ),
+                        BoxShadow(
+                          color: palette.gold.withValues(alpha: 0.18),
+                          blurRadius: 60,
+                          spreadRadius: 20,
+                        ),
+                      ],
                     ),
-                  ],
+                    child: Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: palette.gold.withValues(alpha: 0.35),
+                          width: 1.5,
+                        ),
+                      ),
+                      child: Icon(
+                        Icons.mosque_rounded,
+                        color: palette.gold,
+                        size: 34,
+                        shadows: <Shadow>[
+                          Shadow(
+                            color: palette.gold.withValues(alpha: 0.5),
+                            blurRadius: 18,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
                 ),
                 const SizedBox(height: 12),
                 Text(
@@ -174,13 +294,28 @@ class _SplashScreenState extends State<SplashScreen>
                     color: Colors.white,
                     fontSize: 26,
                     letterSpacing: 3,
+                    shadows: <Shadow>[
+                      Shadow(
+                        color: Colors.black.withValues(alpha: 0.3),
+                        blurRadius: 12,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
                   ),
                 ),
                 const SizedBox(height: 8),
                 Container(
                   width: 40,
                   height: 1.4,
-                  color: palette.gold.withValues(alpha: 0.6),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: <Color>[
+                        palette.gold.withValues(alpha: 0.8),
+                        palette.gold.withValues(alpha: 0.2),
+                        palette.gold.withValues(alpha: 0.8),
+                      ],
+                    ),
+                  ),
                 ),
                 const SizedBox(height: 8),
                 Text(
@@ -195,7 +330,34 @@ class _SplashScreenState extends State<SplashScreen>
             ),
           ),
         ),
-        // Kedudukan butang dialihkan ke bahagian bawah (0.75)
+        Align(
+          alignment: const Alignment(0, 0.30),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            child: Text(
+              'بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ',
+              textDirection: TextDirection.rtl,
+              textAlign: TextAlign.center,
+              style: GoogleFonts.amiri(
+                color: palette.gold.withValues(alpha: 0.7),
+                fontSize: 20,
+                fontWeight: FontWeight.w500,
+                height: 1.5,
+              ),
+            ),
+          ),
+        ),
+        Align(
+          alignment: const Alignment(0, 0.48),
+          child: Text(
+            'Dalil: Surah Al-Hajj (22):27',
+            style: TextStyle(
+              color: Colors.white.withValues(alpha: 0.35),
+              fontSize: 11,
+              fontStyle: FontStyle.italic,
+            ),
+          ),
+        ),
         SafeArea(
           child: Align(
             alignment: const Alignment(0, 0.75),
@@ -216,6 +378,11 @@ class _SplashScreenState extends State<SplashScreen>
                         color: palette.emerald.withValues(alpha: 0.2),
                         blurRadius: 30,
                         spreadRadius: 2,
+                      ),
+                      BoxShadow(
+                        color: palette.gold.withValues(alpha: 0.1),
+                        blurRadius: 20,
+                        offset: const Offset(0, 8),
                       ),
                     ],
                   ),
@@ -283,7 +450,6 @@ class _SplashScreenState extends State<SplashScreen>
       child: Stack(
         fit: StackFit.expand,
         children: <Widget>[
-          // Gambar latar belakang penuh skrin untuk paparan kedua
           Image.asset(
             'assets/images/tawaf.jpg',
             fit: BoxFit.cover,
@@ -291,9 +457,7 @@ class _SplashScreenState extends State<SplashScreen>
               return const SizedBox();
             },
           ),
-          // Lapisan gelap supaya tulisan dan ikon nampak jelas
           Container(color: Colors.black.withValues(alpha: 0.65)),
-          // Kandungan teks dan butang
           SafeArea(
             child: LayoutBuilder(
               builder: (BuildContext context, BoxConstraints constraints) {
@@ -312,57 +476,122 @@ class _SplashScreenState extends State<SplashScreen>
                           mainAxisSize: MainAxisSize.min,
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: <Widget>[
-                            Container(
-                              width: 156,
-                              height: 156,
+                            Stack(
                               alignment: Alignment.center,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: Colors.white.withValues(alpha: 0.08),
-                                border: Border.all(
-                                  color: palette.gold.withValues(alpha: 0.42),
-                                  width: 1.5,
-                                ),
-                                boxShadow: <BoxShadow>[
-                                  BoxShadow(
-                                    color: Colors.black.withValues(alpha: 0.24),
-                                    blurRadius: 24,
-                                    offset: const Offset(0, 10),
-                                  ),
-                                ],
-                              ),
-                              child: Container(
-                                width: 126,
-                                height: 126,
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  color: palette.emerald.withValues(
-                                    alpha: 0.28,
-                                  ),
-                                  border: Border.all(
-                                    color: palette.emerald.withValues(
-                                      alpha: 0.65,
-                                    ),
-                                    width: 2,
-                                  ),
-                                  boxShadow: <BoxShadow>[
-                                    BoxShadow(
-                                      color: palette.emerald.withValues(
-                                        alpha: 0.3,
+                              children: <Widget>[
+                                AnimatedBuilder(
+                                  animation: _orbitRotation,
+                                  builder: (
+                                    BuildContext context,
+                                    Widget? child,
+                                  ) {
+                                    return Transform.rotate(
+                                      angle: _orbitRotation.value,
+                                      child: Container(
+                                        width: 190,
+                                        height: 190,
+                                        decoration: BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          border: Border.all(
+                                            color: palette.gold.withValues(
+                                              alpha: 0.25,
+                                            ),
+                                            width: 1.2,
+                                          ),
+                                          boxShadow: <BoxShadow>[
+                                            BoxShadow(
+                                              color: palette.gold
+                                                  .withValues(alpha: 0.12),
+                                              blurRadius: 20,
+                                            ),
+                                          ],
+                                        ),
                                       ),
-                                      blurRadius: 40,
-                                      spreadRadius: 5,
-                                    ),
-                                  ],
+                                    );
+                                  },
                                 ),
-                                child: Padding(
-                                  padding: const EdgeInsets.all(14),
-                                  child: ClipOval(
-                                    child: Image.asset(
-                                      'assets/images/app_icon.png',
-                                      fit: BoxFit.cover,
-                                      errorBuilder:
-                                          (
+                                AnimatedBuilder(
+                                  animation: _orbitRotation,
+                                  builder: (
+                                    BuildContext context,
+                                    Widget? child,
+                                  ) {
+                                    return Transform.rotate(
+                                      angle: -_orbitRotation.value * 0.7,
+                                      child: Container(
+                                        width: 200,
+                                        height: 200,
+                                        decoration: BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          border: Border.all(
+                                            color: palette.emerald.withValues(
+                                              alpha: 0.18,
+                                            ),
+                                            width: 0.8,
+                                          ),
+                                          boxShadow: <BoxShadow>[
+                                            BoxShadow(
+                                              color: palette.emerald
+                                                  .withValues(alpha: 0.08),
+                                              blurRadius: 24,
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                ),
+                                Container(
+                                  width: 180,
+                                  height: 180,
+                                  alignment: Alignment.center,
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: Colors.white.withValues(alpha: 0.08),
+                                    border: Border.all(
+                                      color: palette.gold.withValues(alpha: 0.42),
+                                      width: 1.5,
+                                    ),
+                                    boxShadow: <BoxShadow>[
+                                      BoxShadow(
+                                        color: Colors.black
+                                            .withValues(alpha: 0.24),
+                                        blurRadius: 24,
+                                        offset: const Offset(0, 10),
+                                      ),
+                                    ],
+                                  ),
+                                  child: Container(
+                                    width: 150,
+                                    height: 150,
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: palette.emerald.withValues(
+                                        alpha: 0.28,
+                                      ),
+                                      border: Border.all(
+                                        color: palette.emerald.withValues(
+                                          alpha: 0.65,
+                                        ),
+                                        width: 2,
+                                      ),
+                                      boxShadow: <BoxShadow>[
+                                        BoxShadow(
+                                          color: palette.emerald.withValues(
+                                            alpha: 0.3,
+                                          ),
+                                          blurRadius: 40,
+                                          spreadRadius: 5,
+                                        ),
+                                      ],
+                                    ),
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(14),
+                                      child: ClipOval(
+                                        child: Image.asset(
+                                          'assets/images/app_icon.png',
+                                          fit: BoxFit.cover,
+                                          errorBuilder: (
                                             BuildContext context,
                                             Object error,
                                             StackTrace? stackTrace,
@@ -373,13 +602,14 @@ class _SplashScreenState extends State<SplashScreen>
                                               color: palette.gold,
                                             );
                                           },
+                                        ),
+                                      ),
                                     ),
                                   ),
                                 ),
-                              ),
+                              ],
                             ),
                             const SizedBox(height: 34),
-
                             Text(
                               'أَهْلاً وَسَهْلاً',
                               textDirection: TextDirection.rtl,
@@ -389,13 +619,21 @@ class _SplashScreenState extends State<SplashScreen>
                                 fontSize: 46,
                                 fontWeight: FontWeight.bold,
                                 height: 1.4,
+                                shadows: <Shadow>[
+                                  Shadow(
+                                    color: Colors.black.withValues(alpha: 0.3),
+                                    blurRadius: 12,
+                                  ),
+                                ],
                               ),
                             ),
                             const SizedBox(height: 16),
                             Text(
                               'Ahlan wa Sahlan\nPara Dhuyufur Rahman',
                               textAlign: TextAlign.center,
-                              style: Theme.of(context).textTheme.headlineMedium
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .headlineMedium
                                   ?.copyWith(
                                     color: Colors.white,
                                     fontSize: 25,
@@ -403,16 +641,87 @@ class _SplashScreenState extends State<SplashScreen>
                                     letterSpacing: 0.4,
                                   ),
                             ),
-                            const SizedBox(height: 12),
-                            const Text(
-                              'Semoga mendapat Haji Mabrur',
-                              style: TextStyle(
-                                color: Colors.white70,
-                                fontSize: 16,
+                            const SizedBox(height: 14),
+                            Container(
+                              constraints: const BoxConstraints(maxWidth: 360),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 10,
+                              ),
+                              decoration: BoxDecoration(
+                                color: Colors.white.withValues(alpha: 0.06),
+                                borderRadius: BorderRadius.circular(14),
+                                border: Border.all(
+                                  color: palette.gold.withValues(alpha: 0.15),
+                                  width: 0.8,
+                                ),
+                              ),
+                              child: Column(
+                                children: <Widget>[
+                                  Text(
+                                    'وَأَذِّن فِي مَكَّةَ لِلنَّاسِ',
+                                    textDirection: TextDirection.rtl,
+                                    textAlign: TextAlign.center,
+                                    style: GoogleFonts.amiri(
+                                      color: palette.gold.withValues(alpha: 0.85),
+                                      fontSize: 22,
+                                      height: 1.5,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 6),
+                                  Text(
+                                    'Surah Al-Hajj (22):27 — Seruan kepada kaum untuk menunaikan haji',
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      color: Colors.white.withValues(alpha: 0.55),
+                                      fontSize: 11.5,
+                                      height: 1.4,
+                                      fontStyle: FontStyle.italic,
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
-                            const SizedBox(height: 60),
-
+                            const SizedBox(height: 12),
+                            Container(
+                              constraints: const BoxConstraints(maxWidth: 360),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 10,
+                              ),
+                              decoration: BoxDecoration(
+                                color: Colors.white.withValues(alpha: 0.06),
+                                borderRadius: BorderRadius.circular(14),
+                                border: Border.all(
+                                  color: palette.emerald.withValues(alpha: 0.15),
+                                  width: 0.8,
+                                ),
+                              ),
+                              child: Row(
+                                children: <Widget>[
+                                  HajjIcon(
+                                    type: HajjIconType.doa,
+                                    color: palette.emerald,
+                                    size: 18,
+                                    strokeWidth: 3,
+                                  ),
+                                  const SizedBox(width: 10),
+                                  Expanded(
+                                    child: Text(
+                                      'Hadith: "Siapa yang berihram demi Allah,\nAllah akan bebaskannya dari neraka."',
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        color: Colors.white.withValues(alpha: 0.55),
+                                        fontSize: 11.5,
+                                        height: 1.5,
+                                        fontStyle: FontStyle.italic,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(height: 40),
                             ClipRRect(
                               borderRadius: BorderRadius.circular(30),
                               child: BackdropFilter(
@@ -441,7 +750,7 @@ class _SplashScreenState extends State<SplashScreen>
                                         child: Row(
                                           mainAxisSize: MainAxisSize.min,
                                           children: <Widget>[
-                                            const Text(
+                                            Text(
                                               'Masuk ke Papan Pemuka',
                                               style: TextStyle(
                                                 color: Colors.white,
@@ -480,27 +789,39 @@ class _SplashScreenState extends State<SplashScreen>
     final dynamic palette = context.hajjColors;
     final ColorScheme colors = context.appColorScheme;
     final List<_PengenalanData> pages = <_PengenalanData>[
-      const _PengenalanData(
+      _PengenalanData(
         icon: HajjIconType.guide,
-        title: 'Teman persediaan Haji',
+        title: 'Teman Persediaan Haji',
         description:
             'HajiPintar membantu anda memahami perjalanan Haji '
             'dengan panduan yang tersusun, ringkas dan mudah dirujuk.',
+        tip: 'Mulakan persiapan minatab dengan niat yang ikhlas\n'
+             'dan ilmu yang cukup sebelum berlepas.',
+        fact: 'Haji wajib dilakukan sekurang-kurangnya '
+              'sekali dalam hidup seorang Muslim.',
       ),
-      const _PengenalanData(
+      _PengenalanData(
         icon: HajjIconType.learning,
-        title: 'Belajar dengan lebih yakin',
+        title: 'Belajar dengan Lebih Yakin',
         description:
             'Akses modul pembelajaran, doa, zikir, kuiz, peta lokasi '
             'serta panduan langkah demi langkah dalam satu aplikasi.',
+        tip: 'Gunakan modul doa dan zikir setiap hari '
+             'untuk meningkatkan keimanan dan ketenangan.',
+        fact: 'Doa Arafah yang dibaca di Padang Arafah '
+              'adalah doa yang paling utama dalam Haji.',
       ),
-      const _PengenalanData(
+      _PengenalanData(
         icon: HajjIconType.rukun,
-        title: 'Rujukan yang bertanggungjawab',
+        title: 'Rujukan yang Bertanggungjawab',
         description:
             'Kandungan ini untuk pendidikan dan rujukan umum. '
             'Untuk persoalan hukum khusus, rujuk pembimbing Haji '
             'atau pihak berautoriti.',
+        tip: 'Simpan nombor bantuan kedutaan dan '
+             'pembimbing Haji di tempat yang mudah diakses.',
+        fact: 'Haji mengukuhkan semangat ukhuwwah '
+              'Persatuan dan persaudaraan sesama umat.',
       ),
     ];
 
@@ -520,22 +841,33 @@ class _SplashScreenState extends State<SplashScreen>
                     _buildIntroGlow(palette),
                     Row(
                       children: <Widget>[
-                        Image.asset(
-                          'assets/images/app_icon.png',
-                          width: 46,
-                          height: 46,
-                          errorBuilder:
-                              (
-                                BuildContext context,
-                                Object error,
-                                StackTrace? stackTrace,
-                              ) {
-                                return Icon(
-                                  Icons.mosque_rounded,
-                                  color: palette.gold,
-                                  size: 36,
-                                );
-                              },
+                        Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: palette.gold.withValues(alpha: 0.3),
+                              width: 1,
+                            ),
+                          ),
+                          child: Image.asset(
+                            'assets/images/app_icon.png',
+                            width: 42,
+                            height: 42,
+                            errorBuilder:
+                                (
+                                  BuildContext context,
+                                  Object error,
+                                  StackTrace? stackTrace,
+                                ) {
+                                  return HajjIcon(
+                                    type: HajjIconType.mosque,
+                                    color: palette.gold,
+                                    size: 30,
+                                    strokeWidth: 2.5,
+                                  );
+                                },
+                          ),
                         ),
                         const SizedBox(width: 12),
                         Text(
@@ -587,6 +919,7 @@ class _SplashScreenState extends State<SplashScreen>
                         },
                       ),
                     ),
+                    const SizedBox(height: 4),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: List<Widget>.generate(pages.length, (
@@ -607,7 +940,7 @@ class _SplashScreenState extends State<SplashScreen>
                         );
                       }),
                     ),
-                    const SizedBox(height: 24),
+                    const SizedBox(height: 20),
                     SizedBox(
                       width: double.infinity,
                       height: 54,
@@ -681,11 +1014,15 @@ class _PengenalanData {
     required this.icon,
     required this.title,
     required this.description,
+    required this.tip,
+    required this.fact,
   });
 
   final HajjIconType icon;
   final String title;
   final String description;
+  final String tip;
+  final String fact;
 }
 
 class _PengenalanPage extends StatelessWidget {
@@ -707,91 +1044,229 @@ class _PengenalanPage extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             SizedBox(
-              width: 190,
-              height: 190,
+              width: 200,
+              height: 200,
               child: Stack(
                 alignment: Alignment.center,
                 children: <Widget>[
                   Container(
-                    width: 178,
-                    height: 178,
+                    width: 190,
+                    height: 190,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: palette.emerald.withValues(alpha: 0.22),
+                      gradient: SweepGradient(
+                        colors: <Color>[
+                          palette.gold.withValues(alpha: 0.15),
+                          palette.emerald.withValues(alpha: 0.15),
+                          palette.gold.withValues(alpha: 0.15),
+                        ],
+                        stops: const <double>[0.0, 0.5, 1.0],
+                      ),
                       border: Border.all(
-                        color: palette.gold.withValues(alpha: 0.5),
+                        color: palette.gold.withValues(alpha: 0.35),
                         width: 1.5,
                       ),
                       boxShadow: <BoxShadow>[
                         BoxShadow(
-                          color: palette.emerald.withValues(alpha: 0.35),
-                          blurRadius: 40,
-                          spreadRadius: 4,
+                          color: palette.gold.withValues(alpha: 0.2),
+                          blurRadius: 35,
+                          spreadRadius: 8,
+                        ),
+                        BoxShadow(
+                          color: palette.emerald.withValues(alpha: 0.12),
+                          blurRadius: 50,
+                          spreadRadius: 12,
                         ),
                       ],
                     ),
                     child: Center(
                       child: Container(
-                        width: 116,
-                        height: 116,
+                        width: 130,
+                        height: 130,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: Colors.black.withValues(alpha: 0.16),
-                          border: Border.all(
-                            color: palette.gold.withValues(alpha: 0.28),
+                          gradient: RadialGradient(
+                            colors: <Color>[
+                              palette.emerald.withValues(alpha: 0.35),
+                              palette.emerald.withValues(alpha: 0.12),
+                            ],
                           ),
+                          border: Border.all(
+                            color: palette.gold.withValues(alpha: 0.3),
+                            width: 1.5,
+                          ),
+                          boxShadow: <BoxShadow>[
+                            BoxShadow(
+                              color: palette.emerald.withValues(alpha: 0.2),
+                              blurRadius: 20,
+                            ),
+                          ],
                         ),
                         child: Center(
                           child: HajjIcon(
                             type: data.icon,
                             color: palette.gold,
-                            size: 68,
-                            strokeWidth: 5,
+                            size: 62,
+                            strokeWidth: 4.5,
                           ),
                         ),
                       ),
                     ),
                   ),
                   Positioned(
-                    top: 2,
-                    right: 18,
-                    child: _IntroSpark(color: palette.gold, size: 11),
+                    top: 0,
+                    right: 0,
+                    child: _IntroSpark(color: palette.gold, size: 12),
                   ),
                   Positioned(
-                    bottom: 14,
+                    bottom: 10,
+                    left: 6,
+                    child: _IntroSpark(color: palette.emerald, size: 9),
+                  ),
+                  Positioned(
+                    top: 55,
                     left: 10,
-                    child: _IntroSpark(color: palette.emerald, size: 8),
+                    child: _IntroSpark(
+                      color: palette.gold.withValues(alpha: 0.6),
+                      size: 8,
+                    ),
                   ),
                   Positioned(
-                    top: 38,
-                    left: 4,
-                    child: Icon(
-                      Icons.star_rounded,
-                      color: Colors.white.withValues(alpha: 0.72),
-                      size: 15,
+                    bottom: 40,
+                    right: 16,
+                    child: _IntroSpark(
+                      color: palette.emerald.withValues(alpha: 0.6),
+                      size: 7,
                     ),
                   ),
                 ],
               ),
             ),
-            const SizedBox(height: 38),
-            Text(
-              data.title,
-              textAlign: TextAlign.center,
-              style: GoogleFonts.playfairDisplay(
-                color: colors.onSurface,
-                fontSize: 30,
-                fontWeight: FontWeight.w700,
+            const SizedBox(height: 32),
+            Container(
+              constraints: const BoxConstraints(maxWidth: 500),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 20,
+                vertical: 14,
+              ),
+              decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: 0.06),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(
+                  color: palette.gold.withValues(alpha: 0.12),
+                  width: 0.8,
+                ),
+              ),
+              child: Text(
+                data.title,
+                textAlign: TextAlign.center,
+                style: GoogleFonts.playfairDisplay(
+                  color: colors.onSurface,
+                  fontSize: 30,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 0.3,
+                ),
               ),
             ),
-            const SizedBox(height: 16),
-            Text(
-              data.description,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                color: Colors.white.withValues(alpha: 0.82),
-                fontSize: 16,
-                height: 1.6,
+            const SizedBox(height: 14),
+            Container(
+              constraints: const BoxConstraints(maxWidth: 500),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 20,
+                vertical: 14,
+              ),
+              decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: 0.04),
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Text(
+                data.description,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Colors.white.withValues(alpha: 0.85),
+                  fontSize: 15.5,
+                  height: 1.65,
+                ),
+              ),
+            ),
+            const SizedBox(height: 18),
+            Container(
+              constraints: const BoxConstraints(maxWidth: 500),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 12,
+              ),
+              decoration: BoxDecoration(
+                color: palette.emerald.withValues(alpha: 0.08),
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(
+                  color: palette.emerald.withValues(alpha: 0.2),
+                  width: 0.8,
+                ),
+              ),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Padding(
+                    padding: const EdgeInsets.only(top: 2),
+                    child: Icon(
+                      Icons.lightbulb_rounded,
+                      color: palette.gold,
+                      size: 18,
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      data.tip,
+                      style: TextStyle(
+                        color: Colors.white.withValues(alpha: 0.78),
+                        fontSize: 13.5,
+                        height: 1.55,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 12),
+            Container(
+              constraints: const BoxConstraints(maxWidth: 500),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 12,
+              ),
+              decoration: BoxDecoration(
+                color: palette.gold.withValues(alpha: 0.08),
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(
+                  color: palette.gold.withValues(alpha: 0.18),
+                  width: 0.8,
+                ),
+              ),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Padding(
+                    padding: const EdgeInsets.only(top: 2),
+                    child: Icon(
+                      Icons.emoji_objects_rounded,
+                      color: palette.emerald,
+                      size: 18,
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      data.fact,
+                      style: TextStyle(
+                        color: Colors.white.withValues(alpha: 0.72),
+                        fontSize: 13.5,
+                        height: 1.55,
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
           ],
@@ -816,7 +1291,10 @@ class _IntroSpark extends StatelessWidget {
         color: color,
         shape: BoxShape.circle,
         boxShadow: <BoxShadow>[
-          BoxShadow(color: color.withValues(alpha: 0.65), blurRadius: 10),
+          BoxShadow(
+            color: color.withValues(alpha: 0.65),
+            blurRadius: 10,
+          ),
         ],
       ),
     );
