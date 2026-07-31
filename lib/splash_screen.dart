@@ -6,6 +6,7 @@ import 'dart:ui';
 
 import 'theme_controller.dart';
 import 'home_dashboard.dart'; // Untuk memanggil HalamanUtama
+import 'islamic_icons.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({required this.themeController, super.key});
@@ -480,21 +481,21 @@ class _SplashScreenState extends State<SplashScreen>
     final ColorScheme colors = context.appColorScheme;
     final List<_PengenalanData> pages = <_PengenalanData>[
       const _PengenalanData(
-        icon: Icons.explore_rounded,
+        icon: HajjIconType.guide,
         title: 'Teman persediaan Haji',
         description:
             'HajiPintar membantu anda memahami perjalanan Haji '
             'dengan panduan yang tersusun, ringkas dan mudah dirujuk.',
       ),
       const _PengenalanData(
-        icon: Icons.auto_stories_rounded,
+        icon: HajjIconType.learning,
         title: 'Belajar dengan lebih yakin',
         description:
             'Akses modul pembelajaran, doa, zikir, kuiz, peta lokasi '
             'serta panduan langkah demi langkah dalam satu aplikasi.',
       ),
       const _PengenalanData(
-        icon: Icons.verified_user_rounded,
+        icon: HajjIconType.rukun,
         title: 'Rujukan yang bertanggungjawab',
         description:
             'Kandungan ini untuk pendidikan dan rujukan umum. '
@@ -682,7 +683,7 @@ class _PengenalanData {
     required this.description,
   });
 
-  final IconData icon;
+  final HajjIconType icon;
   final String title;
   final String description;
 }
@@ -705,25 +706,73 @@ class _PengenalanPage extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Container(
-              width: 178,
-              height: 178,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: palette.emerald.withValues(alpha: 0.22),
-                border: Border.all(
-                  color: palette.gold.withValues(alpha: 0.5),
-                  width: 1.5,
-                ),
-                boxShadow: <BoxShadow>[
-                  BoxShadow(
-                    color: palette.emerald.withValues(alpha: 0.35),
-                    blurRadius: 40,
-                    spreadRadius: 4,
+            SizedBox(
+              width: 190,
+              height: 190,
+              child: Stack(
+                alignment: Alignment.center,
+                children: <Widget>[
+                  Container(
+                    width: 178,
+                    height: 178,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: palette.emerald.withValues(alpha: 0.22),
+                      border: Border.all(
+                        color: palette.gold.withValues(alpha: 0.5),
+                        width: 1.5,
+                      ),
+                      boxShadow: <BoxShadow>[
+                        BoxShadow(
+                          color: palette.emerald.withValues(alpha: 0.35),
+                          blurRadius: 40,
+                          spreadRadius: 4,
+                        ),
+                      ],
+                    ),
+                    child: Center(
+                      child: Container(
+                        width: 116,
+                        height: 116,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Colors.black.withValues(alpha: 0.16),
+                          border: Border.all(
+                            color: palette.gold.withValues(alpha: 0.28),
+                          ),
+                        ),
+                        child: Center(
+                          child: HajjIcon(
+                            type: data.icon,
+                            color: palette.gold,
+                            size: 68,
+                            strokeWidth: 5,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  Positioned(
+                    top: 2,
+                    right: 18,
+                    child: _IntroSpark(color: palette.gold, size: 11),
+                  ),
+                  Positioned(
+                    bottom: 14,
+                    left: 10,
+                    child: _IntroSpark(color: palette.emerald, size: 8),
+                  ),
+                  Positioned(
+                    top: 38,
+                    left: 4,
+                    child: Icon(
+                      Icons.star_rounded,
+                      color: Colors.white.withValues(alpha: 0.72),
+                      size: 15,
+                    ),
                   ),
                 ],
               ),
-              child: Icon(data.icon, color: palette.gold, size: 78),
             ),
             const SizedBox(height: 38),
             Text(
@@ -747,6 +796,28 @@ class _PengenalanPage extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _IntroSpark extends StatelessWidget {
+  const _IntroSpark({required this.color, required this.size});
+
+  final Color color;
+  final double size;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(
+        color: color,
+        shape: BoxShape.circle,
+        boxShadow: <BoxShadow>[
+          BoxShadow(color: color.withValues(alpha: 0.65), blurRadius: 10),
+        ],
       ),
     );
   }
