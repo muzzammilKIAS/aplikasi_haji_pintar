@@ -134,46 +134,33 @@ class MyCertificatesScreen extends StatelessWidget {
                   ),
                 ),
               ),
-              // Tarikh — text-anchor middle.
+              // Tarikh — text-anchor start
               pw.Positioned(
                 top: CertificateCoordinates.dateY * scaleY -
                     CertificateCoordinates.dateFontSize * scaleY * 0.4,
-                left: CertificateCoordinates.dateX * scaleX - 80 * scaleX,
-                child: pw.Container(
-                  width: 160 * scaleX,
-                  alignment: pw.Alignment.center,
-                  child: pw.Text(
-                    date,
-                    textAlign: pw.TextAlign.center,
-                    style: pw.TextStyle(
-                      font: jakartaBold,
-                      fontSize: CertificateCoordinates.dateFontSize * scaleY,
-                      color: const PdfColor.fromInt(0xFF16231F),
-                    ),
+                left: CertificateCoordinates.dateX * scaleX,
+                child: pw.Text(
+                  date,
+                  textAlign: pw.TextAlign.left,
+                  style: pw.TextStyle(
+                    font: jakartaBold,
+                    fontSize: CertificateCoordinates.dateFontSize * scaleY,
+                    color: const PdfColor.fromInt(0xFF16231F),
                   ),
                 ),
               ),
-              // Nombor sijil — text-anchor middle.
+              // Nombor sijil — text-anchor start
               pw.Positioned(
                 top: CertificateCoordinates.certificateNumberY * scaleY -
-                    CertificateCoordinates.certificateNumberFontSize *
-                        scaleY *
-                        0.4,
-                left: CertificateCoordinates.certificateNumberX * scaleX -
-                    80 * scaleX,
-                child: pw.Container(
-                  width: 160 * scaleX,
-                  alignment: pw.Alignment.center,
-                  child: pw.Text(
-                    certNumber,
-                    textAlign: pw.TextAlign.center,
-                    style: pw.TextStyle(
-                      font: jakartaBold,
-                      fontSize: CertificateCoordinates
-                              .certificateNumberFontSize *
-                          scaleY,
-                      color: const PdfColor.fromInt(0xFF16231F),
-                    ),
+                    CertificateCoordinates.certificateNumberFontSize * scaleY * 0.4,
+                left: CertificateCoordinates.certificateNumberX * scaleX,
+                child: pw.Text(
+                  certNumber,
+                  textAlign: pw.TextAlign.left,
+                  style: pw.TextStyle(
+                    font: jakartaBold,
+                    fontSize: CertificateCoordinates.certificateNumberFontSize * scaleY,
+                    color: const PdfColor.fromInt(0xFF16231F),
                   ),
                 ),
               ),

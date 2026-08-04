@@ -16,6 +16,19 @@ class HajjColors extends ThemeExtension<HajjColors> {
     required this.softSurface,
     required this.shadow,
     required this.onAccent,
+    required this.textPrimary,
+    required this.textSecondary,
+    required this.divider,
+    required this.success,
+    required this.warning,
+    required this.sand,
+    required this.sandSoft,
+    required this.skySoft,
+    required this.sageSoft,
+    required this.secondaryColor,
+    required this.secondarySoft,
+    required this.cardSurface,
+    required this.cardBorder,
   });
 
   final Color gradientStart;
@@ -31,19 +44,46 @@ class HajjColors extends ThemeExtension<HajjColors> {
   final Color shadow;
   final Color onAccent;
 
+  final Color textPrimary;
+  final Color textSecondary;
+  final Color divider;
+  final Color success;
+  final Color warning;
+  final Color sand;
+  final Color sandSoft;
+  final Color skySoft;
+  final Color sageSoft;
+  final Color secondaryColor;
+  final Color secondarySoft;
+  final Color cardSurface;
+  final Color cardBorder;
+
   static const HajjColors light = HajjColors(
-    gradientStart: Color(0xFFFBF8F1),
-    gradientMiddle: Color(0xFFF4E9CE),
-    gradientEnd: Color(0xFFE7F2EC),
-    glassSurface: Color(0xF5FFFFFF),
-    glassBorder: Color(0xFFDCE3DC),
-    mutedText: Color(0xFF63756E),
-    gold: Color(0xFFAD7B27),
-    emerald: Color(0xFF0E5C4F),
-    danger: Color(0xFFC94852),
-    softSurface: Color(0xFFF3ECD9),
-    shadow: Color(0x28000000),
+    gradientStart: Color(0xFFF7F5EF),
+    gradientMiddle: Color(0xFFEEF6F2),
+    gradientEnd: Color(0xFFF5EEE1),
+    glassSurface: Color(0xFFFFFFFF),
+    glassBorder: Color(0xFFD7E1DC),
+    mutedText: Color(0xFF5F716B),
+    gold: Color(0xFFC4953A),
+    emerald: Color(0xFF176B5B),
+    danger: Color(0xFFB64949),
+    softSurface: Color(0xFFF4E8CF),
+    shadow: Color(0x1F000000),
     onAccent: Color(0xFFFFFFFF),
+    textPrimary: Color(0xFF19332E),
+    textSecondary: Color(0xFF5F716B),
+    divider: Color(0xFFE5EBE8),
+    success: Color(0xFF2E7D5B),
+    warning: Color(0xFFC5822D),
+    sand: Color(0xFFE8D7B8),
+    sandSoft: Color(0xFFF5EEE1),
+    skySoft: Color(0xFFE6F1F5),
+    sageSoft: Color(0xFFE7EFE6),
+    secondaryColor: Color(0xFF3F8C8A),
+    secondarySoft: Color(0xFFDCEEEE),
+    cardSurface: Color(0xFFFFFFFF),
+    cardBorder: Color(0xFFD7E1DC),
   );
 
   static const HajjColors dark = HajjColors(
@@ -59,6 +99,19 @@ class HajjColors extends ThemeExtension<HajjColors> {
     softSurface: Color(0xFF163B34),
     shadow: Color(0x66000000),
     onAccent: Color(0xFF041513),
+    textPrimary: Color(0xFFF5F2EA),
+    textSecondary: Color(0xFFAAB9B4),
+    divider: Color(0x26FFFFFF),
+    success: Color(0xFF37DBA8),
+    warning: Color(0xFFE3C177),
+    sand: Color(0xFF2A3A35),
+    sandSoft: Color(0xFF1A2A25),
+    skySoft: Color(0xFF1A252B),
+    sageSoft: Color(0xFF1A2A22),
+    secondaryColor: Color(0xFF5BBFB8),
+    secondarySoft: Color(0xFF1A3A38),
+    cardSurface: Color(0x17FFFFFF),
+    cardBorder: Color(0x26FFFFFF),
   );
 
   @override
@@ -75,6 +128,19 @@ class HajjColors extends ThemeExtension<HajjColors> {
     Color? softSurface,
     Color? shadow,
     Color? onAccent,
+    Color? textPrimary,
+    Color? textSecondary,
+    Color? divider,
+    Color? success,
+    Color? warning,
+    Color? sand,
+    Color? sandSoft,
+    Color? skySoft,
+    Color? sageSoft,
+    Color? secondaryColor,
+    Color? secondarySoft,
+    Color? cardSurface,
+    Color? cardBorder,
   }) {
     return HajjColors(
       gradientStart: gradientStart ?? this.gradientStart,
@@ -89,6 +155,19 @@ class HajjColors extends ThemeExtension<HajjColors> {
       softSurface: softSurface ?? this.softSurface,
       shadow: shadow ?? this.shadow,
       onAccent: onAccent ?? this.onAccent,
+      textPrimary: textPrimary ?? this.textPrimary,
+      textSecondary: textSecondary ?? this.textSecondary,
+      divider: divider ?? this.divider,
+      success: success ?? this.success,
+      warning: warning ?? this.warning,
+      sand: sand ?? this.sand,
+      sandSoft: sandSoft ?? this.sandSoft,
+      skySoft: skySoft ?? this.skySoft,
+      sageSoft: sageSoft ?? this.sageSoft,
+      secondaryColor: secondaryColor ?? this.secondaryColor,
+      secondarySoft: secondarySoft ?? this.secondarySoft,
+      cardSurface: cardSurface ?? this.cardSurface,
+      cardBorder: cardBorder ?? this.cardBorder,
     );
   }
 
@@ -111,6 +190,19 @@ class HajjColors extends ThemeExtension<HajjColors> {
       softSurface: Color.lerp(softSurface, other.softSurface, t)!,
       shadow: Color.lerp(shadow, other.shadow, t)!,
       onAccent: Color.lerp(onAccent, other.onAccent, t)!,
+      textPrimary: Color.lerp(textPrimary, other.textPrimary, t)!,
+      textSecondary: Color.lerp(textSecondary, other.textSecondary, t)!,
+      divider: Color.lerp(divider, other.divider, t)!,
+      success: Color.lerp(success, other.success, t)!,
+      warning: Color.lerp(warning, other.warning, t)!,
+      sand: Color.lerp(sand, other.sand, t)!,
+      sandSoft: Color.lerp(sandSoft, other.sandSoft, t)!,
+      skySoft: Color.lerp(skySoft, other.skySoft, t)!,
+      sageSoft: Color.lerp(sageSoft, other.sageSoft, t)!,
+      secondaryColor: Color.lerp(secondaryColor, other.secondaryColor, t)!,
+      secondarySoft: Color.lerp(secondarySoft, other.secondarySoft, t)!,
+      cardSurface: Color.lerp(cardSurface, other.cardSurface, t)!,
+      cardBorder: Color.lerp(cardBorder, other.cardBorder, t)!,
     );
   }
 }
@@ -143,25 +235,24 @@ class AppTheme {
   }) {
     final bool isDark = brightness == Brightness.dark;
 
-    final ColorScheme scheme =
-        ColorScheme.fromSeed(
-          seedColor: const Color(0xFF0E5C4F),
-          brightness: brightness,
-        ).copyWith(
-          primary: palette.emerald,
-          onPrimary: palette.onAccent,
-          secondary: palette.gold,
-          onSecondary: isDark
-              ? const Color(0xFF201A0D)
-              : const Color(0xFFFFFFFF),
-          surface: isDark ? const Color(0xFF102822) : const Color(0xFFFFFDF8),
-          onSurface: isDark ? const Color(0xFFF5F2EA) : const Color(0xFF25332E),
-          surfaceContainerHighest: isDark
-              ? const Color(0xFF183A33)
-              : const Color(0xFFF1EBDD),
-          outline: isDark ? const Color(0xFF789088) : const Color(0xFF899991),
-          error: palette.danger,
-        );
+    final ColorScheme scheme = ColorScheme.fromSeed(
+      seedColor: isDark ? const Color(0xFF37DBA8) : const Color(0xFF176B5B),
+      brightness: brightness,
+    ).copyWith(
+      primary: palette.emerald,
+      onPrimary: palette.onAccent,
+      secondary: palette.gold,
+      onSecondary: isDark
+          ? const Color(0xFF201A0D)
+          : const Color(0xFFFFFFFF),
+      surface: isDark ? const Color(0xFF102822) : palette.cardSurface,
+      onSurface: isDark ? const Color(0xFFF5F2EA) : palette.textPrimary,
+      surfaceContainerHighest: isDark
+          ? const Color(0xFF183A33)
+          : palette.sandSoft,
+      outline: isDark ? const Color(0xFF789088) : palette.cardBorder,
+      error: palette.danger,
+    );
 
     return ThemeData(
       useMaterial3: true,
@@ -193,7 +284,7 @@ class AppTheme {
           height: 1.5,
         ),
         bodyMedium: GoogleFonts.plusJakartaSans(
-          color: palette.mutedText,
+          color: palette.textSecondary,
           height: 1.5,
         ),
       ),
@@ -224,8 +315,8 @@ class AppTheme {
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
-          foregroundColor: scheme.onSurface,
-          side: BorderSide(color: palette.glassBorder, width: 1.3),
+          foregroundColor: palette.emerald,
+          side: BorderSide(color: palette.emerald, width: 1.3),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(18),
           ),

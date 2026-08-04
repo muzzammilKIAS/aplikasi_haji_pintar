@@ -189,9 +189,9 @@ class GlassContainer extends StatelessWidget {
           duration: const Duration(milliseconds: 260),
           padding: padding,
           decoration: BoxDecoration(
-            color: palette.glassSurface,
+            color: palette.cardSurface,
             borderRadius: BorderRadius.circular(borderRadius),
-            border: Border.all(color: borderColor ?? palette.glassBorder),
+            border: Border.all(color: borderColor ?? palette.cardBorder),
             boxShadow: <BoxShadow>[
               BoxShadow(
                 color: palette.shadow,

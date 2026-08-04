@@ -238,41 +238,33 @@ class _CertificateScreenState extends State<CertificateScreen> {
                   ),
                 ),
               ),
-              // Tarikh — text-anchor middle.
+              // Tarikh — text-anchor start
               pw.Positioned(
                 top: CertificateCoordinates.dateY * scaleY -
                     CertificateCoordinates.dateFontSize * scaleY * 0.4,
-                left: CertificateCoordinates.dateX * scaleX - 80 * scaleX,
-                child: pw.Container(
-                  width: 160 * scaleX,
-                  alignment: pw.Alignment.center,
-                  child: pw.Text(
-                    date,
-                    textAlign: pw.TextAlign.center,
-                    style: pw.TextStyle(
-                      font: jakartaBold,
-                      fontSize: CertificateCoordinates.dateFontSize * scaleY,
-                      color: const PdfColor.fromInt(0xFF16231F),
-                    ),
+                left: CertificateCoordinates.dateX * scaleX,
+                child: pw.Text(
+                  date,
+                  textAlign: pw.TextAlign.left,
+                  style: pw.TextStyle(
+                    font: jakartaBold,
+                    fontSize: CertificateCoordinates.dateFontSize * scaleY,
+                    color: const PdfColor.fromInt(0xFF16231F),
                   ),
                 ),
               ),
-              // Nombor sijil — text-anchor middle.
+              // Nombor sijil — text-anchor start
               pw.Positioned(
                 top: CertificateCoordinates.certificateNumberY * scaleY -
                     CertificateCoordinates.certificateNumberFontSize * scaleY * 0.4,
-                left: CertificateCoordinates.certificateNumberX * scaleX - 80 * scaleX,
-                child: pw.Container(
-                  width: 160 * scaleX,
-                  alignment: pw.Alignment.center,
-                  child: pw.Text(
-                    certNumber,
-                    textAlign: pw.TextAlign.center,
-                    style: pw.TextStyle(
-                      font: jakartaBold,
-                      fontSize: CertificateCoordinates.certificateNumberFontSize * scaleY,
-                      color: const PdfColor.fromInt(0xFF16231F),
-                    ),
+                left: CertificateCoordinates.certificateNumberX * scaleX,
+                child: pw.Text(
+                  certNumber,
+                  textAlign: pw.TextAlign.left,
+                  style: pw.TextStyle(
+                    font: jakartaBold,
+                    fontSize: CertificateCoordinates.certificateNumberFontSize * scaleY,
+                    color: const PdfColor.fromInt(0xFF16231F),
                   ),
                 ),
               ),
@@ -775,51 +767,43 @@ class _CertificatePreview extends StatelessWidget {
                       ),
                     ),
                   ),
-                  // Tarikh — text-anchor middle, dominant-baseline middle.
+                  // Tarikh — dibetulkan ke text-anchor start
                   Positioned(
                     left: width * CertificateCoordinates.dateX /
-                            CertificateCoordinates.templateWidth -
-                        120,
+                        CertificateCoordinates.templateWidth,
                     top: height * CertificateCoordinates.dateY /
                             CertificateCoordinates.templateHeight -
                         CertificateCoordinates.dateFontSize / 2,
-                    child: SizedBox(
-                      width: 240,
-                      child: Text(
-                        date,
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(
-                          fontFamily: CertificateCoordinates.dateFontFamily,
-                          fontSize: CertificateCoordinates.dateFontSize,
-                          fontWeight: FontWeight.w500,
-                          color: Color(0xFF16231F),
-                          height: 1.0,
-                        ),
+                    child: Text(
+                      date,
+                      textAlign: TextAlign.left,
+                      style: const TextStyle(
+                        fontFamily: CertificateCoordinates.dateFontFamily,
+                        fontSize: CertificateCoordinates.dateFontSize,
+                        fontWeight: FontWeight.w500,
+                        color: Color(0xFF16231F),
+                        height: 1.0,
                       ),
                     ),
                   ),
-                  // Nombor sijil — text-anchor middle, dominant-baseline middle.
+                  // Nombor sijil — dibetulkan ke text-anchor start
                   Positioned(
                     left: width * CertificateCoordinates.certificateNumberX /
-                            CertificateCoordinates.templateWidth -
-                        120,
+                        CertificateCoordinates.templateWidth,
                     top: height * CertificateCoordinates.certificateNumberY /
                             CertificateCoordinates.templateHeight -
                         CertificateCoordinates.certificateNumberFontSize / 2,
-                    child: SizedBox(
-                      width: 240,
-                      child: Text(
-                        certificateNumber,
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(
-                          fontFamily: CertificateCoordinates
-                              .certificateNumberFontFamily,
-                          fontSize: CertificateCoordinates
-                              .certificateNumberFontSize,
-                          fontWeight: FontWeight.w600,
-                          color: Color(0xFF16231F),
-                          height: 1.0,
-                        ),
+                    child: Text(
+                      certificateNumber,
+                      textAlign: TextAlign.left,
+                      style: const TextStyle(
+                        fontFamily: CertificateCoordinates
+                            .certificateNumberFontFamily,
+                        fontSize: CertificateCoordinates
+                            .certificateNumberFontSize,
+                        fontWeight: FontWeight.w600,
+                        color: Color(0xFF16231F),
+                        height: 1.0,
                       ),
                     ),
                   ),

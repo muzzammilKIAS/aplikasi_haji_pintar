@@ -18,23 +18,26 @@ class CertificateCoordinates {
   static const String nameColor = '0xFF006B57';
 
   // Tahap pencapaian — nilai sahaja selepas label tetap.
-  static const double achievementX = 855.0;
-  static const double achievementY = 692.0;
-  static const double achievementFontSize = 23.0;
+  static const double achievementX = 895.0; // Dianjak jauh ke kanan melepasi titik bertindih
+  static const double achievementY = 718.0; // Diturunkan supaya rapat ke garisan bawah
+  static const double achievementFontSize = 14.0; // Dikecilkan dengan drastik
+
   static const String achievementFontFamily = 'PlayfairDisplay';
   static const String achievementColor = '0xFFB46A16';
 
   // Tarikh — nilai sahaja selepas label tetap.
-  static const double dateX = 644.0;
-  static const double dateY = 768.0;
-  static const double dateFontSize = 18.0;
+  static const double dateX = 665.0; // Dianjak jauh ke kanan melepasi label 'Tarikh:'
+  static const double dateY = 782.0; // Diturunkan supaya duduk tegak di atas garisan
+  static const double dateFontSize = 12.0; // Dikecilkan dengan drastik
+
   static const String dateFontFamily = 'PlusJakartaSans';
   static const String dateColor = '0xFF16231F';
 
   // Nombor sijil — nilai sahaja selepas label tetap.
-  static const double certificateNumberX = 1000.0;
-  static const double certificateNumberY = 768.0;
-  static const double certificateNumberFontSize = 18.0;
+  static const double certificateNumberX = 1030.0; // Dianjak jauh ke kanan melepasi label 'No. Sijil:'
+  static const double certificateNumberY = 782.0; // Diturunkan supaya duduk tegak di atas garisan
+  static const double certificateNumberFontSize = 12.0; // Dikecilkan dengan drastik
+
   static const String certificateNumberFontFamily = 'PlusJakartaSans';
   static const String certificateNumberColor = '0xFF16231F';
 
