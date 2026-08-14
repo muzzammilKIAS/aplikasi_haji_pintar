@@ -10,13 +10,17 @@ class SaiCounterScreen extends StatefulWidget {
 
   final Box<dynamic> saiBox;
 
+  /// Kunci storan Hive bagi bilangan perjalanan Sa'i yang selesai.
+  static const String storageKey = 'completedSaiTrips';
+
+  static const int totalTrips = 7;
+
   @override
   State<SaiCounterScreen> createState() => _SaiCounterScreenState();
 }
 
 class _SaiCounterScreenState extends State<SaiCounterScreen> {
-  static const int totalTrips = 7;
-  static const String storageKey = 'completedSaiTrips';
+  static const int totalTrips = SaiCounterScreen.totalTrips;
 
   int completedTrips = 0;
 
@@ -36,7 +40,7 @@ class _SaiCounterScreenState extends State<SaiCounterScreen> {
   void initState() {
     super.initState();
 
-    final dynamic savedValue = widget.saiBox.get(storageKey, defaultValue: 0);
+    final dynamic savedValue = widget.saiBox.get(SaiCounterScreen.storageKey, defaultValue: 0);
 
     if (savedValue is int) {
       completedTrips = savedValue.clamp(0, totalTrips).toInt();
@@ -52,7 +56,7 @@ class _SaiCounterScreenState extends State<SaiCounterScreen> {
       completedTrips++;
     });
 
-    await widget.saiBox.put(storageKey, completedTrips);
+    await widget.saiBox.put(SaiCounterScreen.storageKey, completedTrips);
   }
 
   Future<void> undurPerjalanan() async {
@@ -64,7 +68,7 @@ class _SaiCounterScreenState extends State<SaiCounterScreen> {
       completedTrips--;
     });
 
-    await widget.saiBox.put(storageKey, completedTrips);
+    await widget.saiBox.put(SaiCounterScreen.storageKey, completedTrips);
   }
 
   Future<void> resetKaunter() async {
@@ -72,7 +76,7 @@ class _SaiCounterScreenState extends State<SaiCounterScreen> {
       completedTrips = 0;
     });
 
-    await widget.saiBox.put(storageKey, 0);
+    await widget.saiBox.put(SaiCounterScreen.storageKey, 0);
   }
 
   @override
@@ -95,7 +99,10 @@ class _SaiCounterScreenState extends State<SaiCounterScreen> {
             ],
           ),
         ),
-        child: SafeArea(
+        child: Stack(
+          children: <Widget>[
+            const IslamicPatternOverlay(),
+            SafeArea(
           child: SingleChildScrollView(
             padding: const EdgeInsets.all(20),
             child: Center(
@@ -337,6 +344,8 @@ class _SaiCounterScreenState extends State<SaiCounterScreen> {
               ),
             ),
           ),
+        ),
+          ],
         ),
       ),
     );

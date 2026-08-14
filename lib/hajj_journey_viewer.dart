@@ -124,7 +124,10 @@ class _HajjJourneyViewerState extends State<HajjJourneyViewer>
             ],
           ),
         ),
-        child: SafeArea(
+        child: Stack(
+          children: <Widget>[
+            const IslamicPatternOverlay(),
+            SafeArea(
           child: Column(
             children: <Widget>[
               _buildHeader(context),
@@ -136,6 +139,8 @@ class _HajjJourneyViewerState extends State<HajjJourneyViewer>
               ),
             ],
           ),
+        ),
+          ],
         ),
       ),
     );

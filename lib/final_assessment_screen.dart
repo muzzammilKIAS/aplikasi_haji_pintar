@@ -157,6 +157,20 @@ class _FinalAssessmentScreenState extends State<FinalAssessmentScreen> {
           'Memotong kuku atau mencabut rambut tanpa sebab yang dibenarkan perlu dielakkan ketika ihram.',
     ),
     AssessmentQuestion(
+      topic: 'Larangan Ihram',
+      question:
+          'Berapakah jumlah kategori larangan ihram (محظورات) yang disebutkan dalam kitab-kitab fiqh manasik?',
+      options: <String>[
+        'Tujuh',
+        'Tiga',
+        'Sepuluh',
+        'Lima',
+      ],
+      correctIndex: 0,
+      explanation:
+          'Terdapat tujuh kategori larangan ihram: pakaian, wangian, minyak rambut, cukur/potong kuku, akad nikah, jimak dan pendahuluannya, serta memburu.',
+    ),
+    AssessmentQuestion(
       topic: 'Dam',
       question: 'Apakah maksud dam dalam ibadah Haji?',
       options: <String>[
@@ -490,8 +504,13 @@ class _FinalAssessmentScreenState extends State<FinalAssessmentScreen> {
             ],
           ),
         ),
-        child: SafeArea(
+        child: Stack(
+          children: <Widget>[
+            const IslamicPatternOverlay(),
+            SafeArea(
           child: showResult ? _buildResult(context) : _buildQuestion(context),
+        ),
+          ],
         ),
       ),
     );
@@ -1312,9 +1331,12 @@ class _AssessmentNotice extends StatelessWidget {
           const SizedBox(width: 11),
           Expanded(
             child: Text(
-              'Soalan ini ialah kandungan prototaip. '
-              'Semak kandungan akhir bersama pembimbing '
-              'Haji atau panel syariah yang berautoriti.',
+              'Soalan ini adalah prototaip yang diambil '
+              'daripada kitab al-Idah fi Manasik al-Hajj wa '
+              'al-Umrah karangan Imam an-Nawawi (mazhab '
+              'Syafi’i). Semak kandungan akhir bersama '
+              'pembimbing Haji atau panel syariah yang '
+              'berautoriti sebelum dijadikan rujukan hukum.',
               style: TextStyle(
                 color: palette.mutedText,
                 fontSize: 12,

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -7,7 +8,6 @@ import 'package:hijri/hijri_calendar.dart';
 import 'app_theme.dart';
 import 'final_assessment_screen.dart';
 import 'hajj_guide_screen.dart';
-import 'hajj_journey_viewer.dart';
 import 'islamic_icons.dart';
 import 'learning_module_screen.dart';
 import 'main.dart';
@@ -18,23 +18,15 @@ import 'shared_widgets.dart';
 import 'tawaf_counter_screen.dart';
 import 'theme_controller.dart';
 
-// ---------------------------------------------------------------------
-// Penukaran Masihi <-> Hijrah (algoritma tabular Kuwait) supaya tarikh
-// Wukuf (9 Zulhijjah) boleh dikira secara automatik setiap tahun, tanpa
-// perlu hardcode tarikh Masihi yang akan menjadi lapuk selepas 2027.
-// Ketepatan lebih kurang ±1 hari berbanding kalendar rasmi cerapan hilal.
-// ---------------------------------------------------------------------
 Map<String, int> _tarikhMasihiKeHijrahTabular(DateTime tarikh) {
-  final int jd = ((tarikh.millisecondsSinceEpoch / 86400000) + 2440587.5 + 0.5)
-      .floor();
+  final int jd =
+      ((tarikh.millisecondsSinceEpoch / 86400000) + 2440587.5 + 0.5).floor();
   int l = jd - 1948440 + 10632;
   final int n = ((l - 1) / 10631).floor();
   l = l - 10631 * n + 354;
-  final int j =
-      (((10985 - l) / 5316).floor()) * (((50 * l) / 17719).floor()) +
+  final int j = (((10985 - l) / 5316).floor()) * (((50 * l) / 17719).floor()) +
       ((l / 5670).floor()) * (((43 * l) / 15238).floor());
-  l =
-      l -
+  l = l -
       (((30 - j) / 15).floor()) * (((17719 * j) / 50).floor()) -
       ((j / 16).floor()) * (((15238 * j) / 43).floor()) +
       29;
@@ -62,9 +54,6 @@ DateTime _julianDayKeMasihi(int jd) {
   return DateTime(utc.year, utc.month, utc.day);
 }
 
-/// Kira tarikh 9 Zulhijjah (hari Wukuf) yang akan datang, secara automatik
-/// mengikut tahun semasa. Jika tarikh tahun ini sudah berlalu, dikira maju
-/// ke tahun Hijrah seterusnya.
 DateTime kiraTarikhWukufAkanDatang(DateTime sekarang) {
   final Map<String, int> hSekarang = _tarikhMasihiKeHijrahTabular(sekarang);
   int tahunHijrah = hSekarang['tahun']!;
@@ -73,11 +62,7 @@ DateTime kiraTarikhWukufAkanDatang(DateTime sekarang) {
     _hijrahKeJulianDay(tahunHijrah, 12, 9),
   );
 
-  final DateTime hariIni = DateTime(
-    sekarang.year,
-    sekarang.month,
-    sekarang.day,
-  );
+  final DateTime hariIni = DateTime(sekarang.year, sekarang.month, sekarang.day);
 
   if (calonWukuf.isBefore(hariIni)) {
     tahunHijrah += 1;
@@ -87,8 +72,6 @@ DateTime kiraTarikhWukufAkanDatang(DateTime sekarang) {
   return calonWukuf;
 }
 
-/// Sapaan mengikut waktu semasa peranti (pagi/tengah hari/petang/malam),
-/// dipaparkan pada kad hero halaman utama.
 String sapaanMengikutMasa() {
   final int jam = DateTime.now().hour;
 
@@ -104,43 +87,146 @@ String sapaanMengikutMasa() {
   return 'Selamat Malam';
 }
 
-/// Kad "hero" utama papan pemuka — menyatukan sapaan/pengenalan (HeroPanel)
-/// dan maklumat mendesak (tarikh Masihi/Hijrah, waktu semasa, countdown
-/// Wukuf daripada TimeAndCountdownPanel) dalam SATU kad kaca yang menonjol,
-/// dipisahkan oleh pembahagi emas. Ini supaya jemaah nampak semua maklumat
-/// paling penting sekali imbas, tanpa kad berasingan yang berselerak.
-class DashboardHeroCard extends StatelessWidget {
-  const DashboardHeroCard({super.key});
+/// Palet biru elegan + aksen pelbagai warna (pelangi lembut) khusus untuk
+/// papan pemuka. Berasingan daripada [HajjColors] sedia ada (zamrud/emas)
+/// supaya skrin lain dalam aplikasi kekal tidak terjejas.
+class _DashPalette {
+  const _DashPalette({
+    required this.bgTop,
+    required this.bgMiddle,
+    required this.bgBottom,
+    required this.cardSurface,
+    required this.cardBorder,
+    required this.textPrimary,
+    required this.textMuted,
+    required this.shadow,
+    required this.blue,
+    required this.pink,
+    required this.gold,
+    required this.teal,
+    required this.purple,
+  });
 
-  @override
-  Widget build(BuildContext context) {
-    final HajjColors palette = context.hajjColors;
+  final Color bgTop;
+  final Color bgMiddle;
+  final Color bgBottom;
+  final Color cardSurface;
+  final Color cardBorder;
+  final Color textPrimary;
+  final Color textMuted;
+  final Color shadow;
 
-    return GlassContainer(
-      borderRadius: 30,
-      padding: EdgeInsets.zero,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: <Widget>[
-          const HeroPanel(),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 26),
-            child: HajjOrnamentDivider(
-              color: palette.gold.withValues(alpha: 0.6),
-            ),
-          ),
-          const SizedBox(height: 22),
-          const TimeAndCountdownPanel(),
-        ],
-      ),
-    );
+  // Aksen "pelangi" — dikongsi merentasi kad, carta bar, graf donut.
+  final Color blue;
+  final Color pink;
+  final Color gold;
+  final Color teal;
+  final Color purple;
+
+  List<Color> get rainbow => <Color>[blue, pink, gold, teal, purple];
+
+  static const _DashPalette light = _DashPalette(
+    bgTop: Color(0xFFBFE0FA),
+    bgMiddle: Color(0xFFDCEEFB),
+    bgBottom: Color(0xFFF3F9FE),
+    cardSurface: Color(0xFFFFFFFF),
+    cardBorder: Color(0xFFE1EDF8),
+    textPrimary: Color(0xFF152A47),
+    textMuted: Color(0xFF6C7E96),
+    shadow: Color(0x1A1D4C8A),
+    blue: Color(0xFF3E8BFF),
+    pink: Color(0xFFFF6FA8),
+    gold: Color(0xFFFFB648),
+    teal: Color(0xFF2FC6B6),
+    purple: Color(0xFF9B7BFF),
+  );
+
+  static const _DashPalette dark = _DashPalette(
+    bgTop: Color(0xFF060B1A),
+    bgMiddle: Color(0xFF0B1636),
+    bgBottom: Color(0xFF060B1A),
+    cardSurface: Color(0xFF121B3B),
+    cardBorder: Color(0x26FFFFFF),
+    textPrimary: Color(0xFFF2F6FF),
+    textMuted: Color(0xFFA6B3D0),
+    shadow: Color(0x66000B2E),
+    blue: Color(0xFF6FA8FF),
+    pink: Color(0xFFFF8FC5),
+    gold: Color(0xFFFFC96B),
+    teal: Color(0xFF4FE0CC),
+    purple: Color(0xFFB79CFF),
+  );
+
+  static _DashPalette of(BuildContext context) {
+    return context.isDarkMode ? dark : light;
   }
 }
 
-class HalamanUtama extends StatelessWidget {
+class HalamanUtama extends StatefulWidget {
   const HalamanUtama({required this.themeController, super.key});
 
   final ThemeController themeController;
+
+  @override
+  State<HalamanUtama> createState() => _HalamanUtamaState();
+}
+
+class _HalamanUtamaState extends State<HalamanUtama>
+    with TickerProviderStateMixin {
+  late final AnimationController _entranceController;
+  late final AnimationController _breatheController;
+  late final Animation<double> _breathe;
+
+  /// Bina animasi fade + slide-up bagi satu bahagian dashboard, dengan
+  /// selang masa (`start`-`end`) tersendiri supaya bahagian muncul
+  /// berperingkat (staggered) dari atas ke bawah — bukan sekaligus statik.
+  Animation<double> _fadeFor(double start, double end) {
+    return CurvedAnimation(
+      parent: _entranceController,
+      curve: Interval(start, end, curve: Curves.easeOutCubic),
+    );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _entranceController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 900),
+    )..forward();
+
+    _breatheController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 3600),
+    )..repeat(reverse: true);
+    _breathe = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _breatheController, curve: Curves.easeInOut),
+    );
+  }
+
+  @override
+  void dispose() {
+    _entranceController.dispose();
+    _breatheController.dispose();
+    super.dispose();
+  }
+
+  Widget _staggered(Widget child, double start, double end) {
+    final Animation<double> fade = _fadeFor(start, end);
+    return FadeTransition(
+      opacity: fade,
+      child: AnimatedBuilder(
+        animation: fade,
+        builder: (BuildContext context, Widget? innerChild) {
+          return Transform.translate(
+            offset: Offset(0, (1 - fade.value) * 18),
+            child: innerChild,
+          );
+        },
+        child: child,
+      ),
+    );
+  }
 
   void _bukaTawaf(BuildContext context) {
     Navigator.of(context).push(
@@ -199,81 +285,120 @@ class HalamanUtama extends StatelessWidget {
     );
   }
 
-  void _bukaSOS(BuildContext context) {
-    final ColorScheme colors = context.appColorScheme;
-    final HajjColors palette = context.hajjColors;
-
-    showDialog<void>(
-      context: context,
-      builder: (BuildContext dialogContext) {
-        return AlertDialog(
-          title: Row(
-            children: <Widget>[
-              HajjIcon(
-                type: HajjIconType.emergency,
-                color: palette.danger,
-                size: 28,
-              ),
-              const SizedBox(width: 12),
-              const Text('SOS Kecemasan'),
-            ],
-          ),
-          content: const Text(
-            'Ini masih prototaip. GPS dan penghantaran '
-            'amaran Firebase belum diaktifkan.',
-          ),
-          actions: <Widget>[
-            FilledButton(
-              onPressed: () {
-                Navigator.of(dialogContext).pop();
-              },
-              child: const Text('Saya faham'),
-            ),
-          ],
-        );
-      },
+  void _bukaPeta(BuildContext context) {
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (_) => const OfflineMapScreen(),
+      ),
     );
+  }
 
-    // Elakkan analyzer menganggap colors tidak digunakan jika
-    // dialog theme berubah pada versi Flutter tertentu.
-    assert(colors.surface != Colors.transparent);
+  void _bukaSai(BuildContext context) {
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (_) => SaiCounterScreen(saiBox: saiBox),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    final HajjColors palette = context.hajjColors;
+    final _DashPalette palette = _DashPalette.of(context);
+
+    // Data sebenar diambil terus daripada kotak Hive sedia ada supaya
+    // dashboard mencerminkan kemajuan ibadah/pembelajaran yang benar.
+    final int tawafRounds = (tawafBox.get(
+              TawafCounterScreen.storageKey,
+              defaultValue: 0,
+            )
+            as int)
+        .clamp(0, TawafCounterScreen.totalRounds);
+    final int saiTrips = (saiBox.get(
+              SaiCounterScreen.storageKey,
+              defaultValue: 0,
+            )
+            as int)
+        .clamp(0, SaiCounterScreen.totalTrips);
+
+    final dynamic savedGuideSteps = guideBox.get(
+      HajjGuideScreen.storageKey,
+      defaultValue: <int>[],
+    );
+    final int guideCompleted = savedGuideSteps is List<dynamic>
+        ? savedGuideSteps.length
+        : 0;
+    final int guideTotal = HajjGuideScreen.totalSteps;
+
+    final dynamic savedBestScore = assessmentBox.get(
+      'best_score',
+      defaultValue: 0,
+    );
+    final int bestScore = savedBestScore is int ? savedBestScore : 0;
+    final bool passedAssessment =
+        assessmentBox.get('passed', defaultValue: false) == true;
 
     return Scaffold(
       body: AnimatedContainer(
         duration: const Duration(milliseconds: 320),
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: <Color>[
-              palette.gradientStart,
-              palette.gradientMiddle,
-              palette.gradientEnd,
-            ],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: <Color>[palette.bgTop, palette.bgMiddle, palette.bgBottom],
           ),
         ),
         child: Stack(
           children: <Widget>[
-            Positioned(
-              top: -130,
-              right: -100,
-              child: GlowCircle(
-                size: 320,
-                color: palette.emerald.withValues(alpha: 0.13),
-              ),
-            ),
-            Positioned(
-              bottom: -180,
-              left: -130,
-              child: GlowCircle(
-                size: 380,
-                color: palette.gold.withValues(alpha: 0.12),
-              ),
+            const IslamicPatternOverlay(),
+            AnimatedBuilder(
+              animation: _breatheController,
+              builder: (BuildContext context, Widget? child) {
+                final double breathe = _breathe.value;
+                return Stack(
+                  children: <Widget>[
+                    Positioned(
+                      top: -130 + breathe * 14,
+                      right: -100 - breathe * 10,
+                      child: GlowCircle(
+                        size: 320 + breathe * 18,
+                        color: palette.blue.withValues(
+                          alpha: 0.16 + breathe * 0.06,
+                        ),
+                      ),
+                    ),
+                    Positioned(
+                      top: 140 - breathe * 10,
+                      left: -120 + breathe * 14,
+                      child: GlowCircle(
+                        size: 260,
+                        color: palette.purple.withValues(
+                          alpha: 0.10 + breathe * 0.05,
+                        ),
+                      ),
+                    ),
+                    Positioned(
+                      bottom: -180 + breathe * 16,
+                      left: -100 + breathe * 12,
+                      child: GlowCircle(
+                        size: 360 - breathe * 20,
+                        color: palette.pink.withValues(
+                          alpha: 0.10 + breathe * 0.05,
+                        ),
+                      ),
+                    ),
+                    Positioned(
+                      bottom: 60 - breathe * 10,
+                      right: -80 - breathe * 10,
+                      child: GlowCircle(
+                        size: 240,
+                        color: palette.teal.withValues(
+                          alpha: 0.10 + breathe * 0.05,
+                        ),
+                      ),
+                    ),
+                  ],
+                );
+              },
             ),
             SafeArea(
               child: SingleChildScrollView(
@@ -284,96 +409,198 @@ class HalamanUtama extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
-                        DashboardHeader(themeController: themeController),
-                        const SizedBox(height: 24),
-                        const DashboardHeroCard(),
-                        const SizedBox(height: 40),
-                        const SectionTitle(
-                          title: 'Modul Utama',
-                          subtitle: 'Akses pantas kepada fungsi utama.',
+                        _staggered(
+                          _DashHeader(themeController: widget.themeController),
+                          0.00,
+                          0.45,
                         ),
-                        const SizedBox(height: 18),
-                        LayoutBuilder(
-                          builder:
-                              (
-                                BuildContext context,
-                                BoxConstraints constraints,
-                              ) {
-                                return _buildFeatureGrid(
-                                  context,
-                                  constraints.maxWidth,
-                                );
-                              },
-                        ),
-                        const SizedBox(height: 40),
-                        const SectionTitle(
-                          title: 'Info Perjalanan',
-                          subtitle:
-                              'Ringkasan tatacara, tempat, rukun dan wajib.',
-                        ),
-                        const SizedBox(height: 18),
-                        HajjJourneyBox(
-                          onOpenGuide: () => _bukaPanduanHaji(context),
-                        ),
-                        const SizedBox(height: 40),
-                        const SectionTitle(
-                          title: 'Kemajuan Anda',
-                          subtitle: 'Penilaian akhir dan sijil pencapaian.',
-                        ),
-                        const SizedBox(height: 18),
-                        AssessmentPanel(
-                          onTap: () {
-                            final bool passed =
-                                assessmentBox.get(
-                                  'passed',
-                                  defaultValue: false,
-                                ) ==
-                                true;
-
-                            if (passed) {
-                              _bukaSijilSaya(context);
-                            } else {
-                              _bukaPenilaianAkhir(context);
-                            }
-                          },
-                        ),
-
-                        // --- KOD COPYRIGHT ---
-                        const SizedBox(height: 48),
-                        Center(
-                          child: Column(
-                            children: <Widget>[
-                              Container(
-                                width: 46,
-                                height: 1,
-                                color: palette.gold.withValues(alpha: 0.3),
-                              ),
-                              const SizedBox(height: 14),
-                              Text(
-                                '© Muzzammil Najib',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  color: palette.mutedText.withValues(
-                                    alpha: 0.75,
-                                  ),
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w700,
-                                  letterSpacing: 0.4,
+                        const SizedBox(height: 22),
+                        _staggered(const _DashGreeting(), 0.04, 0.50),
+                        const SizedBox(height: 16),
+                        _staggered(const _DateCountdownStrip(), 0.06, 0.52),
+                        const SizedBox(height: 22),
+                        _staggered(
+                          LayoutBuilder(
+                            builder: (BuildContext context, BoxConstraints constraints) {
+                              final bool stack = constraints.maxWidth < 560;
+                              final List<Widget> charts = <Widget>[
+                                _StatBarCard(
+                                  title: 'Tawaf',
+                                  subtitle: 'Pusingan mengelilingi Kaabah',
+                                  icon: HajjIconType.tawaf,
+                                  accent: palette.blue,
+                                  completed: tawafRounds,
+                                  total: TawafCounterScreen.totalRounds,
+                                  palette: palette,
                                 ),
-                              ),
-                              const SizedBox(height: 2),
-                              Text(
-                                'Versi BETA • Kemas kini akan menyusul.',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  color: palette.mutedText.withValues(
-                                    alpha: 0.55,
-                                  ),
-                                  fontSize: 11,
+                                SizedBox(width: stack ? 0 : 16, height: stack ? 16 : 0),
+                                _StatBarCard(
+                                  title: 'Sa’i',
+                                  subtitle: 'Perjalanan Safa — Marwah',
+                                  icon: HajjIconType.sai,
+                                  accent: palette.pink,
+                                  completed: saiTrips,
+                                  total: SaiCounterScreen.totalTrips,
+                                  palette: palette,
                                 ),
-                              ),
-                            ],
+                              ];
+
+                              if (stack) {
+                                return Column(children: charts);
+                              }
+                              return Row(
+                                children: <Widget>[
+                                  Expanded(child: charts[0]),
+                                  charts[1],
+                                  Expanded(child: charts[2]),
+                                ],
+                              );
+                            },
                           ),
+                          0.08,
+                          0.55,
+                        ),
+                        const SizedBox(height: 22),
+                        _staggered(
+                          _PromoJourneyBanner(
+                            palette: palette,
+                            completed: guideCompleted,
+                            total: guideTotal,
+                            onTap: () => _bukaPanduanHaji(context),
+                          ),
+                          0.12,
+                          0.62,
+                        ),
+                        const SizedBox(height: 30),
+                        _staggered(
+                          _DashSectionTitle(
+                            title: 'Akses Pantas',
+                            palette: palette,
+                          ),
+                          0.16,
+                          0.66,
+                        ),
+                        const SizedBox(height: 14),
+                        _staggered(
+                          LayoutBuilder(
+                            builder: (BuildContext context, BoxConstraints constraints) {
+                              return _buildFeatureGrid(
+                                context,
+                                constraints.maxWidth,
+                                palette,
+                              );
+                            },
+                          ),
+                          0.20,
+                          0.72,
+                        ),
+                        const SizedBox(height: 30),
+                        _staggered(
+                          _DashSectionTitle(
+                            title: 'Kemajuan Keseluruhan',
+                            palette: palette,
+                          ),
+                          0.26,
+                          0.80,
+                        ),
+                        const SizedBox(height: 14),
+                        _staggered(
+                          LayoutBuilder(
+                            builder: (BuildContext context, BoxConstraints constraints) {
+                              final bool stack = constraints.maxWidth < 760;
+
+                              final Widget donut = _CategoryDonutCard(
+                                palette: palette,
+                                guidePct: guideTotal == 0
+                                    ? 0
+                                    : (guideCompleted / guideTotal * 100),
+                                ibadahPct:
+                                    ((tawafRounds / TawafCounterScreen.totalRounds) +
+                                            (saiTrips / SaiCounterScreen.totalTrips)) /
+                                        2 *
+                                        100,
+                                pembelajaranPct: passedAssessment
+                                    ? 100
+                                    : bestScore.toDouble(),
+                              );
+
+                              final Widget activity = _RecentActivityCard(
+                                palette: palette,
+                                guideCompleted: guideCompleted,
+                                guideTotal: guideTotal,
+                                tawafRounds: tawafRounds,
+                                saiTrips: saiTrips,
+                                bestScore: bestScore,
+                                passedAssessment: passedAssessment,
+                                onTapCertificate: () => _bukaSijilSaya(context),
+                                onTapAssessment: () =>
+                                    _bukaPenilaianAkhir(context),
+                              );
+
+                              if (stack) {
+                                return Column(
+                                  children: <Widget>[
+                                    donut,
+                                    const SizedBox(height: 16),
+                                    activity,
+                                  ],
+                                );
+                              }
+
+                              // IntrinsicHeight + stretch supaya kad
+                              // "Statistik Ibadah" dan "Aktiviti Terkini"
+                              // sentiasa sama tinggi, tidak kira mana satu
+                              // mempunyai lebih banyak kandungan.
+                              return IntrinsicHeight(
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                                  children: <Widget>[
+                                    Expanded(flex: 4, child: donut),
+                                    const SizedBox(width: 16),
+                                    Expanded(flex: 6, child: activity),
+                                  ],
+                                ),
+                              );
+                            },
+                          ),
+                          0.32,
+                          0.92,
+                        ),
+                        const SizedBox(height: 44),
+                        _staggered(
+                          Center(
+                            child: Column(
+                              children: <Widget>[
+                                Container(
+                                  width: 46,
+                                  height: 1,
+                                  color: palette.blue.withValues(alpha: 0.30),
+                                ),
+                                const SizedBox(height: 14),
+                                Text(
+                                  '© Muzzammil Najib',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    color: palette.textMuted.withValues(alpha: 0.85),
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w700,
+                                    letterSpacing: 0.4,
+                                  ),
+                                ),
+                                const SizedBox(height: 2),
+                                Text(
+                                  'Versi BETA • Kemas kini akan menyusul.',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    color: palette.textMuted.withValues(alpha: 0.65),
+                                    fontSize: 11,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          0.40,
+                          1.0,
                         ),
                       ],
                     ),
@@ -387,102 +614,78 @@ class HalamanUtama extends StatelessWidget {
     );
   }
 
-  Widget _buildFeatureGrid(BuildContext context, double width) {
-    int columns = 1;
-
-    if (width >= 900) {
+  Widget _buildFeatureGrid(
+    BuildContext context,
+    double width,
+    _DashPalette palette,
+  ) {
+    int columns;
+    if (width >= 768) {
       columns = 3;
-    } else if (width >= 560) {
+    } else if (width >= 360) {
       columns = 2;
+    } else {
+      columns = 1;
     }
 
     const double spacing = 16;
     final double cardWidth = (width - spacing * (columns - 1)) / columns;
 
-    final HajjColors palette = context.hajjColors;
-
-    final List<FeatureData> features = <FeatureData>[
-      FeatureData(
-        number: '01',
+    final List<_FeatureData> features = <_FeatureData>[
+      _FeatureData(
         title: 'Kaunter Tawaf',
         description: 'Rekod tujuh pusingan dengan paparan kemajuan.',
         icon: HajjIconType.tawaf,
-        accent: palette.emerald,
+        accent: palette.blue,
         onTap: () => _bukaTawaf(context),
       ),
-      FeatureData(
-        number: '02',
+      _FeatureData(
         title: 'Kaunter Sa’i',
         description: 'Panduan perjalanan antara Safa dan Marwah.',
         icon: HajjIconType.sai,
-        accent: const Color(0xFF4B8CCB),
-        onTap: () {
-          Navigator.of(context).push(
-            MaterialPageRoute<void>(
-              builder: (_) {
-                return SaiCounterScreen(saiBox: saiBox);
-              },
-            ),
-          );
-        },
+        accent: palette.pink,
+        onTap: () => _bukaSai(context),
       ),
-      FeatureData(
-        number: '03',
+      _FeatureData(
         title: 'Peta Offline',
         description: 'Akses peta Mina dan Arafah tanpa internet.',
         icon: HajjIconType.map,
-        accent: palette.gold,
-        onTap: () {
-          Navigator.of(context).push(
-            MaterialPageRoute<void>(
-              builder: (_) {
-                return const OfflineMapScreen();
-              },
-            ),
-          );
-        },
+        accent: palette.teal,
+        onTap: () => _bukaPeta(context),
       ),
-      FeatureData(
-        number: '04',
+      _FeatureData(
         title: 'Modul Belajar',
         description: 'Asas, rukun, wajib, larangan ihram, dam dan doa.',
         icon: HajjIconType.learning,
-        accent: palette.emerald,
+        accent: palette.purple,
         onTap: () => _bukaModulBelajar(context),
       ),
-      FeatureData(
-        number: '05',
+      _FeatureData(
         title: 'Panduan Haji',
         description: 'Ikuti langkah demi langkah dari persediaan hingga Wada’.',
         icon: HajjIconType.guide,
         accent: palette.gold,
         onTap: () => _bukaPanduanHaji(context),
       ),
-      FeatureData(
-        number: 'SOS',
-        title: 'Kecemasan',
-        description: 'Hantar lokasi semasa kepada mutawwif.',
-        icon: HajjIconType.emergency,
-        accent: palette.danger,
-        onTap: () => _bukaSOS(context),
-      ),
     ];
 
     return Wrap(
       spacing: spacing,
       runSpacing: spacing,
-      children: features.map((FeatureData feature) {
+      children: features.map((_FeatureData feature) {
         return SizedBox(
           width: cardWidth,
-          child: FeatureCard(data: feature),
+          child: _FeatureCard(data: feature, palette: palette),
         );
       }).toList(),
     );
   }
 }
 
-class DashboardHeader extends StatelessWidget {
-  const DashboardHeader({required this.themeController, super.key});
+/// Header papan pemuka: ikon aplikasi, tajuk, dan togol tema — diwarnakan
+/// mengikut palet biru dashboard.
+class _DashHeader extends StatelessWidget {
+  const _DashHeader({required this.themeController});
 
   final ThemeController themeController;
 
@@ -527,7 +730,7 @@ class DashboardHeader extends StatelessWidget {
                 ),
                 ThemeModeTile(
                   title: 'Light Mode',
-                  subtitle: 'Paparan ivory, putih dan hijau lembut.',
+                  subtitle: 'Paparan biru lembut yang elegan.',
                   icon: Icons.light_mode_rounded,
                   value: ThemeMode.light,
                   groupValue: themeController.themeMode,
@@ -541,7 +744,7 @@ class DashboardHeader extends StatelessWidget {
                 ),
                 ThemeModeTile(
                   title: 'Dark Mode',
-                  subtitle: 'Paparan hijau gelap yang redup.',
+                  subtitle: 'Paparan navy gelap yang redup.',
                   icon: Icons.dark_mode_rounded,
                   value: ThemeMode.dark,
                   groupValue: themeController.themeMode,
@@ -563,90 +766,1139 @@ class DashboardHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final HajjColors palette = context.hajjColors;
-    final ColorScheme colors = context.appColorScheme;
+    final _DashPalette palette = _DashPalette.of(context);
 
     return Row(
       children: <Widget>[
         Container(
-          width: 48,
-          height: 48,
+          width: 46,
+          height: 46,
+          padding: const EdgeInsets.all(5),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(15),
+            shape: BoxShape.circle,
+            color: palette.cardSurface,
+            border: Border.all(color: palette.blue.withValues(alpha: 0.35)),
             boxShadow: <BoxShadow>[
               BoxShadow(
-                color: palette.emerald.withValues(alpha: 0.23),
-                blurRadius: 22,
+                color: palette.blue.withValues(alpha: 0.20),
+                blurRadius: 20,
                 offset: const Offset(0, 4),
               ),
             ],
           ),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(15),
-            child: Image.asset('assets/images/app_icon.png', fit: BoxFit.cover),
+          child: Image.asset(
+            'assets/images/app_icon.png',
+            fit: BoxFit.contain,
+            alignment: Alignment.center,
           ),
         ),
-        const SizedBox(width: 14),
+        const SizedBox(width: 13),
         Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Text(
-                'HAJI PINTAR',
-                style: GoogleFonts.playfairDisplay(
-                  color: colors.onSurface,
-                  fontSize: 20,
-                  fontWeight: FontWeight.w700,
-                  letterSpacing: 3,
-                ),
-              ),
-              const SizedBox(height: 3),
-              Text(
-                'SMART PILGRIMAGE COMPANION',
-                style: TextStyle(
-                  color: palette.gold,
-                  fontSize: 10,
-                  fontWeight: FontWeight.w700,
-                  letterSpacing: 1.6,
-                ),
+          child: Text(
+            'HAJI PINTAR',
+            style: GoogleFonts.playfairDisplay(
+              color: palette.textPrimary,
+              fontSize: 19,
+              fontWeight: FontWeight.w700,
+              letterSpacing: 2.6,
+            ),
+          ),
+        ),
+        Container(
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: palette.cardSurface,
+            border: Border.all(color: palette.cardBorder),
+            boxShadow: <BoxShadow>[
+              BoxShadow(
+                color: palette.shadow,
+                blurRadius: 16,
+                offset: const Offset(0, 6),
               ),
             ],
           ),
-        ),
-        GlassButton(
-          tooltip: 'Tukar tema',
-          icon: themeController.themeMode == ThemeMode.dark
-              ? Icons.dark_mode_rounded
-              : themeController.themeMode == ThemeMode.light
-              ? Icons.light_mode_rounded
-              : Icons.brightness_auto_rounded,
-          onPressed: () {
-            _bukaPilihanTheme(context);
-          },
-        ),
-        const SizedBox(width: 10),
-        Container(
-          padding: const EdgeInsets.all(2),
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            border: Border.all(color: palette.gold.withValues(alpha: 0.55)),
-          ),
-          child: CircleAvatar(
-            radius: 20,
-            backgroundColor: palette.softSurface,
-            child: Text(
-              'U',
-              style: GoogleFonts.playfairDisplay(
-                color: palette.gold,
-                fontWeight: FontWeight.w700,
-                fontSize: 16,
-              ),
+          child: IconButton(
+            tooltip: 'Tukar tema',
+            color: palette.blue,
+            onPressed: () => _bukaPilihanTheme(context),
+            icon: Icon(
+              themeController.themeMode == ThemeMode.dark
+                  ? Icons.dark_mode_rounded
+                  : themeController.themeMode == ThemeMode.light
+                  ? Icons.light_mode_rounded
+                  : Icons.brightness_auto_rounded,
             ),
           ),
         ),
       ],
     );
   }
+}
+
+/// Sapaan ringkas ("Assalamualaikum" + sapaan mengikut waktu).
+class _DashGreeting extends StatelessWidget {
+  const _DashGreeting();
+
+  @override
+  Widget build(BuildContext context) {
+    final _DashPalette palette = _DashPalette.of(context);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Text(
+          'Assalamualaikum,',
+          style: GoogleFonts.playfairDisplay(
+            color: palette.blue,
+            fontSize: 17,
+            fontStyle: FontStyle.italic,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+        Text(
+          sapaanMengikutMasa(),
+          style: GoogleFonts.playfairDisplay(
+            color: palette.textPrimary,
+            fontSize: 30,
+            height: 1.15,
+            fontWeight: FontWeight.w700,
+            letterSpacing: -0.5,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+/// Jalur padat memaparkan tarikh Masihi/Hijrah semasa dan anggaran baki
+/// hari menuju Wukuf di Arafah akan datang.
+class _DateCountdownStrip extends StatefulWidget {
+  const _DateCountdownStrip();
+
+  @override
+  State<_DateCountdownStrip> createState() => _DateCountdownStripState();
+}
+
+class _DateCountdownStripState extends State<_DateCountdownStrip> {
+  late Timer _timer;
+  late DateTime _now;
+  late HijriCalendar _hijriNow;
+  late DateTime _targetHajj;
+
+  @override
+  void initState() {
+    super.initState();
+    _now = DateTime.now();
+    _targetHajj = kiraTarikhWukufAkanDatang(_now);
+
+    HijriCalendar.addLocale('ms', <String, Map<int, String>>{
+      'long': <int, String>{
+        1: 'Muharram',
+        2: 'Safar',
+        3: 'Rabiulawal',
+        4: 'Rabiulakhir',
+        5: 'Jamadilawal',
+        6: 'Jamadilakhir',
+        7: 'Rejab',
+        8: 'Syaaban',
+        9: 'Ramadan',
+        10: 'Syawal',
+        11: 'Zulkaedah',
+        12: 'Zulhijjah',
+      },
+      'short': <int, String>{
+        1: 'Muh',
+        2: 'Saf',
+        3: 'Raw',
+        4: 'Rak',
+        5: 'Jaw',
+        6: 'Jak',
+        7: 'Rej',
+        8: 'Sya',
+        9: 'Ram',
+        10: 'Syw',
+        11: 'Zkd',
+        12: 'Zhj',
+      },
+      'days': <int, String>{
+        1: 'Isnin',
+        2: 'Selasa',
+        3: 'Rabu',
+        4: 'Khamis',
+        5: 'Jumaat',
+        6: 'Sabtu',
+        7: 'Ahad',
+      },
+      'short_days': <int, String>{
+        1: 'Isn',
+        2: 'Sel',
+        3: 'Rab',
+        4: 'Kha',
+        5: 'Jum',
+        6: 'Sab',
+        7: 'Ahd',
+      },
+    });
+
+    HijriCalendar.setLocal('ms');
+    _hijriNow = HijriCalendar.now();
+
+    _timer = Timer.periodic(const Duration(minutes: 1), (Timer timer) {
+      if (mounted) {
+        setState(() {
+          _now = DateTime.now();
+          _hijriNow = HijriCalendar.now();
+
+          final DateTime tarikhSemasa = DateTime(_now.year, _now.month, _now.day);
+          final DateTime tarikhSasaran = DateTime(
+            _targetHajj.year,
+            _targetHajj.month,
+            _targetHajj.day,
+          );
+
+          if (!tarikhSasaran.isAfter(tarikhSemasa)) {
+            _targetHajj = kiraTarikhWukufAkanDatang(_now);
+          }
+        });
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer.cancel();
+    super.dispose();
+  }
+
+  String _formatTarikhPenuhMasihi(DateTime masa) {
+    const List<String> bulan = <String>[
+      'Januari',
+      'Februari',
+      'Mac',
+      'April',
+      'Mei',
+      'Jun',
+      'Julai',
+      'Ogos',
+      'September',
+      'Oktober',
+      'November',
+      'Disember',
+    ];
+    return '${masa.day} ${bulan[masa.month - 1]} ${masa.year}';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final _DashPalette palette = _DashPalette.of(context);
+
+    final DateTime tarikhSemasa = DateTime(_now.year, _now.month, _now.day);
+    final DateTime tarikhSasaran = DateTime(
+      _targetHajj.year,
+      _targetHajj.month,
+      _targetHajj.day,
+    );
+    final int bakiHari = tarikhSasaran.difference(tarikhSemasa).inDays;
+
+    return _DashCard(
+      palette: palette,
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+      child: LayoutBuilder(
+        builder: (BuildContext context, BoxConstraints constraints) {
+          final bool compact = constraints.maxWidth < 420;
+
+          final Widget tarikhPanel = Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              Text(
+                _formatTarikhPenuhMasihi(_now),
+                style: TextStyle(
+                  color: palette.textPrimary,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              const SizedBox(height: 2),
+              Text(
+                '${_hijriNow.hDay} ${_hijriNow.getLongMonthName()} ${_hijriNow.hYear}H',
+                style: TextStyle(
+                  color: palette.textMuted,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
+          );
+
+          final Widget countdown = Container(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+            decoration: BoxDecoration(
+              color: palette.gold.withValues(alpha: 0.12),
+              borderRadius: BorderRadius.circular(999),
+              border: Border.all(color: palette.gold.withValues(alpha: 0.30)),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Icon(Icons.hourglass_bottom_rounded, size: 15, color: palette.gold),
+                const SizedBox(width: 7),
+                Text(
+                  '$bakiHari hari ke Wukuf',
+                  style: TextStyle(
+                    color: palette.gold,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+              ],
+            ),
+          );
+
+          if (compact) {
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                tarikhPanel,
+                const SizedBox(height: 10),
+                countdown,
+              ],
+            );
+          }
+
+          return Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[tarikhPanel, countdown],
+          );
+        },
+      ),
+    );
+  }
+}
+
+class _DashSectionTitle extends StatelessWidget {
+  const _DashSectionTitle({required this.title, required this.palette});
+
+  final String title;
+  final _DashPalette palette;
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      title,
+      style: GoogleFonts.playfairDisplay(
+        color: palette.textPrimary,
+        fontSize: 21,
+        fontWeight: FontWeight.w700,
+        letterSpacing: -0.2,
+      ),
+    );
+  }
+}
+
+/// Kad "glass" ringkas mengikut palet biru dashboard — pengganti tempatan
+/// untuk [GlassContainer] (yang terikat kepada [HajjColors] zamrud/emas).
+class _DashCard extends StatelessWidget {
+  const _DashCard({
+    required this.child,
+    required this.palette,
+    this.borderRadius = 24,
+    this.padding = const EdgeInsets.all(20),
+    this.borderColor,
+    this.borderWidth = 1,
+    this.boxShadow,
+  });
+
+  final Widget child;
+  final _DashPalette palette;
+  final double borderRadius;
+  final EdgeInsets padding;
+  final Color? borderColor;
+  final double borderWidth;
+  final List<BoxShadow>? boxShadow;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: padding,
+      decoration: BoxDecoration(
+        color: palette.cardSurface,
+        borderRadius: BorderRadius.circular(borderRadius),
+        border: Border.all(
+          color: borderColor ?? palette.cardBorder,
+          width: borderWidth,
+        ),
+        boxShadow: boxShadow ??
+            <BoxShadow>[
+              BoxShadow(
+                color: palette.shadow,
+                blurRadius: 26,
+                offset: const Offset(0, 12),
+              ),
+            ],
+      ),
+      child: child,
+    );
+  }
+}
+
+/// Kad statistik dengan carta bar mini (gaya "Expense/Income" pada
+/// dashboard kewangan), digunakan bagi Tawaf dan Sa'i — setiap bar
+/// mewakili satu pusingan/perjalanan, terisi jika sudah selesai.
+class _StatBarCard extends StatelessWidget {
+  const _StatBarCard({
+    required this.title,
+    required this.subtitle,
+    required this.icon,
+    required this.accent,
+    required this.completed,
+    required this.total,
+    required this.palette,
+  });
+
+  final String title;
+  final String subtitle;
+  final HajjIconType icon;
+  final Color accent;
+  final int completed;
+  final int total;
+  final _DashPalette palette;
+
+  @override
+  Widget build(BuildContext context) {
+    return _DashCard(
+      palette: palette,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Row(
+            children: <Widget>[
+              Container(
+                width: 38,
+                height: 38,
+                decoration: BoxDecoration(
+                  color: accent.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: HajjIcon(type: icon, color: accent, size: 20),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Text(
+                      title,
+                      style: TextStyle(
+                        color: palette.textPrimary,
+                        fontWeight: FontWeight.w800,
+                        fontSize: 15,
+                      ),
+                    ),
+                    Text(
+                      subtitle,
+                      style: TextStyle(
+                        color: palette.textMuted,
+                        fontSize: 11,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 4),
+          Text(
+            '$completed/$total',
+            style: TextStyle(
+              color: palette.textPrimary,
+              fontSize: 22,
+              fontWeight: FontWeight.w800,
+            ),
+          ),
+          const SizedBox(height: 12),
+          SizedBox(
+            height: 70,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: List<Widget>.generate(total, (int index) {
+                final bool done = index < completed;
+                return Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 3),
+                    child: TweenAnimationBuilder<double>(
+                      tween: Tween<double>(begin: 0, end: done ? 1 : 0.22),
+                      duration: Duration(milliseconds: 500 + index * 60),
+                      curve: Curves.easeOutCubic,
+                      builder: (BuildContext context, double value, _) {
+                        return FractionallySizedBox(
+                          heightFactor: value.clamp(0.05, 1.0),
+                          alignment: Alignment.bottomCenter,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: done
+                                  ? accent
+                                  : accent.withValues(alpha: 0.16),
+                              borderRadius: BorderRadius.circular(5),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                );
+              }),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Banner promosi/CTA berwarna gradien pelangi lembut, mengajak pengguna
+/// membuka/menyambung Panduan Haji — dilengkapi bar kemajuan sebenar.
+class _PromoJourneyBanner extends StatelessWidget {
+  const _PromoJourneyBanner({
+    required this.palette,
+    required this.completed,
+    required this.total,
+    required this.onTap,
+  });
+
+  final _DashPalette palette;
+  final int completed;
+  final int total;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final double progress = total == 0 ? 0 : (completed / total).clamp(0.0, 1.0);
+    final bool belumMula = completed == 0;
+
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(26),
+        onTap: onTap,
+        child: Container(
+          padding: const EdgeInsets.all(24),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(26),
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: <Color>[
+                palette.blue,
+                palette.purple,
+              ],
+            ),
+            boxShadow: <BoxShadow>[
+              BoxShadow(
+                color: palette.blue.withValues(alpha: 0.35),
+                blurRadius: 30,
+                offset: const Offset(0, 16),
+              ),
+            ],
+          ),
+          child: Row(
+            children: <Widget>[
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Text(
+                      belumMula ? 'Mula Panduan Haji' : 'Sambung Panduan Haji',
+                      style: GoogleFonts.playfairDisplay(
+                        color: Colors.white,
+                        fontSize: 19,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      'Ikuti $total langkah dari persediaan hingga Tawaf Wada’, '
+                      'diselaraskan dengan kitab al-Idah karangan Imam an-Nawawi.',
+                      style: TextStyle(
+                        color: Colors.white.withValues(alpha: 0.88),
+                        fontSize: 12.5,
+                        height: 1.45,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(999),
+                      child: TweenAnimationBuilder<double>(
+                        tween: Tween<double>(begin: 0, end: progress),
+                        duration: const Duration(milliseconds: 900),
+                        curve: Curves.easeOutCubic,
+                        builder: (BuildContext context, double value, _) {
+                          return LinearProgressIndicator(
+                            value: value,
+                            minHeight: 7,
+                            backgroundColor: Colors.white.withValues(alpha: 0.22),
+                            valueColor: const AlwaysStoppedAnimation<Color>(
+                              Colors.white,
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      '$completed / $total langkah selesai',
+                      style: TextStyle(
+                        color: Colors.white.withValues(alpha: 0.82),
+                        fontSize: 11,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 14),
+              Container(
+                width: 52,
+                height: 52,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  Icons.arrow_forward_rounded,
+                  color: palette.blue,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _FeatureData {
+  const _FeatureData({
+    required this.title,
+    required this.description,
+    required this.icon,
+    required this.accent,
+    required this.onTap,
+  });
+
+  final String title;
+  final String description;
+  final HajjIconType icon;
+  final Color accent;
+  final VoidCallback onTap;
+}
+
+class _FeatureCard extends StatefulWidget {
+  const _FeatureCard({required this.data, required this.palette});
+
+  final _FeatureData data;
+  final _DashPalette palette;
+
+  @override
+  State<_FeatureCard> createState() => _FeatureCardState();
+}
+
+class _FeatureCardState extends State<_FeatureCard> {
+  bool hovering = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final Color accent = widget.data.accent;
+    final _DashPalette palette = widget.palette;
+    final bool isDark = context.isDarkMode;
+    final bool goldHover = hovering && isDark;
+
+    final Color borderColor = goldHover
+        ? palette.gold.withValues(alpha: 0.85)
+        : hovering
+        ? accent.withValues(alpha: 0.5)
+        : palette.cardBorder;
+
+    final List<BoxShadow> shadow = goldHover
+        ? <BoxShadow>[
+            BoxShadow(
+              color: palette.gold.withValues(alpha: 0.22),
+              blurRadius: 30,
+              offset: const Offset(0, 10),
+              spreadRadius: 2,
+            ),
+          ]
+        : <BoxShadow>[
+            BoxShadow(
+              color: palette.shadow,
+              blurRadius: 26,
+              offset: const Offset(0, 12),
+            ),
+          ];
+
+    return MouseRegion(
+      onEnter: (_) {
+        setState(() { hovering = true; });
+      },
+      onExit: (_) {
+        setState(() { hovering = false; });
+      },
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 220),
+        transform: Matrix4.translationValues(0, hovering ? -4 : 0, 0),
+        child: _DashCard(
+          palette: palette,
+          borderRadius: 22,
+          padding: EdgeInsets.zero,
+          borderColor: borderColor,
+          borderWidth: goldHover ? 1.4 : 1,
+          boxShadow: shadow,
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(22),
+            child: Stack(
+              children: <Widget>[
+                // Motif bintang lapan penjuru di bucu kad, sedikit
+                // melimpah keluar supaya kelihatan semula jadi dipotong
+                // oleh bucu bulat kad — menjadikan kad lebih "hidup".
+                Positioned(
+                  top: -22,
+                  right: -22,
+                  child: IslamicCornerMotif(
+                    color: accent.withValues(alpha: 0.22),
+                    size: 92,
+                  ),
+                ),
+                Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(22),
+                    onTap: widget.data.onTap,
+                    child: Padding(
+                      padding: const EdgeInsets.all(18),
+                      // Tinggi tetap supaya semua kad akses pantas sama
+                      // besar tanpa mengira panjang teks penerangan.
+                      child: SizedBox(
+                        height: 158,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Container(
+                              width: 46,
+                              height: 46,
+                              decoration: BoxDecoration(
+                                color: accent.withValues(alpha: 0.12),
+                                borderRadius: BorderRadius.circular(15),
+                              ),
+                              child: HajjIcon(
+                                type: widget.data.icon,
+                                color: accent,
+                                size: 26,
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+                            Text(
+                              widget.data.title,
+                              style: GoogleFonts.playfairDisplay(
+                                color: palette.textPrimary,
+                                fontSize: 17,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                            const SizedBox(height: 6),
+                            Expanded(
+                              child: Text(
+                                widget.data.description,
+                                style: TextStyle(
+                                  color: palette.textMuted,
+                                  fontSize: 12.5,
+                                  height: 1.4,
+                                ),
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Segmen data untuk carta donat berbilang warna.
+class _DonutSegment {
+  const _DonutSegment({
+    required this.label,
+    required this.value,
+    required this.color,
+  });
+
+  final String label;
+  final double value;
+  final Color color;
+}
+
+/// Carta donat pelbagai warna (gaya "Statistics by category") memaparkan
+/// komposisi kemajuan keseluruhan: Panduan, Ibadah (Tawaf+Sa'i), dan
+/// Pembelajaran (markah penilaian).
+class _CategoryDonutCard extends StatelessWidget {
+  const _CategoryDonutCard({
+    required this.palette,
+    required this.guidePct,
+    required this.ibadahPct,
+    required this.pembelajaranPct,
+  });
+
+  final _DashPalette palette;
+  final double guidePct;
+  final double ibadahPct;
+  final double pembelajaranPct;
+
+  @override
+  Widget build(BuildContext context) {
+    final List<_DonutSegment> segments = <_DonutSegment>[
+      _DonutSegment(label: 'Panduan Haji', value: guidePct, color: palette.blue),
+      _DonutSegment(label: 'Ibadah (Tawaf/Sa’i)', value: ibadahPct, color: palette.pink),
+      _DonutSegment(
+        label: 'Pembelajaran',
+        value: pembelajaranPct,
+        color: palette.gold,
+      ),
+    ];
+
+    final double total = segments.fold<double>(0, (double sum, _DonutSegment s) => sum + s.value);
+    final int overallPct = total == 0 ? 0 : (total / segments.length).round();
+
+    return _DashCard(
+      palette: palette,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Text(
+            'Statistik Ibadah',
+            style: TextStyle(
+              color: palette.textPrimary,
+              fontWeight: FontWeight.w800,
+              fontSize: 15,
+            ),
+          ),
+          const SizedBox(height: 18),
+          Center(
+            child: SizedBox(
+              width: 168,
+              height: 168,
+              child: TweenAnimationBuilder<double>(
+                tween: Tween<double>(begin: 0, end: 1),
+                duration: const Duration(milliseconds: 1000),
+                curve: Curves.easeOutCubic,
+                builder: (BuildContext context, double t, _) {
+                  return Stack(
+                    alignment: Alignment.center,
+                    children: <Widget>[
+                      CustomPaint(
+                        size: const Size(168, 168),
+                        painter: _DonutPainter(
+                          segments: segments,
+                          progress: t,
+                          trackColor: palette.cardBorder,
+                        ),
+                      ),
+                      Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: <Widget>[
+                          Text(
+                            '${(overallPct * t).round()}%',
+                            style: TextStyle(
+                              color: palette.textPrimary,
+                              fontSize: 26,
+                              fontWeight: FontWeight.w800,
+                            ),
+                          ),
+                          Text(
+                            'keseluruhan',
+                            style: TextStyle(
+                              color: palette.textMuted,
+                              fontSize: 10.5,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  );
+                },
+              ),
+            ),
+          ),
+          const SizedBox(height: 18),
+          ...segments.map((_DonutSegment segment) {
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 10),
+              child: Row(
+                children: <Widget>[
+                  Container(
+                    width: 9,
+                    height: 9,
+                    decoration: BoxDecoration(
+                      color: segment.color,
+                      shape: BoxShape.circle,
+                    ),
+                  ),
+                  const SizedBox(width: 9),
+                  Expanded(
+                    child: Text(
+                      '${segment.label} — ${segment.value.round()}%',
+                      style: TextStyle(
+                        color: palette.textPrimary,
+                        fontSize: 12.5,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }),
+        ],
+      ),
+    );
+  }
+}
+
+/// Melukis carta donat berbilang segmen dengan lorekan bulat (round cap),
+/// masing-masing warna berlainan (biru/merah jambu/emas) di atas trek kelabu.
+class _DonutPainter extends CustomPainter {
+  _DonutPainter({
+    required this.segments,
+    required this.progress,
+    required this.trackColor,
+  });
+
+  final List<_DonutSegment> segments;
+  final double progress;
+  final Color trackColor;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final Offset center = Offset(size.width / 2, size.height / 2);
+    final double radius = size.width / 2 - 10;
+    final Rect rect = Rect.fromCircle(center: center, radius: radius);
+
+    final Paint track = Paint()
+      ..color = trackColor
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 16
+      ..strokeCap = StrokeCap.round;
+    canvas.drawArc(rect, 0, 2 * math.pi, false, track);
+
+    final double total = segments.fold<double>(
+      0,
+      (double sum, _DonutSegment s) => sum + s.value.clamp(0, 100),
+    );
+
+    if (total <= 0) {
+      return;
+    }
+
+    double startAngle = -math.pi / 2;
+    const double gap = 0.045;
+
+    for (final _DonutSegment segment in segments) {
+      final double fraction = segment.value.clamp(0, 100) / total;
+      final double sweep = (fraction * 2 * math.pi * progress) - gap;
+      if (sweep <= 0) {
+        startAngle += fraction * 2 * math.pi;
+        continue;
+      }
+
+      final Paint arcPaint = Paint()
+        ..color = segment.color
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 16
+        ..strokeCap = StrokeCap.round;
+
+      canvas.drawArc(rect, startAngle, sweep, false, arcPaint);
+      startAngle += fraction * 2 * math.pi;
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant _DonutPainter oldDelegate) {
+    return oldDelegate.progress != progress || oldDelegate.segments != segments;
+  }
+}
+
+/// Senarai aktiviti terkini (gaya "Latest transactions") — memaparkan
+/// status Panduan Haji, Tawaf, Sa'i dan Penilaian Akhir dalam satu senarai.
+class _RecentActivityCard extends StatelessWidget {
+  const _RecentActivityCard({
+    required this.palette,
+    required this.guideCompleted,
+    required this.guideTotal,
+    required this.tawafRounds,
+    required this.saiTrips,
+    required this.bestScore,
+    required this.passedAssessment,
+    required this.onTapCertificate,
+    required this.onTapAssessment,
+  });
+
+  final _DashPalette palette;
+  final int guideCompleted;
+  final int guideTotal;
+  final int tawafRounds;
+  final int saiTrips;
+  final int bestScore;
+  final bool passedAssessment;
+  final VoidCallback onTapCertificate;
+  final VoidCallback onTapAssessment;
+
+  @override
+  Widget build(BuildContext context) {
+    final List<_ActivityRow> rows = <_ActivityRow>[
+      _ActivityRow(
+        icon: HajjIconType.guide,
+        color: palette.blue,
+        title: 'Panduan Haji',
+        subtitle: '$guideCompleted daripada $guideTotal langkah selesai',
+        trailing: guideTotal == 0
+            ? '0%'
+            : '${(guideCompleted / guideTotal * 100).round()}%',
+      ),
+      _ActivityRow(
+        icon: HajjIconType.tawaf,
+        color: palette.pink,
+        title: 'Kaunter Tawaf',
+        subtitle: '$tawafRounds daripada ${TawafCounterScreen.totalRounds} pusingan',
+        trailing: tawafRounds >= TawafCounterScreen.totalRounds
+            ? 'Selesai'
+            : '$tawafRounds/${TawafCounterScreen.totalRounds}',
+      ),
+      _ActivityRow(
+        icon: HajjIconType.sai,
+        color: palette.teal,
+        title: 'Kaunter Sa’i',
+        subtitle: '$saiTrips daripada ${SaiCounterScreen.totalTrips} perjalanan',
+        trailing: saiTrips >= SaiCounterScreen.totalTrips
+            ? 'Selesai'
+            : '$saiTrips/${SaiCounterScreen.totalTrips}',
+      ),
+      _ActivityRow(
+        icon: HajjIconType.quiz,
+        color: palette.gold,
+        title: passedAssessment ? 'Sijil Saya' : 'Penilaian Akhir',
+        subtitle: passedAssessment
+            ? 'Anda layak menerima sijil pencapaian'
+            : 'Markah terbaik: $bestScore% (lulus 80%)',
+        trailing: passedAssessment ? 'Lihat' : 'Cuba',
+        onTap: passedAssessment ? onTapCertificate : onTapAssessment,
+      ),
+    ];
+
+    return _DashCard(
+      palette: palette,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Text(
+            'Aktiviti Terkini',
+            style: TextStyle(
+              color: palette.textPrimary,
+              fontWeight: FontWeight.w800,
+              fontSize: 15,
+            ),
+          ),
+          const SizedBox(height: 16),
+          ...rows.map((_ActivityRow row) {
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 14),
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(14),
+                  onTap: row.onTap,
+                  child: Row(
+                    children: <Widget>[
+                      Container(
+                        width: 42,
+                        height: 42,
+                        decoration: BoxDecoration(
+                          color: row.color.withValues(alpha: 0.12),
+                          shape: BoxShape.circle,
+                        ),
+                        child: HajjIcon(type: row.icon, color: row.color, size: 21),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Text(
+                              row.title,
+                              style: TextStyle(
+                                color: palette.textPrimary,
+                                fontWeight: FontWeight.w700,
+                                fontSize: 13.5,
+                              ),
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              row.subtitle,
+                              style: TextStyle(
+                                color: palette.textMuted,
+                                fontSize: 11.5,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        row.trailing,
+                        style: TextStyle(
+                          color: row.color,
+                          fontWeight: FontWeight.w800,
+                          fontSize: 12.5,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          }),
+        ],
+      ),
+    );
+  }
+}
+
+class _ActivityRow {
+  const _ActivityRow({
+    required this.icon,
+    required this.color,
+    required this.title,
+    required this.subtitle,
+    required this.trailing,
+    this.onTap,
+  });
+
+  final HajjIconType icon;
+  final Color color;
+  final String title;
+  final String subtitle;
+  final String trailing;
+  final VoidCallback? onTap;
 }
 
 class ThemeModeTile extends StatelessWidget {
@@ -729,1686 +1981,6 @@ class ThemeModeTile extends StatelessWidget {
             ),
           ),
         ),
-      ),
-    );
-  }
-}
-
-class HeroPanel extends StatelessWidget {
-  const HeroPanel({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final HajjColors palette = context.hajjColors;
-    final ColorScheme colors = context.appColorScheme;
-
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(26, 26, 26, 26),
-      child: LayoutBuilder(
-        builder: (BuildContext context, BoxConstraints constraints) {
-          final bool compact = constraints.maxWidth < 700;
-
-          final Widget information = Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              StatusPill(
-                hajjIcon: HajjIconType.doa,
-                label: 'Perjalanan spiritual anda',
-                accentColor: palette.gold,
-              ),
-              const SizedBox(height: 24),
-              Text(
-                'Assalamualaikum,',
-                style: GoogleFonts.playfairDisplay(
-                  color: palette.gold,
-                  fontSize: 20,
-                  fontStyle: FontStyle.italic,
-                  fontWeight: FontWeight.w500,
-                  height: 1.1,
-                ),
-              ),
-              Text(
-                sapaanMengikutMasa(),
-                style: GoogleFonts.playfairDisplay(
-                  color: colors.onSurface,
-                  fontSize: 36,
-                  height: 1.15,
-                  fontWeight: FontWeight.w700,
-                  letterSpacing: -0.5,
-                ),
-              ),
-              const SizedBox(height: 18),
-              SizedBox(
-                width: 96,
-                child: HajjOrnamentDivider(color: palette.gold),
-              ),
-              const SizedBox(height: 18),
-              Text(
-                'HajiPintar adalah panduan digital yang membantu perjalanan '
-                'haji anda lebih tersusun, selamat dan tenang.',
-                style: TextStyle(
-                  color: palette.mutedText,
-                  fontSize: 15,
-                  height: 1.6,
-                ),
-              ),
-              const SizedBox(height: 24),
-              const Wrap(
-                spacing: 10,
-                runSpacing: 10,
-                children: <Widget>[
-                  MiniInformation(
-                    icon: Icons.location_on_outlined,
-                    label: 'Makkah',
-                  ),
-                  MiniInformation(icon: Icons.wifi_rounded, label: 'Online'),
-                  MiniInformation(
-                    icon: Icons.verified_user_outlined,
-                    label: 'Jemaah',
-                  ),
-                ],
-              ),
-            ],
-          );
-
-          final Widget visual = Container(
-            width: compact ? double.infinity : 230,
-            height: 220,
-            decoration: BoxDecoration(
-              gradient: RadialGradient(
-                colors: <Color>[
-                  palette.emerald.withValues(alpha: 0.20),
-                  Colors.transparent,
-                ],
-              ),
-              borderRadius: BorderRadius.circular(28),
-            ),
-            child: Stack(
-              alignment: Alignment.center,
-              children: <Widget>[
-                Container(
-                  width: 170,
-                  height: 170,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    border: Border.all(
-                      color: palette.emerald.withValues(alpha: 0.24),
-                    ),
-                  ),
-                ),
-                Container(
-                  width: 125,
-                  height: 125,
-                  decoration: BoxDecoration(
-                    color: palette.softSurface,
-                    shape: BoxShape.circle,
-                    border: Border.all(
-                      color: palette.emerald.withValues(alpha: 0.38),
-                    ),
-                    boxShadow: <BoxShadow>[
-                      BoxShadow(
-                        color: palette.emerald.withValues(alpha: 0.20),
-                        blurRadius: 35,
-                        spreadRadius: 2,
-                      ),
-                    ],
-                  ),
-                  child: ClipOval(
-                    child: Image.asset(
-                      'assets/images/muka_depan.jpg',
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) {
-                        return HajjIcon(
-                          type: HajjIconType.kaaba,
-                          color: palette.gold,
-                          size: 70,
-                          strokeWidth: 4.2,
-                        );
-                      },
-                    ),
-                  ),
-                ),
-                Positioned(
-                  right: 28,
-                  top: 35,
-                  child: GlowDot(size: 10, color: palette.emerald),
-                ),
-                Positioned(
-                  left: 26,
-                  bottom: 45,
-                  child: GlowDot(size: 7, color: palette.gold),
-                ),
-              ],
-            ),
-          );
-
-          if (compact) {
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                information,
-                const SizedBox(height: 18),
-                visual,
-              ],
-            );
-          }
-
-          return Row(
-            children: <Widget>[
-              Expanded(child: information),
-              const SizedBox(width: 24),
-              visual,
-            ],
-          );
-        },
-      ),
-    );
-  }
-}
-
-class SectionTitle extends StatelessWidget {
-  const SectionTitle({required this.title, required this.subtitle, super.key});
-
-  final String title;
-  final String subtitle;
-
-  @override
-  Widget build(BuildContext context) {
-    final HajjColors palette = context.hajjColors;
-    final ColorScheme colors = context.appColorScheme;
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        Row(
-          children: <Widget>[
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Text(
-                    title,
-                    style: GoogleFonts.playfairDisplay(
-                      color: colors.onSurface,
-                      fontSize: 24,
-                      fontWeight: FontWeight.w700,
-                      letterSpacing: -0.3,
-                    ),
-                  ),
-                  const SizedBox(height: 5),
-                  Text(subtitle, style: TextStyle(color: palette.mutedText)),
-                ],
-              ),
-            ),
-            const StatusPill(
-              icon: Icons.cloud_done_rounded,
-              label: 'Sistem aktif',
-            ),
-          ],
-        ),
-        const SizedBox(height: 14),
-        Container(
-          height: 1,
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: <Color>[
-                palette.gold.withValues(alpha: 0.4),
-                palette.gold.withValues(alpha: 0.0),
-              ],
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class FeatureData {
-  const FeatureData({
-    required this.number,
-    required this.title,
-    required this.description,
-    required this.icon,
-    required this.accent,
-    required this.onTap,
-  });
-
-  final String number;
-  final String title;
-  final String description;
-  final HajjIconType icon;
-  final Color accent;
-  final VoidCallback onTap;
-}
-
-class FeatureCard extends StatefulWidget {
-  const FeatureCard({required this.data, super.key});
-
-  final FeatureData data;
-
-  @override
-  State<FeatureCard> createState() => _FeatureCardState();
-}
-
-class _FeatureCardState extends State<FeatureCard> {
-  bool hovering = false;
-
-  @override
-  Widget build(BuildContext context) {
-    final Color accent = widget.data.accent;
-    final HajjColors palette = context.hajjColors;
-    final ColorScheme colors = context.appColorScheme;
-
-    return MouseRegion(
-      onEnter: (_) {
-        setState(() {
-          hovering = true;
-        });
-      },
-      onExit: (_) {
-        setState(() {
-          hovering = false;
-        });
-      },
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 220),
-        transform: Matrix4.translationValues(0, hovering ? -6 : 0, 0),
-        child: GlassContainer(
-          borderRadius: 24,
-          borderColor: hovering
-              ? accent.withValues(alpha: 0.46)
-              : palette.glassBorder,
-          padding: EdgeInsets.zero,
-          child: Material(
-            color: Colors.transparent,
-            child: InkWell(
-              borderRadius: BorderRadius.circular(24),
-              onTap: widget.data.onTap,
-              child: Padding(
-                padding: const EdgeInsets.all(21),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Row(
-                      children: <Widget>[
-                        Container(
-                          width: 52,
-                          height: 52,
-                          decoration: BoxDecoration(
-                            color: accent.withValues(alpha: 0.12),
-                            borderRadius: BorderRadius.circular(16),
-                            border: Border.all(
-                              color: accent.withValues(alpha: 0.28),
-                            ),
-                          ),
-                          child: HajjIcon(
-                            type: widget.data.icon,
-                            color: accent,
-                            size: 29,
-                          ),
-                        ),
-                        const Spacer(),
-                        Text(
-                          widget.data.number,
-                          style: GoogleFonts.playfairDisplay(
-                            color: accent.withValues(alpha: 0.80),
-                            fontSize: 15,
-                            fontStyle: FontStyle.italic,
-                            fontWeight: FontWeight.w700,
-                            letterSpacing: 0.5,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 24),
-                    Text(
-                      widget.data.title,
-                      style: GoogleFonts.playfairDisplay(
-                        color: colors.onSurface,
-                        fontSize: 20,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      widget.data.description,
-                      style: TextStyle(
-                        color: palette.mutedText,
-                        fontSize: 13,
-                        height: 1.5,
-                      ),
-                    ),
-                    const SizedBox(height: 22),
-                    Row(
-                      children: <Widget>[
-                        Text(
-                          widget.data.number == 'SOS'
-                              ? 'Buka SOS'
-                              : 'Buka fungsi',
-                          style: TextStyle(
-                            color: accent,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        Icon(
-                          Icons.arrow_forward_rounded,
-                          color: accent,
-                          size: 18,
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class HajjJourneyBox extends StatefulWidget {
-  const HajjJourneyBox({required this.onOpenGuide, super.key});
-
-  final VoidCallback onOpenGuide;
-
-  @override
-  State<HajjJourneyBox> createState() => _HajjJourneyBoxState();
-}
-
-class _HajjJourneyBoxState extends State<HajjJourneyBox> {
-  int selectedTab = 0;
-
-  static const List<String> tabTitles = <String>[
-    'Tatacara',
-    'Tempat',
-    'Rukun',
-    'Wajib',
-  ];
-
-  static const List<IconData> tabIcons = <IconData>[
-    Icons.route_rounded,
-    Icons.location_on_rounded,
-    Icons.verified_rounded,
-    Icons.checklist_rounded,
-  ];
-
-  static const List<String> tabDescriptions = <String>[
-    'Susunan utama perjalanan ibadah Haji.',
-    'Lokasi penting yang perlu dikenal pasti.',
-    'Perkara yang menentukan sahnya Haji.',
-    'Amalan wajib yang melengkapkan Haji.',
-  ];
-
-  static const List<List<String>> tabContents = <List<String>>[
-    <String>[
-      'Berniat ihram Haji di miqat.',
-      'Berwukuf di Arafah.',
-      'Bermalam di Muzdalifah.',
-      'Melontar Jamrah Kubra pada 10 Zulhijjah.',
-      'Bercukur atau bergunting untuk tahallul awal.',
-      'Melaksanakan Tawaf Ifadah dan Sa’i.',
-      'Bermalam di Mina dan melontar jamrah.',
-      'Melaksanakan Tawaf Wada’ sebelum meninggalkan Makkah.',
-    ],
-    <String>[
-      'Masjidil Haram — lokasi pelaksanaan Tawaf.',
-      'Safa dan Marwah — lokasi pelaksanaan Sa’i.',
-      'Arafah — lokasi pelaksanaan wukuf.',
-      'Muzdalifah — tempat bermalam selepas wukuf.',
-      'Mina — lokasi melontar jamrah dan bermalam.',
-      'Miqat — sempadan untuk memulakan niat ihram.',
-    ],
-    <String>[
-      'Niat ihram Haji.',
-      'Wukuf di Arafah.',
-      'Tawaf Ifadah.',
-      'Sa’i antara Safa dan Marwah.',
-      'Bercukur atau bergunting.',
-      'Tertib pada kebanyakan rukun.',
-    ],
-    <String>[
-      'Berniat ihram di miqat.',
-      'Menjaga larangan semasa dalam ihram.',
-      'Bermalam di Muzdalifah.',
-      'Melontar Jamrah Kubra.',
-      'Bermalam di Mina.',
-      'Melontar ketiga-tiga jamrah.',
-      'Melaksanakan Tawaf Wada’.',
-    ],
-  ];
-
-  void _bukaInfografikTatacara() {
-    Navigator.of(context).push(
-      PageRouteBuilder<void>(
-        transitionDuration: const Duration(milliseconds: 450),
-        reverseTransitionDuration: const Duration(milliseconds: 320),
-        pageBuilder:
-            (
-              BuildContext context,
-              Animation<double> animation,
-              Animation<double> secondaryAnimation,
-            ) {
-              return const HajjJourneyViewer();
-            },
-        transitionsBuilder:
-            (
-              BuildContext context,
-              Animation<double> animation,
-              Animation<double> secondaryAnimation,
-              Widget child,
-            ) {
-              final Animation<double> smoothAnimation = CurvedAnimation(
-                parent: animation,
-                curve: Curves.easeOutCubic,
-              );
-
-              return FadeTransition(
-                opacity: smoothAnimation,
-                child: ScaleTransition(
-                  scale: Tween<double>(
-                    begin: 0.96,
-                    end: 1,
-                  ).animate(smoothAnimation),
-                  child: child,
-                ),
-              );
-            },
-      ),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return GlassContainer(
-      borderRadius: 30,
-      padding: EdgeInsets.zero,
-      child: LayoutBuilder(
-        builder: (BuildContext context, BoxConstraints constraints) {
-          final bool mobile = constraints.maxWidth < 760;
-
-          final Widget imageSection = _buildImageSection(context, mobile);
-
-          final Widget informationSection = _buildInformationSection(context);
-
-          if (mobile) {
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: <Widget>[imageSection, informationSection],
-            );
-          }
-
-          return Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              SizedBox(width: 360, child: imageSection),
-              Expanded(child: informationSection),
-            ],
-          );
-        },
-      ),
-    );
-  }
-
-  Widget _buildImageSection(BuildContext context, bool mobile) {
-    final HajjColors palette = context.hajjColors;
-
-    return AspectRatio(
-      aspectRatio: 3 / 4,
-      child: Stack(
-        fit: StackFit.expand,
-        children: <Widget>[
-          ClipRRect(
-            borderRadius: BorderRadius.only(
-              topLeft: const Radius.circular(30),
-              topRight: Radius.circular(mobile ? 30 : 0),
-              bottomLeft: Radius.circular(mobile ? 0 : 30),
-            ),
-            child: Image.asset(
-              context.isDarkMode
-                  ? 'assets/images/kaabah_dark.jpg'
-                  : 'assets/images/kaabah_light.jpg',
-              fit: BoxFit.cover,
-              errorBuilder:
-                  (BuildContext context, Object error, StackTrace? stackTrace) {
-                    return Container(
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: <Color>[
-                            palette.softSurface,
-                            palette.gradientEnd,
-                          ],
-                        ),
-                      ),
-                      child: Center(
-                        child: HajjIcon(
-                          type: HajjIconType.kaaba,
-                          color: palette.gold,
-                          size: 92,
-                          strokeWidth: 4.2,
-                        ),
-                      ),
-                    );
-                  },
-            ),
-          ),
-          Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.only(
-                topLeft: const Radius.circular(30),
-                topRight: Radius.circular(mobile ? 30 : 0),
-                bottomLeft: Radius.circular(mobile ? 0 : 30),
-              ),
-              gradient: const LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: <Color>[
-                  Colors.transparent,
-                  Color(0x33000000),
-                  Color(0xD9000000),
-                ],
-              ),
-            ),
-          ),
-          Positioned(
-            top: 22,
-            left: 22,
-            child: StatusPill(
-              hajjIcon: HajjIconType.guide,
-              label: 'Panduan Haji',
-              accentColor: palette.gold,
-            ),
-          ),
-          const Positioned(
-            left: 24,
-            right: 24,
-            bottom: 25,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Text(
-                  'PERJALANAN HAJI',
-                  style: TextStyle(
-                    color: Color(0xFFF0D38C),
-                    fontSize: 12,
-                    fontWeight: FontWeight.w900,
-                    letterSpacing: 2,
-                  ),
-                ),
-                SizedBox(height: 8),
-                Text(
-                  'Panduan Menuju\nHaji Mabrur',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 27,
-                    height: 1.12,
-                    fontWeight: FontWeight.w900,
-                  ),
-                ),
-                SizedBox(height: 11),
-                Text(
-                  'Panduan ringkas perjalanan, lokasi '
-                  'dan pelaksanaan ibadah Haji.',
-                  style: TextStyle(color: Color(0xFFDCE5E2), height: 1.5),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildInformationSection(BuildContext context) {
-    final HajjColors palette = context.hajjColors;
-    final ColorScheme colors = context.appColorScheme;
-
-    return Padding(
-      padding: const EdgeInsets.all(26),
-      child: LayoutBuilder(
-        builder: (BuildContext context, BoxConstraints constraints) {
-          final bool wide = constraints.maxWidth >= 620;
-          final double previewWidth = wide ? 180 : 100;
-          final double previewHeight = wide ? 118 : 72;
-
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Text(
-                'Panduan Perjalanan',
-                style: GoogleFonts.playfairDisplay(
-                  color: colors.onSurface,
-                  fontSize: 23,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-              const SizedBox(height: 6),
-              Text(
-                tabDescriptions[selectedTab],
-                style: TextStyle(color: palette.mutedText),
-              ),
-              const SizedBox(height: 20),
-              Wrap(
-                spacing: 8,
-                runSpacing: 8,
-                children: List<Widget>.generate(tabTitles.length, (int index) {
-                  final bool selected = selectedTab == index;
-
-                  return InkWell(
-                    onTap: () {
-                      setState(() {
-                        selectedTab = index;
-                      });
-                    },
-                    borderRadius: BorderRadius.circular(50),
-                    child: AnimatedContainer(
-                      duration: const Duration(milliseconds: 200),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 10,
-                      ),
-                      decoration: BoxDecoration(
-                        color: selected
-                            ? palette.emerald
-                            : palette.glassSurface,
-                        borderRadius: BorderRadius.circular(50),
-                        border: Border.all(
-                          color: selected
-                              ? palette.emerald
-                              : palette.glassBorder,
-                        ),
-                      ),
-                      child: Text(
-                        tabTitles[index],
-                        style: TextStyle(
-                          color: selected ? palette.onAccent : colors.onSurface,
-                          fontWeight: FontWeight.w800,
-                        ),
-                      ),
-                    ),
-                  );
-                }),
-              ),
-              const SizedBox(height: 24),
-              Container(
-                padding: const EdgeInsets.all(14),
-                decoration: BoxDecoration(
-                  color: palette.emerald.withValues(alpha: 0.08),
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(
-                    color: palette.emerald.withValues(alpha: 0.20),
-                  ),
-                ),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Icon(
-                      tabIcons[selectedTab],
-                      color: palette.emerald,
-                      size: 21,
-                    ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: Text(
-                        'Semak ${tabContents[selectedTab].length} perkara '
-                        'utama sebelum meneruskan perjalanan.',
-                        style: TextStyle(
-                          color: colors.onSurface,
-                          fontSize: 12,
-                          fontWeight: FontWeight.w700,
-                          height: 1.45,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 18),
-              if (selectedTab == 0) ...<Widget>[
-                Material(
-                  color: Colors.transparent,
-                  child: InkWell(
-                    onTap: _bukaInfografikTatacara,
-                    borderRadius: BorderRadius.circular(18),
-                    child: Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.all(14),
-                      decoration: BoxDecoration(
-                        color: palette.gold.withValues(alpha: 0.09),
-                        borderRadius: BorderRadius.circular(18),
-                        border: Border.all(
-                          color: palette.gold.withValues(alpha: 0.26),
-                        ),
-                      ),
-                      child: Row(
-                        children: <Widget>[
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(13),
-                            child: Image.asset(
-                              'assets/images/journey.jpg',
-                              width: previewWidth,
-                              height: previewHeight,
-                              fit: BoxFit.cover,
-                              errorBuilder:
-                                  (
-                                    BuildContext context,
-                                    Object error,
-                                    StackTrace? stackTrace,
-                                  ) {
-                                    return Container(
-                                      width: previewWidth,
-                                      height: previewHeight,
-                                      alignment: Alignment.center,
-                                      color: palette.softSurface,
-                                      child: HajjIcon(
-                                        type: HajjIconType.guide,
-                                        color: palette.gold,
-                                        size: 28,
-                                      ),
-                                    );
-                                  },
-                            ),
-                          ),
-                          const SizedBox(width: 15),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: <Widget>[
-                                Text(
-                                  'Lihat Infografik Tatacara Haji',
-                                  style: TextStyle(
-                                    color: colors.onSurface,
-                                    fontWeight: FontWeight.w900,
-                                  ),
-                                ),
-                                const SizedBox(height: 5),
-                                Text(
-                                  'Tekan untuk buka, zoom dan gerakkan gambar.',
-                                  style: TextStyle(
-                                    color: palette.mutedText,
-                                    fontSize: 12,
-                                    height: 1.4,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          const SizedBox(width: 10),
-                          Icon(Icons.open_in_full_rounded, color: palette.gold),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 20),
-              ],
-              AnimatedSwitcher(
-                duration: const Duration(milliseconds: 220),
-                child: Column(
-                  key: ValueKey<int>(selectedTab),
-                  children: List<Widget>.generate(
-                    tabContents[selectedTab].length,
-                    (int index) {
-                      return Padding(
-                        padding: const EdgeInsets.only(bottom: 12),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            Column(
-                              children: <Widget>[
-                                Container(
-                                  width: 28,
-                                  height: 28,
-                                  alignment: Alignment.center,
-                                  decoration: BoxDecoration(
-                                    color: palette.emerald.withValues(
-                                      alpha: 0.11,
-                                    ),
-                                    shape: BoxShape.circle,
-                                    border: Border.all(
-                                      color: palette.emerald.withValues(
-                                        alpha: 0.26,
-                                      ),
-                                    ),
-                                  ),
-                                  child: Text(
-                                    '${index + 1}',
-                                    style: TextStyle(
-                                      color: palette.emerald,
-                                      fontSize: 11,
-                                      fontWeight: FontWeight.w900,
-                                    ),
-                                  ),
-                                ),
-                                if (index < tabContents[selectedTab].length - 1)
-                                  Container(
-                                    width: 1,
-                                    height: 28,
-                                    color: palette.emerald.withValues(
-                                      alpha: 0.22,
-                                    ),
-                                  ),
-                              ],
-                            ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: Padding(
-                                padding: const EdgeInsets.only(top: 4),
-                                child: Text(
-                                  tabContents[selectedTab][index],
-                                  style: TextStyle(
-                                    color: colors.onSurface,
-                                    height: 1.5,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      );
-                    },
-                  ),
-                ),
-              ),
-              const SizedBox(height: 10),
-              SizedBox(
-                width: double.infinity,
-                height: 50,
-                child: OutlinedButton.icon(
-                  onPressed: widget.onOpenGuide,
-                  icon: HajjIcon(
-                    type: HajjIconType.guide,
-                    color: palette.gold,
-                    size: 21,
-                  ),
-                  label: const Text('Buka Panduan Haji Penuh'),
-                ),
-              ),
-              const SizedBox(height: 16),
-              Container(
-                padding: const EdgeInsets.all(14),
-                decoration: BoxDecoration(
-                  color: palette.gold.withValues(alpha: 0.08),
-                  borderRadius: BorderRadius.circular(14),
-                  border: Border.all(
-                    color: palette.gold.withValues(alpha: 0.20),
-                  ),
-                ),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Icon(
-                      Icons.info_outline_rounded,
-                      color: palette.gold,
-                      size: 20,
-                    ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: Text(
-                        'Kandungan ini ialah ringkasan prototaip. '
-                        'Semak kandungan akhir bersama pembimbing '
-                        'Haji atau panel syariah.',
-                        style: TextStyle(
-                          color: palette.mutedText,
-                          fontSize: 12,
-                          height: 1.5,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          );
-        },
-      ),
-    );
-  }
-}
-
-class LearningModulePanel extends StatelessWidget {
-  const LearningModulePanel({required this.onTap, super.key});
-
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final HajjColors palette = context.hajjColors;
-    final ColorScheme colors = context.appColorScheme;
-
-    return GlassContainer(
-      borderRadius: 24,
-      padding: const EdgeInsets.all(22),
-      child: LayoutBuilder(
-        builder: (BuildContext context, BoxConstraints constraints) {
-          final bool compact = constraints.maxWidth < 650;
-
-          final Widget information = Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Row(
-                children: <Widget>[
-                  Container(
-                    width: 48,
-                    height: 48,
-                    decoration: BoxDecoration(
-                      color: palette.emerald.withValues(alpha: 0.11),
-                      borderRadius: BorderRadius.circular(15),
-                      border: Border.all(
-                        color: palette.emerald.withValues(alpha: 0.24),
-                      ),
-                    ),
-                    child: HajjIcon(
-                      type: HajjIconType.learning,
-                      color: palette.emerald,
-                      size: 28,
-                    ),
-                  ),
-                  const SizedBox(width: 14),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Text(
-                          'Modul Belajar Haji',
-                          style: GoogleFonts.playfairDisplay(
-                            color: colors.onSurface,
-                            fontSize: 20,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                        const SizedBox(height: 5),
-                        Text(
-                          'Belajar asas, rukun, wajib, '
-                          'larangan ihram, dam dan doa.',
-                          style: TextStyle(
-                            color: palette.mutedText,
-                            height: 1.45,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
-              Wrap(
-                spacing: 8,
-                runSpacing: 8,
-                children: <Widget>[
-                  _LearningTopicChip(
-                    label: 'Asas Haji',
-                    color: palette.emerald,
-                  ),
-                  _LearningTopicChip(
-                    label: 'Rukun & Wajib',
-                    color: palette.gold,
-                  ),
-                  const _LearningTopicChip(
-                    label: 'Doa & Zikir',
-                    color: Color(0xFF4B8CCB),
-                  ),
-                ],
-              ),
-            ],
-          );
-
-          final Widget button = SizedBox(
-            height: 52,
-            child: FilledButton.icon(
-              onPressed: onTap,
-              icon: HajjIcon(
-                type: HajjIconType.learning,
-                color: palette.onAccent,
-                size: 22,
-                strokeWidth: 5,
-              ),
-              label: const Text('Mula Belajar'),
-            ),
-          );
-
-          if (compact) {
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: <Widget>[
-                information,
-                const SizedBox(height: 20),
-                button,
-              ],
-            );
-          }
-
-          return Row(
-            children: <Widget>[
-              Expanded(child: information),
-              const SizedBox(width: 24),
-              button,
-            ],
-          );
-        },
-      ),
-    );
-  }
-}
-
-class _LearningTopicChip extends StatelessWidget {
-  const _LearningTopicChip({required this.label, required this.color});
-
-  final String label;
-  final Color color;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 7),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.10),
-        borderRadius: BorderRadius.circular(50),
-        border: Border.all(color: color.withValues(alpha: 0.22)),
-      ),
-      child: Text(
-        label,
-        style: TextStyle(
-          color: color,
-          fontSize: 11,
-          fontWeight: FontWeight.w800,
-        ),
-      ),
-    );
-  }
-}
-
-class AssessmentPanel extends StatelessWidget {
-  const AssessmentPanel({required this.onTap, super.key});
-
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final HajjColors palette = context.hajjColors;
-    final ColorScheme colors = context.appColorScheme;
-
-    final dynamic savedBestScore = assessmentBox.get(
-      'best_score',
-      defaultValue: 0,
-    );
-
-    final int bestScore = savedBestScore is int ? savedBestScore : 0;
-
-    final bool passed =
-        assessmentBox.get('passed', defaultValue: false) == true;
-
-    return GlassContainer(
-      borderRadius: 24,
-      padding: const EdgeInsets.all(22),
-      child: LayoutBuilder(
-        builder: (BuildContext context, BoxConstraints constraints) {
-          final bool compact = constraints.maxWidth < 650;
-
-          final Widget information = Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Row(
-                children: <Widget>[
-                  Container(
-                    width: 48,
-                    height: 48,
-                    decoration: BoxDecoration(
-                      color: palette.gold.withValues(alpha: 0.11),
-                      borderRadius: BorderRadius.circular(15),
-                      border: Border.all(
-                        color: palette.gold.withValues(alpha: 0.24),
-                      ),
-                    ),
-                    child: Center(
-                      child: HajjIcon(
-                        type: HajjIconType.quiz,
-                        color: palette.gold,
-                        size: 25,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 14),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Text(
-                          'Penilaian Akhir',
-                          style: GoogleFonts.playfairDisplay(
-                            color: colors.onSurface,
-                            fontSize: 20,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                        const SizedBox(height: 5),
-                        Text(
-                          'Jawab 20 soalan dan capai '
-                          'sekurang-kurangnya 80%.',
-                          style: TextStyle(
-                            color: palette.mutedText,
-                            height: 1.45,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
-              Wrap(
-                spacing: 8,
-                runSpacing: 8,
-                children: <Widget>[
-                  _AssessmentTopicChip(label: '20 soalan', color: palette.gold),
-                  _AssessmentTopicChip(
-                    label: 'Lulus 80%',
-                    color: palette.emerald,
-                  ),
-                  _AssessmentTopicChip(
-                    label: passed ? 'Layak sijil' : 'Terbaik $bestScore%',
-                    color: passed ? palette.emerald : const Color(0xFF4B8CCB),
-                  ),
-                ],
-              ),
-            ],
-          );
-
-          final Widget button = SizedBox(
-            height: 52,
-            child: FilledButton.icon(
-              onPressed: onTap,
-              icon: Icon(
-                passed
-                    ? Icons.workspace_premium_rounded
-                    : Icons.quiz_rounded,
-              ),
-              label: Text(passed ? 'Sijil Saya' : 'Mula Penilaian'),
-            ),
-          );
-
-          if (compact) {
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: <Widget>[
-                information,
-                const SizedBox(height: 20),
-                button,
-              ],
-            );
-          }
-
-          return Row(
-            children: <Widget>[
-              Expanded(child: information),
-              const SizedBox(width: 24),
-              button,
-            ],
-          );
-        },
-      ),
-    );
-  }
-}
-
-class _AssessmentTopicChip extends StatelessWidget {
-  const _AssessmentTopicChip({required this.label, required this.color});
-
-  final String label;
-  final Color color;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 7),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.10),
-        borderRadius: BorderRadius.circular(50),
-        border: Border.all(color: color.withValues(alpha: 0.22)),
-      ),
-      child: Text(
-        label,
-        style: TextStyle(
-          color: color,
-          fontSize: 11,
-          fontWeight: FontWeight.w800,
-        ),
-      ),
-    );
-  }
-}
-
-class HajjGuidePanel extends StatelessWidget {
-  const HajjGuidePanel({required this.onTap, super.key});
-
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final HajjColors palette = context.hajjColors;
-    final ColorScheme colors = context.appColorScheme;
-
-    return GlassContainer(
-      borderRadius: 24,
-      padding: const EdgeInsets.all(22),
-      child: LayoutBuilder(
-        builder: (BuildContext context, BoxConstraints constraints) {
-          final bool compact = constraints.maxWidth < 650;
-
-          final Widget information = Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Row(
-                children: <Widget>[
-                  Container(
-                    width: 48,
-                    height: 48,
-                    decoration: BoxDecoration(
-                      color: palette.gold.withValues(alpha: 0.11),
-                      borderRadius: BorderRadius.circular(15),
-                      border: Border.all(
-                        color: palette.gold.withValues(alpha: 0.24),
-                      ),
-                    ),
-                    child: HajjIcon(
-                      type: HajjIconType.guide,
-                      color: palette.gold,
-                      size: 28,
-                    ),
-                  ),
-                  const SizedBox(width: 14),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Text(
-                          'Panduan Langkah demi Langkah',
-                          style: GoogleFonts.playfairDisplay(
-                            color: colors.onSurface,
-                            fontSize: 20,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                        const SizedBox(height: 5),
-                        Text(
-                          'Ikuti perjalanan dari persediaan '
-                          'hingga Tawaf Wada’.',
-                          style: TextStyle(
-                            color: palette.mutedText,
-                            height: 1.45,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
-              Wrap(
-                spacing: 8,
-                runSpacing: 8,
-                children: <Widget>[
-                  _GuideTopicChip(label: '9 langkah', color: palette.gold),
-                  _GuideTopicChip(label: 'Checklist', color: palette.emerald),
-                  const _GuideTopicChip(
-                    label: 'Offline',
-                    color: Color(0xFF4B8CCB),
-                  ),
-                ],
-              ),
-            ],
-          );
-
-          final Widget button = SizedBox(
-            height: 52,
-            child: FilledButton.icon(
-              onPressed: onTap,
-              icon: HajjIcon(
-                type: HajjIconType.guide,
-                color: palette.onAccent,
-                size: 22,
-                strokeWidth: 5,
-              ),
-              label: const Text('Buka Panduan'),
-            ),
-          );
-
-          if (compact) {
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: <Widget>[
-                information,
-                const SizedBox(height: 20),
-                button,
-              ],
-            );
-          }
-
-          return Row(
-            children: <Widget>[
-              Expanded(child: information),
-              const SizedBox(width: 24),
-              button,
-            ],
-          );
-        },
-      ),
-    );
-  }
-}
-
-class _GuideTopicChip extends StatelessWidget {
-  const _GuideTopicChip({required this.label, required this.color});
-
-  final String label;
-  final Color color;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 7),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.10),
-        borderRadius: BorderRadius.circular(50),
-        border: Border.all(color: color.withValues(alpha: 0.22)),
-      ),
-      child: Text(
-        label,
-        style: TextStyle(
-          color: color,
-          fontSize: 11,
-          fontWeight: FontWeight.w800,
-        ),
-      ),
-    );
-  }
-}
-
-class TimeAndCountdownPanel extends StatefulWidget {
-  const TimeAndCountdownPanel({super.key});
-
-  @override
-  State<TimeAndCountdownPanel> createState() => _TimeAndCountdownPanelState();
-}
-
-class _TimeAndCountdownPanelState extends State<TimeAndCountdownPanel> {
-  late Timer _timer;
-  late DateTime _now;
-  late HijriCalendar _hijriNow;
-
-  late DateTime _targetHajj;
-  late int _hariIni; // Digunakan untuk menyemak pertukaran hari yang tepat
-
-  @override
-  void initState() {
-    super.initState();
-    _now = DateTime.now();
-    _hariIni = _now.day;
-    _targetHajj = kiraTarikhWukufAkanDatang(_now);
-
-    // 1. Daftarkan kamus Bahasa Melayu mengikut format Map<int, String>
-    HijriCalendar.addLocale('ms', <String, Map<int, String>>{
-      'long': <int, String>{
-        1: 'Muharram',
-        2: 'Safar',
-        3: 'Rabiulawal',
-        4: 'Rabiulakhir',
-        5: 'Jamadilawal',
-        6: 'Jamadilakhir',
-        7: 'Rejab',
-        8: 'Syaaban',
-        9: 'Ramadan',
-        10: 'Syawal',
-        11: 'Zulkaedah',
-        12: 'Zulhijjah',
-      },
-      'short': <int, String>{
-        1: 'Muh',
-        2: 'Saf',
-        3: 'Raw',
-        4: 'Rak',
-        5: 'Jaw',
-        6: 'Jak',
-        7: 'Rej',
-        8: 'Sya',
-        9: 'Ram',
-        10: 'Syw',
-        11: 'Zkd',
-        12: 'Zhj',
-      },
-      'days': <int, String>{
-        1: 'Isnin',
-        2: 'Selasa',
-        3: 'Rabu',
-        4: 'Khamis',
-        5: 'Jumaat',
-        6: 'Sabtu',
-        7: 'Ahad',
-      },
-      'short_days': <int, String>{
-        1: 'Isn',
-        2: 'Sel',
-        3: 'Rab',
-        4: 'Kha',
-        5: 'Jum',
-        6: 'Sab',
-        7: 'Ahd',
-      },
-    });
-
-    // 2. Sekarang baru kita boleh gunakan 'ms'
-    HijriCalendar.setLocal('ms');
-    _hijriNow = HijriCalendar.now();
-
-    // 3. Mengemas kini masa setiap 1 saat
-    _timer = Timer.periodic(const Duration(seconds: 1), (Timer timer) {
-      if (mounted) {
-        setState(() {
-          _now = DateTime.now();
-
-          // Memperbaiki ralat pertukaran hari - kini menyemak tarikh berbanding saat tepat
-          if (_now.day != _hariIni) {
-            _hariIni = _now.day;
-            _hijriNow = HijriCalendar.now();
-            _targetHajj = kiraTarikhWukufAkanDatang(_now);
-          }
-        });
-      }
-    });
-  }
-
-  @override
-  void dispose() {
-    _timer.cancel();
-    super.dispose();
-  }
-
-  String _formatWaktu(DateTime masa) {
-    final int jam = masa.hour > 12
-        ? masa.hour - 12
-        : (masa.hour == 0 ? 12 : masa.hour);
-    final String minit = masa.minute.toString().padLeft(2, '0');
-    final String saat = masa.second.toString().padLeft(2, '0');
-    final String ampm = masa.hour >= 12 ? 'PM' : 'AM';
-    return '$jam:$minit:$saat $ampm';
-  }
-
-  String _formatTarikhMasihi(DateTime masa) {
-    const List<String> bulan = <String>[
-      'Jan',
-      'Feb',
-      'Mac',
-      'Apr',
-      'Mei',
-      'Jun',
-      'Jul',
-      'Ogos',
-      'Sep',
-      'Okt',
-      'Nov',
-      'Dis',
-    ];
-    return '${masa.day} ${bulan[masa.month - 1]} ${masa.year}';
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final HajjColors palette = context.hajjColors;
-    final ColorScheme colors = context.appColorScheme;
-
-    // Memperbaiki ralat .inDays - Memastikan pengiraan hari menggunakan tarikh kalendar mutlak
-    // tanpa dipengaruhi oleh waktu jam/minit/saat.
-    final DateTime tarikhSemasa = DateTime(_now.year, _now.month, _now.day);
-    final DateTime tarikhSasaran = DateTime(
-      _targetHajj.year,
-      _targetHajj.month,
-      _targetHajj.day,
-    );
-    final int bakiHari = tarikhSasaran.difference(tarikhSemasa).inDays;
-
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(26, 0, 26, 26),
-      child: LayoutBuilder(
-        builder: (BuildContext context, BoxConstraints constraints) {
-          final bool compact = constraints.maxWidth < 650;
-
-          final Widget jamSekarang = Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Text(
-                _formatWaktu(_now),
-                style: GoogleFonts.playfairDisplay(
-                  color: colors.onSurface,
-                  fontSize: 32,
-                  fontWeight: FontWeight.w700,
-                  letterSpacing: 1,
-                ),
-              ),
-              const SizedBox(height: 6),
-              Wrap(
-                spacing: 10,
-                runSpacing: 10,
-                children: <Widget>[
-                  Container(
-                    alignment: Alignment.center,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 6,
-                    ),
-                    decoration: BoxDecoration(
-                      color: palette.emerald.withValues(alpha: 0.12),
-                      borderRadius: BorderRadius.circular(10),
-                      border: Border.all(
-                        color: palette.emerald.withValues(alpha: 0.25),
-                      ),
-                    ),
-                    child: Text(
-                      _formatTarikhMasihi(_now),
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: colors.onSurface,
-                        fontSize: 13,
-                        fontWeight: FontWeight.w700,
-                        height: 1.0,
-                      ),
-                    ),
-                  ),
-                  Container(
-                    alignment: Alignment.center,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 6,
-                    ),
-                    decoration: BoxDecoration(
-                      color: palette.gold.withValues(alpha: 0.12),
-                      borderRadius: BorderRadius.circular(10),
-                      border: Border.all(
-                        color: palette.gold.withValues(alpha: 0.25),
-                      ),
-                    ),
-                    child: Text(
-                      '${_hijriNow.hDay} ${_hijriNow.getLongMonthName()} ${_hijriNow.hYear}H',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: colors.onSurface,
-                        fontSize: 13,
-                        fontWeight: FontWeight.w700,
-                        height: 1.0,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          );
-
-          final Widget countdownHaji = Container(
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 18),
-            decoration: BoxDecoration(
-              color: palette.gold.withValues(alpha: 0.12),
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: palette.gold.withValues(alpha: 0.3)),
-            ),
-            child: Column(
-              crossAxisAlignment: compact
-                  ? CrossAxisAlignment.start
-                  : CrossAxisAlignment.center,
-              children: <Widget>[
-                Text(
-                  'WUKUF',
-                  style: TextStyle(
-                    color: palette.gold,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w800,
-                    letterSpacing: 1.2,
-                  ),
-                ),
-                const SizedBox(height: 2),
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.baseline,
-                  textBaseline: TextBaseline.alphabetic,
-                  children: <Widget>[
-                    Text(
-                      '$bakiHari',
-                      style: GoogleFonts.playfairDisplay(
-                        color: colors.onSurface,
-                        fontSize: 36,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                    const SizedBox(width: 6),
-                    Text(
-                      'HARI LAGI',
-                      style: TextStyle(
-                        color: palette.mutedText,
-                        fontWeight: FontWeight.w800,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          );
-
-          if (compact) {
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: <Widget>[
-                jamSekarang,
-                const SizedBox(height: 20),
-                countdownHaji,
-              ],
-            );
-          }
-
-          return Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[jamSekarang, countdownHaji],
-          );
-        },
       ),
     );
   }

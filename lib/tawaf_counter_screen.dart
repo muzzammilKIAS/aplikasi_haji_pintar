@@ -11,12 +11,17 @@ class TawafCounterScreen extends StatefulWidget {
 
   final Box<dynamic> tawafBox;
 
+  /// Kunci storan Hive bagi bilangan pusingan Tawaf yang selesai.
+  static const String storageKey = 'completedRounds';
+
+  static const int totalRounds = 7;
+
   @override
   State<TawafCounterScreen> createState() => _TawafCounterScreenState();
 }
 
 class _TawafCounterScreenState extends State<TawafCounterScreen> {
-  static const int totalRounds = 7;
+  static const int totalRounds = TawafCounterScreen.totalRounds;
 
   int completedRounds = 0;
 
@@ -30,7 +35,7 @@ class _TawafCounterScreenState extends State<TawafCounterScreen> {
     super.initState();
 
     final dynamic savedValue = widget.tawafBox.get(
-      'completedRounds',
+      TawafCounterScreen.storageKey,
       defaultValue: 0,
     );
 
@@ -48,7 +53,7 @@ class _TawafCounterScreenState extends State<TawafCounterScreen> {
       completedRounds++;
     });
 
-    await widget.tawafBox.put('completedRounds', completedRounds);
+    await widget.tawafBox.put(TawafCounterScreen.storageKey, completedRounds);
   }
 
   Future<void> _undurPusingan() async {
@@ -60,7 +65,7 @@ class _TawafCounterScreenState extends State<TawafCounterScreen> {
       completedRounds--;
     });
 
-    await widget.tawafBox.put('completedRounds', completedRounds);
+    await widget.tawafBox.put(TawafCounterScreen.storageKey, completedRounds);
   }
 
   Future<void> _resetKaunter() async {
@@ -68,7 +73,7 @@ class _TawafCounterScreenState extends State<TawafCounterScreen> {
       completedRounds = 0;
     });
 
-    await widget.tawafBox.put('completedRounds', 0);
+    await widget.tawafBox.put(TawafCounterScreen.storageKey, 0);
   }
 
   @override
@@ -93,6 +98,7 @@ class _TawafCounterScreenState extends State<TawafCounterScreen> {
         ),
         child: Stack(
           children: <Widget>[
+            const IslamicPatternOverlay(),
             Positioned(
               top: -100,
               right: -100,

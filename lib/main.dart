@@ -29,24 +29,13 @@ Future<void> main() async {
 
   final ThemeController themeController = ThemeController(settingsBox);
 
-  final bool onboardingCompleted =
-      settingsBox.get('onboarding_completed', defaultValue: false) as bool;
-
-  runApp(AplikasiHajiPintar(
-    themeController: themeController,
-    onboardingCompleted: onboardingCompleted,
-  ));
+  runApp(AplikasiHajiPintar(themeController: themeController));
 }
 
 class AplikasiHajiPintar extends StatelessWidget {
-  const AplikasiHajiPintar({
-    required this.themeController,
-    this.onboardingCompleted = false,
-    super.key,
-  });
+  const AplikasiHajiPintar({required this.themeController, super.key});
 
   final ThemeController themeController;
-  final bool onboardingCompleted;
 
   @override
   Widget build(BuildContext context) {
@@ -59,14 +48,37 @@ class AplikasiHajiPintar extends StatelessWidget {
           theme: AppTheme.light,
           darkTheme: AppTheme.dark,
           themeMode: themeController.themeMode,
-          home: onboardingCompleted
-              ? HalamanUtama(themeController: themeController)
-              : SplashScreen(
-                  themeController: themeController,
-                  settingsBox: settingsBox,
-                ),
+          home: _AppRoot(themeController: themeController),
         );
       },
     );
+  }
+}
+
+class _AppRoot extends StatefulWidget {
+  const _AppRoot({required this.themeController});
+
+  final ThemeController themeController;
+
+  @override
+  State<_AppRoot> createState() => _AppRootState();
+}
+
+class _AppRootState extends State<_AppRoot> {
+  bool _splashSelesai = false;
+
+  @override
+  Widget build(BuildContext context) {
+    if (!_splashSelesai) {
+      return SplashScreen(
+        onComplete: () {
+          setState(() {
+            _splashSelesai = true;
+          });
+        },
+      );
+    }
+
+    return HalamanUtama(themeController: widget.themeController);
   }
 }

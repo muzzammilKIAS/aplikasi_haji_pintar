@@ -11,12 +11,19 @@ class HajjGuideScreen extends StatefulWidget {
 
   final Box<dynamic> guideBox;
 
+  /// Kunci storan Hive bagi senarai indeks langkah yang sudah ditandakan
+  /// selesai. Didedahkan secara awam supaya skrin lain (contoh: dashboard)
+  /// boleh memaparkan kemajuan tanpa menduplikasi data.
+  static const String storageKey = 'completed_guide_steps';
+
+  /// Jumlah keseluruhan langkah dalam panduan Haji.
+  static int get totalSteps => _HajjGuideScreenState.steps.length;
+
   @override
   State<HajjGuideScreen> createState() => _HajjGuideScreenState();
 }
 
 class _HajjGuideScreenState extends State<HajjGuideScreen> {
-  static const String storageKey = 'completed_guide_steps';
 
   final Set<int> completedSteps = <int>{};
 
@@ -57,17 +64,23 @@ class _HajjGuideScreenState extends State<HajjGuideScreen> {
         ),
       ],
       academicInsight:
-          'Para ulama meletakkan persediaan rohani setaraf pentingnya '
-          'dengan persediaan fizikal sebelum Haji. Menyelesaikan hutang, '
-          'memohon kemaafan dan restu keluarga, serta bertaubat dianggap '
-          'sebahagian daripada erti "tazawwud" (bekalan) yang disebut '
-          'dalam Surah al-Baqarah ayat 197: "Berbekallah, dan '
-          'sesungguhnya sebaik-baik bekalan ialah takwa." Dari sudut '
-          'fiqh, konsep istita\u2019ah (kemampuan) yang menjadi syarat '
-          'wajib Haji turut merangkumi tiga dimensi: kemampuan kewangan '
-          '(termasuk nafkah keluarga yang ditinggalkan), kesihatan '
-          'fizikal, dan keselamatan sepanjang perjalanan — ketiadaan '
-          'mana-mana satu boleh menggugurkan kewajipan tanpa dosa.',
+          'Bab Pertama al-Idah menyusun adab safar Haji secara tertib: '
+          'bermusyawarah dengan orang yang dipercayai ilmu dan agamanya, '
+          'diikuti solat istikharah dua rakaat (membaca Surah al-Kafirun '
+          'dan al-Ikhlas) memohon pilihan waktu terbaik untuk berangkat, '
+          'kemudian barulah bertaubat daripada segala dosa, '
+          'menyelesaikan mazalim (hak orang lain yang teraniaya), '
+          'melunaskan hutang yang cukup tempoh, menulis wasiat dan '
+          'menyaksikannya, serta meninggalkan nafkah yang mencukupi bagi '
+          'tanggungan sehingga pulang. Imam an-Nawawi turut menegaskan '
+          'sesiapa yang berhutang tunai dan mampu membayarnya, '
+          'pemiutang berhak menghalangnya keluar berhaji sehingga '
+          'hutang dilangsaikan. Dari sudut fiqh, konsep istita\u2019ah '
+          '(kemampuan) yang menjadi syarat wajib Haji turut merangkumi '
+          'tiga dimensi: kemampuan kewangan (termasuk nafkah keluarga '
+          'yang ditinggalkan), kesihatan fizikal, dan keselamatan '
+          'sepanjang perjalanan — ketiadaan mana-mana satu boleh '
+          'menggugurkan kewajipan tanpa dosa.',
       reflectionQuestions: <String>[
         'Sejauh manakah persediaan rohani (seperti bertaubat dan '
             'menyelesaikan hutang) sama pentingnya dengan persediaan '
@@ -124,12 +137,17 @@ class _HajjGuideScreenState extends State<HajjGuideScreen> {
           'putih tanpa jahitan menghapuskan segala tanda status sosial, '
           'bangsa dan kekayaan, menegakkan prinsip kesamarataan seluruh '
           'manusia di hadapan Allah SWT. Amalan ini turut mengingatkan '
-          'jemaah tentang kain kafan dan hari kebangkitan. Dari sudut '
-          'fiqh, miqat makani (had tempat) yang lima — antaranya '
-          'Zulhulaifah, Juhfah dan Qarnul Manazil — ditetapkan sendiri '
-          'oleh Rasulullah SAW berdasarkan arah kedatangan jemaah, dan '
-          'sesiapa yang melepasinya tanpa berihram dikenakan dam '
-          'melainkan kembali semula ke miqat.',
+          'jemaah tentang kain kafan dan hari kebangkitan. Dalam Fasal '
+          'Miqat al-Idah, Imam an-Nawawi menyenaraikan lima miqat makani '
+          'yang ditetapkan Rasulullah SAW mengikut arah kedatangan '
+          'jemaah: Zulhulaifah (bagi ahli Madinah), Juhfah (Syam, Mesir '
+          'dan Maghribi), Qarnul Manazil (Najd), Yalamlam (Yaman/Tihamah) '
+          'dan Zatu Irqin (Iraq dan timur). Bagi penduduk Makkah sendiri, '
+          'miqatnya ialah Makkah itu sendiri. Miqat zamani (had masa) '
+          'pula bermula Syawal sehingga fajar hari raya Aidiladha; niat '
+          'Haji di luar tempoh ini tidak sah sebagai Haji, tetapi '
+          'terkira sebagai Umrah. Sesiapa yang melepasi miqat tanpa '
+          'berihram dikenakan dam melainkan kembali semula ke miqat.',
       reflectionQuestions: <String>[
         'Apakah hikmah di sebalik pemakaian ihram yang sama bagi semua '
             'jemaah tanpa mengira status sosial atau kekayaan?',
@@ -171,15 +189,23 @@ class _HajjGuideScreenState extends State<HajjGuideScreen> {
         ),
       ],
       academicInsight:
-          'Masjidil Haram telah mengalami pelbagai pengembangan sepanjang '
-          'sejarah Islam bagi menampung jemaah yang semakin ramai, namun '
-          'kedudukan Kaabah kekal sebagai kiblat dan pusat tumpuan sejak '
-          'zaman Nabi Ibrahim AS. Sunnah Rasulullah SAW ketika pertama '
-          'kali melihat Kaabah ialah mengangkat tangan dan berdoa dengan '
-          'penuh khusyuk, bukan semestinya menyentuhnya. Ramai ulama '
-          'turut menekankan pentingnya menjaga adab dan ketenangan hati '
-          'walaupun dilanda rasa teruja, kerana saat ini sering '
-          'digambarkan sebagai detik yang amat mustajab untuk berdoa.',
+          'Bab Ketiga al-Idah menggariskan adab masuk Makkah dengan '
+          'terperinci: mandi sunat di Dzi Tuwa sebelum memasuki kota '
+          '(masih disunatkan walaupun ketika haid atau nifas), masuk '
+          'melalui Thaniyyat Kada di bahagian atas Makkah dan keluar '
+          'melalui Thaniyyat Kuda di bahagian bawah, serta afdal masuk '
+          'dengan berjalan kaki pada waktu siang berbanding menunggang '
+          'atau waktu malam. Masjidil Haram telah mengalami pelbagai '
+          'pengembangan sepanjang sejarah Islam bagi menampung jemaah '
+          'yang semakin ramai, namun kedudukan Kaabah kekal sebagai '
+          'kiblat dan pusat tumpuan sejak zaman Nabi Ibrahim AS. Sunnah '
+          'Rasulullah SAW ketika pertama kali melihat Kaabah ialah '
+          'mengangkat tangan dan berdoa dengan penuh khusyuk, bukan '
+          'semestinya menyentuhnya. Menurut jumhur ulama Syafi\u2019i, '
+          'sesiapa yang datang dari luar Tanah Haram wajib masuk dalam '
+          'keadaan berihram jika kedatangannya tidak berulang-ulang '
+          '(seperti peniaga atau pengunjung), manakala golongan yang '
+          'sering keluar masuk seperti pemunggah kayu api dikecualikan.',
       reflectionQuestions: <String>[
         'Bagaimana jemaah dapat menyeimbangkan emosi (seperti teruja '
             'atau terharu) dengan ketenangan dan tertib semasa ketibaan '
@@ -243,7 +269,18 @@ class _HajjGuideScreenState extends State<HajjGuideScreen> {
           'berputus asa walaupun dalam keadaan yang paling getir. Dari '
           'sudut fiqh, terdapat tiga jenis Tawaf: Qudum (ketibaan), '
           'Ifadah (rukun) dan Wada\u2019 (perpisahan), masing-masing '
-          'dengan hukum dan waktu yang berbeza.',
+          'dengan hukum dan waktu yang berbeza. Fasal Kaifiyat Tawaf '
+          'dalam al-Idah menggariskan lapan syarat sah Tawaf \u2014 antaranya '
+          'menutup aurat, suci daripada hadas dan najis, memulakan dari '
+          'sejajar Hajar Aswad, menjadikan Baitullah di sebelah kiri, '
+          'dan menyempurnakan tujuh pusingan penuh di dalam masjid. '
+          'Manakala Fasal Sa\u2019i pula mensyaratkan penyempurnaan '
+          'jarak penuh antara Safa dan Marwah tanpa berbaki walau '
+          'sejengkal, serta tertib bermula dari Safa dan disudahi di '
+          'Marwah \u2014 jumhur ulama Syafi\u2019i dan Maliki meletakkan '
+          'Sa\u2019i sebagai rukun, bukan sekadar wajib, berdasarkan '
+          'sabda Nabi SAW: "Sa\u2019ilah kamu, kerana Allah telah '
+          'mewajibkan Sa\u2019i ke atas kamu."',
       reflectionQuestions: <String>[
         'Apakah kaitan spiritual antara pergerakan Tawaf mengelilingi '
             'Kaabah dengan konsep ketauhidan dan penyerahan diri kepada '
@@ -349,14 +386,19 @@ class _HajjGuideScreenState extends State<HajjGuideScreen> {
           'Muzdalifah berperanan sebagai persinggahan yang menghimpunkan '
           'jemaah selepas kesibukan Wukuf di Arafah, sebelum meneruskan '
           'perjalanan ke Mina. Rasulullah SAW mengajarkan solat Maghrib '
-          'dan Isyak dijamak serta diqasarkan di sini — satu bentuk '
-          'rukhsah (kelonggaran) yang mencerminkan sifat Islam yang '
-          'mudah dan mengambil kira keletihan jemaah. Ulama berbeza '
-          'pendapat tentang hukum mabit (bermalam) di Muzdalifah — ada '
-          'yang mengategorikannya sebagai wajib dengan dam jika '
-          'ditinggalkan, manakala golongan lemah, wanita hamil, dan '
-          'warga emas diberikan kelonggaran untuk meneruskan perjalanan '
-          'lebih awal ke Mina.',
+          'dan Isyak dijamak takhir di sini — satu bentuk rukhsah '
+          '(kelonggaran) khusus bagi musafir yang mencerminkan sifat '
+          'Islam yang mudah dan mengambil kira keletihan jemaah. Dalam '
+          'Fasal Ifadah, Imam an-Nawawi menjelaskan bahawa pendapat '
+          'termu’tamad mazhab Syafi’i meletakkan mabit (bermalam) '
+          'di Muzdalifah sebagai wajib yang dikenakan dam jika '
+          'ditinggalkan tanpa uzur, bukan rukun — malah sebahagian tokoh '
+          'seperti Ibnu Khuzaimah menganggapnya rukun demi berhati-hati. '
+          'Mabit dianggap sempurna sekadar hadir sesaat sahaja selepas '
+          'tengah malam walaupun tidak singgah lama, dan golongan lemah, '
+          'wanita serta petugas boleh didahulukan pulang ke Mina lebih '
+          'awal (rukhsah yang diriwayatkan berlaku ke atas Aisyah dan '
+          'Ummu Habibah r.anhuma).',
       reflectionQuestions: <String>[
         'Apakah hikmah disyariatkan mabit (bermalam) di Muzdalifah '
             'sebelum meneruskan perjalanan ke Mina?',
@@ -474,6 +516,59 @@ class _HajjGuideScreenState extends State<HajjGuideScreen> {
     ),
     HajjGuideStepData(
       number: '09',
+      title: 'Hari Tasyriq di Mina',
+      location: 'Mina',
+      icon: HajjIconType.tasyriq,
+      accent: Color(0xFFA8722F),
+      summary:
+          'Bermalam dan melontar tiga jamrah pada 11, 12 dan (jika perlu) 13 Zulhijjah.',
+      actions: <String>[
+        'Bermalam di Mina sepanjang hari Tasyriq mengikut ketetapan.',
+        'Lontar Jamrah Ula, Wusta dan Aqabah mengikut susunan pada setiap hari.',
+        'Pastikan waktu lontaran selepas gelincir matahari (zawal).',
+        'Ketahui had nafar awal (13 Zulhijjah) dan nafar akhir sebelum bertolak.',
+      ],
+      checklist: <String>[
+        'Bermalam di Mina disahkan pada setiap malam Tasyriq.',
+        'Tiga jamrah dilontar mengikut susunan yang betul.',
+        'Bilangan batu bagi setiap jamrah mencukupi (7 biji).',
+        'Keputusan nafar awal atau nafar akhir dibuat sebelum matahari terbenam 12 Zulhijjah.',
+      ],
+      reminder:
+          'Sesiapa yang memilih nafar awal wajib bertolak sebelum matahari terbenam pada 12 Zulhijjah, jika tidak dia wajib bermalam dan melontar pada 13 Zulhijjah.',
+      duas: <GuideDua>[
+        GuideDua(
+          title: 'Takbir Setiap Lontaran',
+          arabic: 'اللَّهُ أَكْبَرُ',
+          translation: 'Allah Maha Besar.',
+          source:
+              'Dilafazkan pada setiap kali lontaran batu di ketiga-tiga '
+              'jamrah, susunan bermula dari Jamrah Ula (Sughra)',
+        ),
+      ],
+      academicInsight:
+          'Menurut Imam an-Nawawi dalam al-Idah, susunan lontaran pada '
+          'hari Tasyriq wajib bermula dengan Jamrah Ula (paling dekat '
+          'dengan Masjid Khaif), diikuti Jamrah Wusta, dan disudahi '
+          'dengan Jamrah Aqabah — tertib ini adalah wajib dan tidak sah '
+          'jika dibalik susunannya. Jemaah disunatkan berhenti sebentar '
+          'berdoa selepas melontar Jamrah Ula dan Wusta (menghadap '
+          'kiblat, mengangkat tangan), tetapi tidak berhenti berdoa '
+          'selepas Jamrah Aqabah. Bermalam (mabit) di Mina pada malam '
+          'Tasyriq adalah wajib menurut jumhur, dan meninggalkannya '
+          'tanpa uzur mewajibkan dam. Nafar awal (bertolak pada 12 '
+          'Zulhijjah selepas lontaran) adalah rukhsah yang disebut '
+          'dalam al-Quran (al-Baqarah: 203), manakala nafar akhir '
+          '(bermalam hingga 13 Zulhijjah) adalah lebih afdal.',
+      reflectionQuestions: <String>[
+        'Mengapakah susunan lontaran tiga jamrah (Ula, Wusta, Aqabah) '
+            'perlu diikuti dengan tertib dan tidak boleh dibalik?',
+        'Apakah perbezaan hukum dan kelebihan antara memilih nafar '
+            'awal berbanding nafar akhir pada hari Tasyriq?',
+      ],
+    ),
+    HajjGuideStepData(
+      number: '10',
       title: 'Tawaf Wada’',
       location: 'Masjidil Haram',
       icon: HajjIconType.tawafWada,
@@ -533,6 +628,169 @@ class _HajjGuideScreenState extends State<HajjGuideScreen> {
             'ia bukan sekadar pengalaman sekali lalu?',
       ],
     ),
+    HajjGuideStepData(
+      number: '11',
+      title: 'Umrah Berasingan',
+      location: 'Makkah / Tanaim',
+      icon: HajjIconType.umrahJourney,
+      accent: Color(0xFF3D8FA0),
+      summary:
+          'Laksanakan Umrah berasingan daripada Miqat terdekat semasa masih tinggal di Makkah.',
+      actions: <String>[
+        'Keluar ke miqat terdekat (contohnya Tanaim) untuk berihram Umrah.',
+        'Berniat Umrah dan baca talbiyah dari miqat.',
+        'Lakukan Tawaf tujuh pusingan dan Sa’i tujuh kali.',
+        'Bertahallul dengan bercukur atau bergunting rambut.',
+      ],
+      checklist: <String>[
+        'Miqat Umrah dikenal pasti dan dituju.',
+        'Niat dan talbiyah Umrah dilaksanakan.',
+        'Tawaf dan Sa’i Umrah selesai.',
+        'Tahallul Umrah dilakukan.',
+      ],
+      reminder:
+          'Umrah boleh diulangi beberapa kali semasa tinggal di Makkah, tetapi elakkan menyusahkan diri atau kumpulan.',
+      duas: <GuideDua>[
+        GuideDua(
+          title: 'Lafaz Niat Umrah',
+          arabic: 'اللَّهُمَّ لَبَّيْكَ عُمْرَةً',
+          translation: 'Ya Allah, aku sahut seruan-Mu untuk menunaikan Umrah.',
+          source: 'Lafaz yang diajarkan dalam kitab-kitab fiqh manasik',
+        ),
+      ],
+      academicInsight:
+          'Dalam Bab keempat al-Idah, Imam an-Nawawi menjelaskan bahawa '
+          'Umrah mempunyai rukun yang sama seperti Haji kecuali wukuf di '
+          'Arafah dan mabit di Muzdalifah serta Mina — iaitu ihram, '
+          'tawaf, sa’i, dan bercukur/bergunting (tahallul), disertai '
+          'tertib di antaranya. Umrah boleh dilakukan pada bila-bila '
+          'masa sepanjang tahun tanpa had waktu tertentu, berbeza dengan '
+          'Haji yang terikat dengan bulan-bulan tertentu. Bagi jemaah '
+          'yang telah berada di Makkah, Aisyah r.a. pernah diarahkan '
+          'Rasulullah SAW keluar ke Tan’im untuk berihram Umrah '
+          'yang berasingan daripada Umrah dalam Haji, dan amalan ini '
+          'menjadi asas kepada kebiasaan sebahagian jemaah melakukan '
+          'Umrah sunat tambahan semasa tinggal di Makkah.',
+      reflectionQuestions: <String>[
+        'Apakah rukun-rukun yang sama dan berbeza antara Umrah dan '
+            'Haji, dan mengapakah Umrah tidak terikat dengan waktu '
+            'tertentu?',
+        'Apakah hikmah di sebalik galakan melakukan Umrah tambahan '
+            'semasa masih berada di Makkah, tanpa menyusahkan diri?',
+      ],
+    ),
+    HajjGuideStepData(
+      number: '12',
+      title: 'Ziarah Madinah',
+      location: 'Masjid Nabawi',
+      icon: HajjIconType.madinah,
+      accent: Color(0xFF2F8F5B),
+      summary:
+          'Ziarahi Masjid Nabawi dan makam Rasulullah ﷺ dengan adab yang sempurna.',
+      actions: <String>[
+        'Niatkan ziarah semata-mata kerana mengunjungi masjid dan mendoakan salam.',
+        'Solat di Raudhah jika berkesempatan, tanpa bersesak-sesak.',
+        'Beri salam kepada Rasulullah ﷺ serta Abu Bakar dan Umar r.a.',
+        'Jaga adab, kesopanan suara dan tidak mengusap atau bertawaf di sekitar makam.',
+      ],
+      checklist: <String>[
+        'Adab ziarah difahami sebelum masuk.',
+        'Solat sunat di Masjid Nabawi dilaksanakan.',
+        'Salam kepada Rasulullah ﷺ disampaikan dengan sopan.',
+        'Ziarah dilakukan tanpa perbuatan yang bercanggah syarak.',
+      ],
+      reminder:
+          'Ziarah Madinah bukan sebahagian daripada rukun atau wajib Haji, tetapi amat dianjurkan kerana kelebihannya yang besar.',
+      duas: <GuideDua>[
+        GuideDua(
+          title: 'Salam kepada Rasulullah ﷺ',
+          arabic:
+              'السَّلَامُ عَلَيْكَ أَيُّهَا النَّبِيُّ وَرَحْمَةُ اللَّهِ '
+              'وَبَرَكَاتُهُ',
+          translation:
+              'Salam sejahtera ke atasmu wahai Nabi, serta rahmat Allah '
+              'dan berkat-Nya.',
+          source: 'Lafaz salam ziarah yang masyhur dalam kitab-kitab manasik',
+        ),
+      ],
+      academicInsight:
+          'Imam an-Nawawi meletakkan bab ziarah makam Rasulullah ﷺ '
+          'sebagai bab keenam dalam al-Idah, menukilkan sabda baginda: '
+          '"Sesiapa yang menziarahiku selepas kewafatanku, seolah-olah '
+          'dia menziarahiku semasa hayatku" — walaupun sebahagian ahli '
+          'hadis mengulas status sanadnya. Adab ziarah yang digariskan '
+          'termasuk menghadap makam dengan penuh kesopanan, merendahkan '
+          'suara, memberi salam dengan lafaz yang khusus, dan dilarang '
+          'sama sekali mengusap atau bertawaf mengelilingi makam kerana '
+          'perbuatan sedemikian hanya khusus bagi Kaabah. Ziarah ini '
+          'bukan syarat sah atau rukun Haji, tetapi digalakkan kerana '
+          'kelebihan solat di Masjid Nabawi yang berganda seribu kali '
+          'ganda berbanding masjid lain selain Masjidil Haram.',
+      reflectionQuestions: <String>[
+        'Apakah adab-adab yang perlu dijaga semasa menziarahi makam '
+            'Rasulullah ﷺ, dan mengapa tawaf atau usapan di sekitar '
+            'makam dilarang?',
+        'Mengapakah ziarah Madinah digalakkan walaupun ia bukan rukun '
+            'atau wajib Haji?',
+      ],
+    ),
+    HajjGuideStepData(
+      number: '13',
+      title: 'Kifarat dan Dam',
+      location: 'Rujukan umum',
+      icon: HajjIconType.dam,
+      accent: Color(0xFF8C5A3C),
+      summary:
+          'Fahami dam dan kifarat yang wajib apabila tertinggal wajib Haji atau melanggar larangan ihram.',
+      actions: <String>[
+        'Kenal pasti sama ada dam tertib-taqdir atau dam takhyir-taqdir.',
+        'Rujuk pembimbing Haji sebaik sahaja tersedar tertinggal wajib atau melanggar larangan.',
+        'Laksanakan dam mengikut jenis kesalahan (menyembelih, berpuasa atau bersedekah).',
+        'Pastikan penyembelihan dam dilakukan di tanah Haram dan diagihkan kepada fakir miskin.',
+      ],
+      checklist: <String>[
+        'Jenis kesalahan atau perkara yang tertinggal dikenal pasti.',
+        'Jenis dam yang wajib disemak bersama pembimbing Haji.',
+        'Dam dilaksanakan mengikut cara yang ditetapkan.',
+        'Bukti atau pengesahan pelaksanaan dam disimpan.',
+      ],
+      reminder:
+          'Jangan tangguhkan urusan dam tanpa sebab; segera rujuk pembimbing Haji yang berkelayakan.',
+      duas: <GuideDua>[
+        GuideDua(
+          title: 'Doa Memohon Kemudahan',
+          arabic: 'رَبَّنَا آتِنَا فِي الدُّنْيَا حَسَنَةً وَفِي الْآخِرَةِ حَسَنَةً',
+          translation:
+              'Wahai Tuhan kami, kurniakanlah kami kebaikan di dunia dan '
+              'kebaikan di akhirat.',
+          source: 'Surah al-Baqarah, ayat 201',
+        ),
+      ],
+      academicInsight:
+          'Bab ketujuh al-Idah membahagikan dam kepada dua jenis utama: '
+          'dam tertib dan taqdir (seperti dam meninggalkan wajib Haji — '
+          'contohnya tidak bermalam di Muzdalifah atau Mina — yang wajib '
+          'menyembelih seekor kambing, dan jika tidak mampu, berpuasa '
+          'tiga hari semasa Haji dan tujuh hari selepas pulang), serta '
+          'dam takhyir dan taqdir (seperti dam bagi larangan ihram '
+          'akibat uzur — mencukur kepala kerana sakit — yang membolehkan '
+          'jemaah memilih antara menyembelih, bersedekah kepada enam '
+          'orang miskin, atau berpuasa tiga hari). Setiap larangan '
+          'ihram (محظورات) yang dilanggar mempunyai kifaratnya yang '
+          'tersendiri mengikut jenis pelanggaran — sama ada memakai '
+          'pakaian berjahit, memotong kuku, memburu, atau melakukan '
+          'hubungan suami isteri sebelum tahallul awal, yang membawa '
+          'kepada batalnya Haji dan wajib meng-qada’nya pada tahun '
+          'berikutnya di samping membayar dam.',
+      reflectionQuestions: <String>[
+        'Apakah perbezaan antara dam tertib-taqdir dan dam '
+            'takhyir-taqdir, dan bagaimana ia berkait dengan sebab '
+            'kewajipannya?',
+        'Mengapakah penting bagi jemaah untuk segera merujuk pembimbing '
+            'Haji apabila tersedar tertinggal wajib atau melanggar '
+            'larangan ihram, berbanding menangguhkannya?',
+      ],
+    ),
   ];
 
   @override
@@ -543,7 +801,7 @@ class _HajjGuideScreenState extends State<HajjGuideScreen> {
 
   void _loadCompletedSteps() {
     final dynamic savedValue = widget.guideBox.get(
-      storageKey,
+      HajjGuideScreen.storageKey,
       defaultValue: <int>[],
     );
 
@@ -569,7 +827,7 @@ class _HajjGuideScreenState extends State<HajjGuideScreen> {
 
     final List<int> savedSteps = completedSteps.toList()..sort();
 
-    await widget.guideBox.put(storageKey, savedSteps);
+    await widget.guideBox.put(HajjGuideScreen.storageKey, savedSteps);
   }
 
   Future<void> _openStep(int index) async {
@@ -611,7 +869,10 @@ class _HajjGuideScreenState extends State<HajjGuideScreen> {
             ],
           ),
         ),
-        child: SafeArea(
+        child: Stack(
+          children: <Widget>[
+            const IslamicPatternOverlay(),
+            SafeArea(
           child: SingleChildScrollView(
             padding: const EdgeInsets.fromLTRB(20, 16, 20, 40),
             child: Center(
@@ -693,6 +954,8 @@ class _HajjGuideScreenState extends State<HajjGuideScreen> {
               ),
             ),
           ),
+        ),
+          ],
         ),
       ),
     );
@@ -1133,87 +1396,70 @@ class _TimelineStep extends StatelessWidget {
         Expanded(
           child: Padding(
             padding: const EdgeInsets.only(bottom: 14),
-            child: Material(
-              color: Colors.transparent,
-              child: InkWell(
-                onTap: onTap,
-                borderRadius: BorderRadius.circular(22),
-                child: Container(
-                  padding: const EdgeInsets.all(18),
-                  decoration: BoxDecoration(
-                    color: palette.glassSurface,
-                    borderRadius: BorderRadius.circular(22),
-                    border: Border.all(
-                      color: isCompleted
-                          ? step.accent.withValues(alpha: 0.32)
-                          : palette.glassBorder,
+            child: HajjHoverCard(
+              accent: step.accent,
+              onTap: onTap,
+              borderRadius: 22,
+              padding: const EdgeInsets.all(18),
+              restBorderColor: isCompleted
+                  ? step.accent.withValues(alpha: 0.32)
+                  : null,
+              child: Row(
+                children: <Widget>[
+                  Container(
+                    width: 48,
+                    height: 48,
+                    decoration: BoxDecoration(
+                      color: step.accent.withValues(alpha: 0.11),
+                      borderRadius: BorderRadius.circular(15),
                     ),
-                    boxShadow: <BoxShadow>[
-                      BoxShadow(
-                        color: palette.shadow,
-                        blurRadius: 20,
-                        offset: const Offset(0, 10),
-                      ),
-                    ],
+                    child: HajjIcon(
+                      type: step.icon,
+                      color: step.accent,
+                      size: 28,
+                    ),
                   ),
-                  child: Row(
-                    children: <Widget>[
-                      Container(
-                        width: 48,
-                        height: 48,
-                        decoration: BoxDecoration(
-                          color: step.accent.withValues(alpha: 0.11),
-                          borderRadius: BorderRadius.circular(15),
+                  const SizedBox(width: 14),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Text(
+                          step.title,
+                          style: GoogleFonts.playfairDisplay(
+                            color: colors.onSurface,
+                            fontSize: 17,
+                            fontWeight: FontWeight.w700,
+                          ),
                         ),
-                        child: HajjIcon(
-                          type: step.icon,
-                          color: step.accent,
-                          size: 28,
+                        const SizedBox(height: 5),
+                        Text(
+                          step.location,
+                          style: TextStyle(
+                            color: step.accent,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w800,
+                          ),
                         ),
-                      ),
-                      const SizedBox(width: 14),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            Text(
-                              step.title,
-                              style: GoogleFonts.playfairDisplay(
-                                color: colors.onSurface,
-                                fontSize: 17,
-                                fontWeight: FontWeight.w700,
-                              ),
-                            ),
-                            const SizedBox(height: 5),
-                            Text(
-                              step.location,
-                              style: TextStyle(
-                                color: step.accent,
-                                fontSize: 12,
-                                fontWeight: FontWeight.w800,
-                              ),
-                            ),
-                            const SizedBox(height: 7),
-                            Text(
-                              step.summary,
-                              style: TextStyle(
-                                color: palette.mutedText,
-                                fontSize: 12,
-                                height: 1.45,
-                              ),
-                            ),
-                          ],
+                        const SizedBox(height: 7),
+                        Text(
+                          step.summary,
+                          style: TextStyle(
+                            color: palette.mutedText,
+                            fontSize: 12,
+                            height: 1.45,
+                          ),
                         ),
-                      ),
-                      const SizedBox(width: 8),
-                      Icon(
-                        Icons.arrow_forward_ios_rounded,
-                        color: palette.mutedText,
-                        size: 16,
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
+                  const SizedBox(width: 8),
+                  Icon(
+                    Icons.arrow_forward_ios_rounded,
+                    color: palette.mutedText,
+                    size: 16,
+                  ),
+                ],
               ),
             ),
           ),
@@ -1510,10 +1756,13 @@ class _GuidePrototypeNotice extends StatelessWidget {
           const SizedBox(width: 11),
           Expanded(
             child: Text(
-              'Panduan ini ialah ringkasan prototaip. '
-              'Urutan dan hukum akhir hendaklah disemak '
-              'bersama pembimbing Haji atau panel syariah '
-              'yang berautoriti.',
+              'Panduan ini adalah prototaip yang diambil '
+              'daripada kitab al-Idah fi Manasik al-Hajj wa '
+              'al-Umrah karangan Imam an-Nawawi (mazhab '
+              'Syafi’i). Urutan dan hukum akhir hendaklah '
+              'disemak bersama pembimbing Haji atau panel '
+              'syariah yang berautoriti sebelum dijadikan '
+              'rujukan hukum.',
               style: TextStyle(
                 color: palette.mutedText,
                 fontSize: 12,
