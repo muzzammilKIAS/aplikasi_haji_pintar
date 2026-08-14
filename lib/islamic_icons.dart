@@ -25,6 +25,9 @@ enum HajjIconType {
   quran,
   crescent,
   star,
+  tasyriq,
+  umrahJourney,
+  madinah,
 }
 
 class HajjIcon extends StatelessWidget {
@@ -110,6 +113,15 @@ class HajjIcon extends StatelessWidget {
 
       case HajjIconType.star:
         return Icons.star_rounded;
+
+      case HajjIconType.tasyriq:
+        return Icons.grain_rounded;
+
+      case HajjIconType.umrahJourney:
+        return Icons.tour_rounded;
+
+      case HajjIconType.madinah:
+        return Icons.mosque_rounded;
     }
   }
 
@@ -186,6 +198,38 @@ class HajjIcon extends StatelessWidget {
         width: size,
         height: size,
         child: CustomPaint(painter: _CrescentPainter(color: color)),
+      );
+    }
+
+    if (type == HajjIconType.tasyriq) {
+      return SizedBox(
+        width: size,
+        height: size,
+        child: CustomPaint(painter: _TasyriqPainter(color: color)),
+      );
+    }
+
+    if (type == HajjIconType.umrahJourney) {
+      return SizedBox(
+        width: size,
+        height: size,
+        child: CustomPaint(painter: _UmrahPainter(color: color)),
+      );
+    }
+
+    if (type == HajjIconType.madinah) {
+      return SizedBox(
+        width: size,
+        height: size,
+        child: CustomPaint(painter: _MadinahPainter(color: color)),
+      );
+    }
+
+    if (type == HajjIconType.dam) {
+      return SizedBox(
+        width: size,
+        height: size,
+        child: CustomPaint(painter: _DamPainter(color: color)),
       );
     }
 
@@ -755,6 +799,275 @@ class _CrescentPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant _CrescentPainter oldDelegate) {
+    return oldDelegate.color != color;
+  }
+}
+
+/// Melukis tiga tiang jamrah (Ula, Wusta, Aqabah) dengan batu-batu kecil
+/// melayang ke arahnya — menggambarkan lontaran sepanjang hari Tasyriq,
+/// lebih khusus berbanding ikon butiran generik.
+class _TasyriqPainter extends CustomPainter {
+  _TasyriqPainter({required this.color});
+
+  final Color color;
+
+  static const Color _batuKelabu = Color(0xFF8C8C8C);
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final double s = size.shortestSide;
+    final double dasarY = size.height * 0.5 + s * 0.34;
+    final Paint tiangCat = Paint()..color = color;
+
+    final List<double> pusatX = <double>[
+      size.width / 2 - s * 0.30,
+      size.width / 2,
+      size.width / 2 + s * 0.30,
+    ];
+    final List<double> tinggiTiang = <double>[s * 0.42, s * 0.56, s * 0.42];
+
+    for (int i = 0; i < pusatX.length; i++) {
+      final Rect tiang = Rect.fromCenter(
+        center: Offset(pusatX[i], dasarY - tinggiTiang[i] / 2),
+        width: s * 0.14,
+        height: tinggiTiang[i],
+      );
+      canvas.drawRRect(
+        RRect.fromRectAndRadius(tiang, Radius.circular(s * 0.05)),
+        tiangCat,
+      );
+    }
+
+    canvas.drawRRect(
+      RRect.fromRectAndRadius(
+        Rect.fromLTWH(size.width / 2 - s * 0.46, dasarY, s * 0.92, s * 0.07),
+        Radius.circular(s * 0.03),
+      ),
+      tiangCat,
+    );
+
+    // Batu-batu kecil melayang menuju tiang tengah, menggambarkan lontaran.
+    final Paint batu = Paint()..color = _batuKelabu;
+    final List<Offset> titikBatu = <Offset>[
+      Offset(size.width / 2 - s * 0.10, dasarY - s * 0.72),
+      Offset(size.width / 2 + s * 0.02, dasarY - s * 0.80),
+      Offset(size.width / 2 + s * 0.14, dasarY - s * 0.70),
+    ];
+    for (final Offset titik in titikBatu) {
+      canvas.drawCircle(titik, s * 0.045, batu);
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant _TasyriqPainter oldDelegate) {
+    return oldDelegate.color != color;
+  }
+}
+
+/// Melukis bulan sabit kecil di atas laluan pusingan ringkas mengelilingi
+/// Kaabah mini — Umrah sebagai "haji kecil", dibezakan daripada ikon
+/// tawaf penuh melalui sabit di atasnya dan liputan pusingan yang lebih
+/// pendek.
+class _UmrahPainter extends CustomPainter {
+  _UmrahPainter({required this.color});
+
+  final Color color;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final double s = size.shortestSide;
+    final Offset pusatKaabah = Offset(size.width / 2, size.height * 0.60);
+
+    final double sisiKubus = s * 0.26;
+    final Rect kubusRect = Rect.fromCenter(
+      center: pusatKaabah,
+      width: sisiKubus,
+      height: sisiKubus,
+    );
+    canvas.drawRRect(
+      RRect.fromRectAndRadius(kubusRect, Radius.circular(sisiKubus * 0.18)),
+      Paint()..color = color,
+    );
+
+    final double jejari = s * 0.34;
+    final Paint gelang = Paint()
+      ..color = color
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = s * 0.065
+      ..strokeCap = StrokeCap.round;
+
+    canvas.drawArc(
+      Rect.fromCircle(center: pusatKaabah, radius: jejari),
+      -math.pi * 0.15,
+      math.pi * 1.3,
+      false,
+      gelang,
+    );
+
+    // Sabit kecil di penjuru atas, melambangkan bulan (waktu umrah bebas).
+    final Offset pusatSabit = Offset(
+      size.width / 2 + s * 0.30,
+      size.height * 0.20,
+    );
+    final double jejariSabit = s * 0.16;
+    final Path luar = Path()
+      ..addOval(Rect.fromCircle(center: pusatSabit, radius: jejariSabit));
+    final Path dalam = Path()
+      ..addOval(
+        Rect.fromCircle(
+          center: Offset(pusatSabit.dx + jejariSabit * 0.4, pusatSabit.dy),
+          radius: jejariSabit * 0.8,
+        ),
+      );
+    canvas.drawPath(
+      Path.combine(PathOperation.difference, luar, dalam),
+      Paint()..color = color,
+    );
+  }
+
+  @override
+  bool shouldRepaint(covariant _UmrahPainter oldDelegate) {
+    return oldDelegate.color != color;
+  }
+}
+
+/// Melukis kubah masjid dengan menara di kedua sisi — mewakili Masjid
+/// Nabawi di Madinah. Kubah kekal beraksen hijau fizikal (Kubah Hijau)
+/// tanpa mengira tema, sama seperti jalur emas Kaabah.
+class _MadinahPainter extends CustomPainter {
+  _MadinahPainter({required this.color});
+
+  final Color color;
+
+  static const Color _kubahHijau = Color(0xFF2F8F5B);
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final double s = size.shortestSide;
+    final double dasarY = size.height * 0.5 + s * 0.32;
+    final Paint isi = Paint()..color = color;
+
+    // Bangunan utama masjid.
+    final Rect badan = Rect.fromLTWH(
+      size.width / 2 - s * 0.34,
+      dasarY - s * 0.30,
+      s * 0.68,
+      s * 0.30,
+    );
+    canvas.drawRRect(
+      RRect.fromRectAndRadius(badan, Radius.circular(s * 0.03)),
+      isi,
+    );
+
+    // Menara kiri dan kanan.
+    for (final double arah in <double>[-1, 1]) {
+      final Rect menara = Rect.fromCenter(
+        center: Offset(size.width / 2 + arah * s * 0.40, dasarY - s * 0.24),
+        width: s * 0.08,
+        height: s * 0.48,
+      );
+      canvas.drawRRect(
+        RRect.fromRectAndRadius(menara, Radius.circular(s * 0.02)),
+        isi,
+      );
+      canvas.drawCircle(
+        Offset(menara.center.dx, menara.top - s * 0.02),
+        s * 0.045,
+        isi,
+      );
+    }
+
+    // Kubah hijau di tengah.
+    canvas.drawArc(
+      Rect.fromCenter(
+        center: Offset(size.width / 2, badan.top),
+        width: s * 0.44,
+        height: s * 0.40,
+      ),
+      math.pi,
+      math.pi,
+      true,
+      Paint()..color = _kubahHijau,
+    );
+    canvas.drawRect(
+      Rect.fromLTWH(size.width / 2 - s * 0.02, badan.top - s * 0.20, s * 0.04, s * 0.10),
+      Paint()..color = _kubahHijau,
+    );
+  }
+
+  @override
+  bool shouldRepaint(covariant _MadinahPainter oldDelegate) {
+    return oldDelegate.color != color;
+  }
+}
+
+/// Melukis bentuk haiwan korban ringkas (kepala + tanduk melengkung) —
+/// menggambarkan dam/kifarat dengan lebih bermakna berbanding ikon
+/// "sumbangan tangan" generik.
+class _DamPainter extends CustomPainter {
+  _DamPainter({required this.color});
+
+  final Color color;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final double s = size.shortestSide;
+    final Offset pusat = Offset(size.width / 2, size.height * 0.56);
+    final Paint isi = Paint()..color = color;
+
+    // Kepala.
+    canvas.drawOval(
+      Rect.fromCenter(center: pusat, width: s * 0.50, height: s * 0.42),
+      isi,
+    );
+
+    // Muncung.
+    canvas.drawRRect(
+      RRect.fromRectAndRadius(
+        Rect.fromCenter(
+          center: Offset(pusat.dx, pusat.dy + s * 0.24),
+          width: s * 0.26,
+          height: s * 0.18,
+        ),
+        Radius.circular(s * 0.06),
+      ),
+      isi,
+    );
+
+    // Tanduk melengkung kiri dan kanan.
+    final Paint tanduk = Paint()
+      ..color = color
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = s * 0.07
+      ..strokeCap = StrokeCap.round;
+
+    for (final double arah in <double>[-1, 1]) {
+      final Path lengkokTanduk = Path()
+        ..moveTo(pusat.dx + arah * s * 0.16, pusat.dy - s * 0.20)
+        ..quadraticBezierTo(
+          pusat.dx + arah * s * 0.42,
+          pusat.dy - s * 0.34,
+          pusat.dx + arah * s * 0.30,
+          pusat.dy - s * 0.50,
+        );
+      canvas.drawPath(lengkokTanduk, tanduk);
+    }
+
+    // Telinga kiri dan kanan.
+    for (final double arah in <double>[-1, 1]) {
+      canvas.drawOval(
+        Rect.fromCenter(
+          center: Offset(pusat.dx + arah * s * 0.28, pusat.dy - s * 0.02),
+          width: s * 0.14,
+          height: s * 0.22,
+        ),
+        isi,
+      );
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant _DamPainter oldDelegate) {
     return oldDelegate.color != color;
   }
 }

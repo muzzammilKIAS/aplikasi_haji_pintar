@@ -1,21 +1,22 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
+
 import 'app_theme.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'theme_controller.dart';
-import 'home_dashboard.dart';
-import 'islamic_icons.dart';
 
+/// Haji Pintar Emerald Motion Splash (SILENT) — gaya sama seperti splash
+/// e-Hadis40: aurora latar, ikon 3D timbul (extrusion), lockup jenama
+/// dengan light sweep, kemudian dialog penafian sebelum masuk dashboard.
+///
+/// Sequence:
+///   1. background + aurora zamrud fade in
+///   2. ikon Haji Pintar timbul (lapisan kedalaman + perspektif)
+///   3. lockup jenama "Haji" + lencana "PINTAR" reveal
+///   4. sapuan cahaya (light sweep) pada teks
+///   5. hold
+///   6. -> Dialog Penafian (bukan terus dashboard)
 class SplashScreen extends StatefulWidget {
-  const SplashScreen({
-    required this.themeController,
-    required this.settingsBox,
-    super.key,
-  });
+  const SplashScreen({required this.onComplete, super.key});
 
-  final ThemeController themeController;
-  final dynamic settingsBox;
+  final VoidCallback onComplete;
 
   @override
   State<SplashScreen> createState() => _SplashScreenState();
@@ -23,302 +24,556 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen>
     with TickerProviderStateMixin {
-  late AnimationController _animationController;
-  late AnimationController _introAnimationController;
-  late Animation<double> _introScaleAnimation;
-  late Animation<Offset> _introSlideAnimation;
-  late Animation<double> _glowPulse;
-  late final PageController _introPageController;
+  late final AnimationController _controller;
+  late final AnimationController _breatheController;
+  late final Animation<double> _breathe;
+  late final Animation<double> _aurora;
+  late final Animation<double> _markOpacity;
+  late final Animation<double> _markScale;
+  late final Animation<double> _markRotateY;
+  late final Animation<double> _wordOpacity;
+  late final Animation<double> _badgeOpacity;
+  late final Animation<double> _badgeScale;
+  late final Animation<double> _sweep;
 
-  bool _sudahMula = false;
-  int _introPage = 0;
+  bool _reducedMotion = false;
+  bool _reducedMotionResolved = false;
 
   @override
   void initState() {
     super.initState();
-
-    _animationController = AnimationController(
+    _controller = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 1500),
+      duration: const Duration(milliseconds: 2700),
     );
-    _introAnimationController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 650),
-    )..forward();
-    final CurvedAnimation introCurve = CurvedAnimation(
-      parent: _introAnimationController,
-      curve: Curves.easeOutCubic,
-    );
-    _introScaleAnimation = Tween<double>(begin: 0.88, end: 1).animate(introCurve);
-    _introSlideAnimation = Tween<Offset>(
-      begin: const Offset(0, 0.08),
-      end: Offset.zero,
-    ).animate(introCurve);
 
-    _glowPulse = Tween<double>(begin: 0.85, end: 1.15).animate(
+    _aurora = CurvedAnimation(
+      parent: _controller,
+      curve: const Interval(0.00, 0.42, curve: Curves.easeInOut),
+    );
+
+    _markOpacity = CurvedAnimation(
+      parent: _controller,
+      curve: const Interval(0.04, 0.28, curve: Curves.easeOutCubic),
+    );
+    _markScale = TweenSequence<double>(<TweenSequenceItem<double>>[
+      TweenSequenceItem<double>(
+        tween: Tween<double>(
+          begin: 0.86,
+          end: 1.03,
+        ).chain(CurveTween(curve: Curves.easeOutCubic)),
+        weight: 65,
+      ),
+      TweenSequenceItem<double>(
+        tween: Tween<double>(
+          begin: 1.03,
+          end: 1.0,
+        ).chain(CurveTween(curve: Curves.easeInOut)),
+        weight: 35,
+      ),
+    ]).animate(
       CurvedAnimation(
-        parent: _animationController,
-        curve: Curves.easeInOutSine,
+        parent: _controller,
+        curve: const Interval(0.04, 0.44, curve: Curves.easeInOut),
+      ),
+    );
+    _markRotateY = Tween<double>(begin: -0.07, end: 0.0).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: const Interval(0.04, 0.44, curve: Curves.easeOutCubic),
       ),
     );
 
-    _introPageController = PageController();
-  }
+    _wordOpacity = CurvedAnimation(
+      parent: _controller,
+      curve: const Interval(0.30, 0.50, curve: Curves.easeOutCubic),
+    );
 
-  Future<void> _mulakanSkrin() async {
-    setState(() {
-      _sudahMula = true;
+    _badgeOpacity = CurvedAnimation(
+      parent: _controller,
+      curve: const Interval(0.40, 0.58, curve: Curves.easeOutCubic),
+    );
+    _badgeScale = TweenSequence<double>(<TweenSequenceItem<double>>[
+      TweenSequenceItem<double>(
+        tween: Tween<double>(
+          begin: 0.88,
+          end: 1.02,
+        ).chain(CurveTween(curve: Curves.easeOutCubic)),
+        weight: 65,
+      ),
+      TweenSequenceItem<double>(
+        tween: Tween<double>(
+          begin: 1.02,
+          end: 1.0,
+        ).chain(CurveTween(curve: Curves.easeInOut)),
+        weight: 35,
+      ),
+    ]).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: const Interval(0.40, 0.60, curve: Curves.easeInOut),
+      ),
+    );
+
+    _sweep = CurvedAnimation(
+      parent: _controller,
+      curve: const Interval(0.66, 0.86, curve: Curves.easeInOut),
+    );
+
+    _breatheController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 2400),
+    )..repeat(reverse: true);
+    _breathe = Tween<double>(begin: 0.0, end: -8.0).animate(
+      CurvedAnimation(parent: _breatheController, curve: Curves.easeInOut),
+    );
+
+    _controller.forward().whenComplete(() {
+      if (mounted) {
+        _showDisclaimer();
+      }
     });
-    _animationController.forward();
   }
 
-  void _masukKeDashboard() {
-    Navigator.of(context).pushReplacement(
-      PageRouteBuilder<void>(
-        transitionDuration: const Duration(milliseconds: 800),
-        pageBuilder: (context, animation, secondaryAnimation) {
-          return FadeTransition(
-            opacity: animation,
-            child: HalamanUtama(themeController: widget.themeController),
-          );
-        },
-      ),
-    );
-  }
-
-  void _simpanOnboardingLanjut() {
-    widget.settingsBox.put('onboarding_completed', true);
-    _masukKeDashboard();
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_reducedMotionResolved) {
+      _reducedMotionResolved = true;
+      _reducedMotion = MediaQuery.maybeOf(context)?.disableAnimations ?? false;
+    }
   }
 
   @override
   void dispose() {
-    _animationController.dispose();
-    _introAnimationController.dispose();
-    _introPageController.dispose();
+    _breatheController.dispose();
+    _controller.dispose();
     super.dispose();
+  }
+
+  Future<void> _showDisclaimer() async {
+    final bool? accepted = await showDialog<bool>(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => const _DisclaimerDialog(),
+    );
+    if (!mounted) {
+      return;
+    }
+    // accepted boleh null (back) — kekal splash, tidak masuk app.
+    if (accepted == true) {
+      widget.onComplete();
+    } else {
+      _controller.reset();
+      _controller.forward().whenComplete(() {
+        if (mounted) {
+          _showDisclaimer();
+        }
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    final HajjColors palette = context.hajjColors;
+    final bool isDark = context.isDarkMode;
+    final Color bg = palette.gradientStart;
+    final Color onBg = isDark ? palette.textPrimary : const Color(0xFF0B2A52);
+
     return Scaffold(
-      body: Container(
-        width: double.infinity,
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: <Color>[
-              context.hajjColors.gradientStart,
-              context.hajjColors.gradientMiddle,
-              context.hajjColors.gradientEnd,
-            ],
-          ),
+      backgroundColor: bg,
+      body: SizedBox.expand(
+        child: AnimatedBuilder(
+          animation: Listenable.merge(<Listenable>[
+            _controller,
+            _breatheController,
+          ]),
+          builder: (BuildContext context, Widget? child) {
+            return Stack(
+              children: <Widget>[
+                _IridescentAurora(
+                  progress: _aurora.value,
+                  isDark: isDark,
+                  palette: palette,
+                ),
+                Center(
+                  child: _SplashLockup(
+                    onBg: onBg,
+                    palette: palette,
+                    markOpacity: _markOpacity.value,
+                    markScale: _markScale.value,
+                    markRotateY: _markRotateY.value,
+                    wordOpacity: _wordOpacity.value,
+                    badgeOpacity: _badgeOpacity.value,
+                    badgeScale: _badgeScale.value,
+                    sweepProgress: _sweep.value,
+                    breathe: _reducedMotion ? 0 : _breathe.value,
+                    isDark: isDark,
+                  ),
+                ),
+              ],
+            );
+          },
         ),
-        child: _sudahMula
-            ? _binaPengenalan()
-            : _binaPaparanMula(),
+      ),
+    );
+  }
+}
+
+class _IridescentAurora extends StatelessWidget {
+  const _IridescentAurora({
+    required this.progress,
+    required this.isDark,
+    required this.palette,
+  });
+
+  final double progress;
+  final bool isDark;
+  final HajjColors palette;
+
+  @override
+  Widget build(BuildContext context) {
+    final Color base = isDark ? palette.gradientStart : const Color(0xFF14468F);
+    return Container(
+      decoration: BoxDecoration(
+        gradient: RadialGradient(
+          center: const Alignment(0.0, -0.2),
+          radius: 1.4,
+          colors: <Color>[
+            palette.emerald.withValues(alpha: 0.30),
+            base.withValues(alpha: 0.9),
+            base,
+          ],
+          stops: const <double>[0.0, 0.55, 1.0],
+        ),
+      ),
+      child: Stack(
+        children: <Widget>[
+          Positioned(
+            top: -120,
+            left: -80,
+            child: _glowCircle(340, palette.secondaryColor, 0.30),
+          ),
+          Positioned(
+            top: -40,
+            right: -100,
+            child: _glowCircle(300, palette.skySoft, 0.24),
+          ),
+          Positioned(
+            bottom: -140,
+            left: 40,
+            child: _glowCircle(360, palette.sageSoft, 0.20),
+          ),
+          Positioned(
+            bottom: -80,
+            right: -40,
+            child: _glowCircle(280, palette.gold, 0.18),
+          ),
+        ],
       ),
     );
   }
 
-  Widget _binaPaparanMula() {
-    final dynamic palette = context.hajjColors;
-
-    return Stack(
-      fit: StackFit.expand,
-      children: <Widget>[
-        Image.asset(
-          'assets/images/muka_depan.jpg',
-          fit: BoxFit.cover,
-          errorBuilder: (context, error, stackTrace) {
-            return Container(color: palette.gradientStart);
-          },
+  Widget _glowCircle(double size, Color color, double alpha) {
+    return IgnorePointer(
+      child: Container(
+        width: size,
+        height: size,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: color.withValues(alpha: alpha * progress),
         ),
-        Container(color: Colors.black.withValues(alpha: 0.40)),
-        SafeArea(
-          child: Align(
-            alignment: const Alignment(0, -0.62),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                ScaleTransition(
-                  scale: _glowPulse,
-                  child: Container(
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      boxShadow: <BoxShadow>[
-                        BoxShadow(
-                          color: palette.gold.withValues(alpha: 0.35),
-                          blurRadius: 30,
-                          spreadRadius: 8,
-                        ),
-                        BoxShadow(
-                          color: palette.gold.withValues(alpha: 0.18),
-                          blurRadius: 60,
-                          spreadRadius: 20,
-                        ),
-                      ],
-                    ),
-                    child: Container(
-                      padding: const EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color: palette.gold.withValues(alpha: 0.35),
-                          width: 1.5,
-                        ),
-                      ),
-                      child: Icon(
-                        Icons.mosque_rounded,
-                        color: palette.gold,
-                        size: 34,
-                        shadows: <Shadow>[
-                          Shadow(
-                            color: palette.gold.withValues(alpha: 0.5),
-                            blurRadius: 18,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
+      ),
+    );
+  }
+}
+
+class _SplashLockup extends StatelessWidget {
+  const _SplashLockup({
+    required this.onBg,
+    required this.palette,
+    required this.markOpacity,
+    required this.markScale,
+    required this.markRotateY,
+    required this.wordOpacity,
+    required this.badgeOpacity,
+    required this.badgeScale,
+    required this.sweepProgress,
+    required this.breathe,
+    required this.isDark,
+  });
+
+  final Color onBg;
+  final HajjColors palette;
+  final double markOpacity;
+  final double markScale;
+  final double markRotateY;
+  final double wordOpacity;
+  final double badgeOpacity;
+  final double badgeScale;
+  final double sweepProgress;
+  final double breathe;
+  final bool isDark;
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (BuildContext context, BoxConstraints constraints) {
+        final double width = constraints.maxWidth;
+        final double logoSize = width < 420
+            ? 170.0
+            : width < 800
+            ? 200.0
+            : 240.0;
+        final double wordmarkSize = width < 420
+            ? 50.0
+            : width < 800
+            ? 64.0
+            : 80.0;
+        final double badgeSize = width < 420 ? 22.0 : 26.0;
+
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 32),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              Transform.translate(
+                offset: Offset(0, breathe),
+                child: _ThreeDLogoMark(
+                  size: logoSize,
+                  opacity: markOpacity,
+                  scale: markScale,
+                  rotateY: markRotateY,
+                  isDark: isDark,
+                  palette: palette,
                 ),
-                const SizedBox(height: 12),
-                Text(
-                  'HAJI PINTAR',
-                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                    color: Colors.white,
-                    fontSize: 26,
-                    letterSpacing: 3,
-                    shadows: <Shadow>[
-                      Shadow(
-                        color: Colors.black.withValues(alpha: 0.3),
-                        blurRadius: 12,
-                        offset: const Offset(0, 2),
-                      ),
-                    ],
-                  ),
+              ),
+              const SizedBox(height: 30),
+              _BrandLockup(
+                onBg: onBg,
+                palette: palette,
+                wordmarkSize: wordmarkSize,
+                badgeSize: badgeSize,
+                wordOpacity: wordOpacity,
+                badgeOpacity: badgeOpacity,
+                badgeScale: badgeScale,
+                sweepProgress: sweepProgress,
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+}
+
+class _ThreeDLogoMark extends StatelessWidget {
+  const _ThreeDLogoMark({
+    required this.size,
+    required this.opacity,
+    required this.scale,
+    required this.rotateY,
+    required this.isDark,
+    required this.palette,
+  });
+
+  final double size;
+  final double opacity;
+  final double scale;
+  final double rotateY;
+  final bool isDark;
+  final HajjColors palette;
+
+  static const String _logoAsset = 'assets/images/app_icon.png';
+
+  @override
+  Widget build(BuildContext context) {
+    return Opacity(
+      opacity: opacity,
+      child: Transform(
+        alignment: Alignment.center,
+        transform: Matrix4.identity()
+          ..setEntry(3, 2, 0.0012)
+          ..rotateY(rotateY)
+          ..scaleByDouble(scale, scale, scale, 1),
+        child: Stack(
+          alignment: Alignment.center,
+          children: <Widget>[
+            // Bayang di tapak.
+            Transform.translate(
+              offset: const Offset(0, 18),
+              child: Container(
+                width: size * 0.72,
+                height: size * 0.18,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(999),
+                  color: Colors.black.withValues(alpha: 0.28),
                 ),
-                const SizedBox(height: 8),
-                Container(
-                  width: 40,
-                  height: 1.4,
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: <Color>[
-                        palette.gold.withValues(alpha: 0.8),
-                        palette.gold.withValues(alpha: 0.2),
-                        palette.gold.withValues(alpha: 0.8),
-                      ],
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'Persediaan Ilmu Menuju Haji yang Mabrur',
-                  style: TextStyle(
-                    color: Colors.white.withValues(alpha: 0.75),
-                    fontSize: 12.5,
-                    letterSpacing: 0.6,
-                  ),
-                ),
-              ],
+              ),
             ),
+            // Lapisan timbul (extrusion) — memberi kesan kedalaman 3D.
+            _extrusion(size, 14, 8, 0.10),
+            _extrusion(size, 10, 6, 0.14),
+            _extrusion(size, 6, 4, 0.20),
+            _extrusion(size, 3, 2, 0.28),
+            // Cahaya di belakang ikon.
+            Container(
+              width: size + 30,
+              height: size + 30,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                boxShadow: <BoxShadow>[
+                  BoxShadow(
+                    color: palette.emerald.withValues(alpha: 0.30),
+                    blurRadius: 60,
+                    spreadRadius: 10,
+                  ),
+                ],
+              ),
+            ),
+            // Ikon rasmi Haji Pintar di hadapan.
+            ClipRRect(
+              borderRadius: BorderRadius.circular(size * 0.22),
+              child: Image.asset(
+                _logoAsset,
+                width: size,
+                height: size,
+                fit: BoxFit.contain,
+                filterQuality: FilterQuality.high,
+                errorBuilder: (BuildContext context, Object error, StackTrace? stack) {
+                  return Container(
+                    width: size,
+                    height: size,
+                    decoration: BoxDecoration(
+                      color: palette.emerald,
+                      borderRadius: BorderRadius.circular(size * 0.22),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _extrusion(double size, double dy, double dx, double alpha) {
+    return Transform.translate(
+      offset: Offset(dx, dy),
+      child: Opacity(
+        opacity: alpha,
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(size * 0.22),
+          child: Image.asset(
+            _logoAsset,
+            width: size,
+            height: size,
+            fit: BoxFit.contain,
+            filterQuality: FilterQuality.high,
+            color: isDark ? Colors.black : const Color(0xFF0B2A52),
+            colorBlendMode: BlendMode.srcATop,
           ),
         ),
-        Align(
-          alignment: const Alignment(0, 0.30),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24),
+      ),
+    );
+  }
+}
+
+class _BrandLockup extends StatelessWidget {
+  const _BrandLockup({
+    required this.onBg,
+    required this.palette,
+    required this.wordmarkSize,
+    required this.badgeSize,
+    required this.wordOpacity,
+    required this.badgeOpacity,
+    required this.badgeScale,
+    required this.sweepProgress,
+  });
+
+  final Color onBg;
+  final HajjColors palette;
+  final double wordmarkSize;
+  final double badgeSize;
+  final double wordOpacity;
+  final double badgeOpacity;
+  final double badgeScale;
+  final double sweepProgress;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: <Widget>[
+        Opacity(
+          opacity: wordOpacity,
+          child: ShaderMask(
+            shaderCallback: (Rect bounds) {
+              return LinearGradient(
+                begin: Alignment.centerLeft,
+                end: Alignment.centerRight,
+                colors: <Color>[palette.emerald, onBg, palette.gold],
+                stops: <double>[
+                  sweepProgress - 0.15,
+                  sweepProgress,
+                  sweepProgress + 0.15,
+                ].map((double v) => v.clamp(0.0, 1.0)).toList(),
+              ).createShader(bounds);
+            },
+            blendMode: BlendMode.srcATop,
             child: Text(
-              'بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ',
-              textDirection: TextDirection.rtl,
-              textAlign: TextAlign.center,
-              style: GoogleFonts.amiri(
-                color: palette.gold.withValues(alpha: 0.7),
-                fontSize: 20,
-                fontWeight: FontWeight.w500,
-                height: 1.5,
+              'Haji',
+              style: TextStyle(
+                fontSize: wordmarkSize,
+                fontWeight: FontWeight.w900,
+                letterSpacing: -1.0,
+                height: 1.0,
+                color: Colors.white,
               ),
             ),
           ),
         ),
-        SafeArea(
-          child: Align(
-            alignment: const Alignment(0, 0.75),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(40),
-              child: BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.15),
-                    borderRadius: BorderRadius.circular(40),
-                    border: Border.all(
-                      color: Colors.white.withValues(alpha: 0.3),
-                      width: 1.5,
-                    ),
-                    boxShadow: <BoxShadow>[
-                      BoxShadow(
-                        color: palette.emerald.withValues(alpha: 0.2),
-                        blurRadius: 30,
-                        spreadRadius: 2,
-                      ),
-                      BoxShadow(
-                        color: palette.gold.withValues(alpha: 0.1),
-                        blurRadius: 20,
-                        offset: const Offset(0, 8),
-                      ),
-                    ],
+        const SizedBox(height: 10),
+        Opacity(
+          opacity: badgeOpacity,
+          child: Transform.scale(
+            scale: badgeScale,
+            child: Container(
+              padding: EdgeInsets.symmetric(
+                horizontal: badgeSize * 1.1,
+                vertical: badgeSize * 0.4,
+              ),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: <Color>[
+                    palette.emerald,
+                    palette.emerald.withValues(alpha: 0.85),
+                  ],
+                ),
+                borderRadius: BorderRadius.circular(999),
+                boxShadow: <BoxShadow>[
+                  BoxShadow(
+                    color: palette.emerald.withValues(alpha: 0.40),
+                    blurRadius: 24,
+                    offset: const Offset(0, 6),
                   ),
-                  child: Material(
-                    color: Colors.transparent,
-                    child: InkWell(
-                      onTap: _mulakanSkrin,
-                      borderRadius: BorderRadius.circular(40),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 32,
-                          vertical: 16,
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: <Widget>[
-                            Container(
-                              padding: const EdgeInsets.all(8),
-                              decoration: BoxDecoration(
-                                color: palette.gold,
-                                shape: BoxShape.circle,
-                                boxShadow: <BoxShadow>[
-                                  BoxShadow(
-                                    color: palette.gold.withValues(alpha: 0.5),
-                                    blurRadius: 10,
-                                    spreadRadius: 1,
-                                  ),
-                                ],
-                              ),
-                              child: const Icon(
-                                Icons.play_arrow_rounded,
-                                color: Colors.white,
-                                size: 24,
-                              ),
-                            ),
-                            const SizedBox(width: 16),
-                            const Text(
-                              'Bismillah, Mulakan',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 18,
-                                fontWeight: FontWeight.w800,
-                                letterSpacing: 1.2,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
+                ],
+                border: Border.all(
+                  color: Colors.white.withValues(alpha: 0.25),
+                  width: 1.2,
+                ),
+              ),
+              child: Text(
+                'PINTAR',
+                style: TextStyle(
+                  fontSize: badgeSize,
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: 2.4,
+                  color: Colors.white,
+                  height: 1.0,
                 ),
               ),
             ),
@@ -327,503 +582,98 @@ class _SplashScreenState extends State<SplashScreen>
       ],
     );
   }
+}
 
-  Widget _binaPengenalan() {
-    final dynamic palette = context.hajjColors;
-    final ColorScheme colors = context.appColorScheme;
-    final List<_PengenalanData> pages = <_PengenalanData>[
-      _PengenalanData(
-        icon: HajjIconType.guide,
-        title: 'Selamat Datang, Tetamu Allah',
-        arabicQuote: 'أَهْلًا وَسَهْلًا',
-        verse: 'وَأَذِّن فِي النَّاسِ بِالْحَجِّ',
-        verseRef: 'Surah al-Hajj, 22:27',
-        titleContent: 'Teman Persediaan Haji',
-        description:
-            'HajiPintar membantu anda memahami perjalanan haji '
-            'melalui panduan yang tersusun, ringkas dan mudah dirujuk.',
-      ),
-      _PengenalanData(
-        icon: HajjIconType.learning,
-        title: 'Belajar dengan Lebih Yakin',
-        arabicQuote: null,
-        verse: null,
-        verseRef: null,
-        titleContent: 'Belajar dengan Lebih Yakin',
-        description:
-            'Akses modul pembelajaran, doa, zikir, kuiz, peta lokasi '
-            'serta panduan langkah demi langkah dalam satu aplikasi.',
-      ),
-      _PengenalanData(
-        icon: HajjIconType.rukun,
-        title: 'Rujukan yang Bertanggungjawab',
-        arabicQuote: null,
-        verse: null,
-        verseRef: null,
-        titleContent: 'Rujukan yang Bertanggungjawab',
-        description:
-            'Kandungan HajiPintar disediakan untuk pendidikan dan '
-            'rujukan umum. Untuk persoalan hukum atau situasi khusus, '
-            'rujuk pembimbing haji dan pihak berautoriti.',
-      ),
-    ];
+class _DisclaimerDialog extends StatelessWidget {
+  const _DisclaimerDialog();
 
-    return SafeArea(
-      child: LayoutBuilder(
-        builder: (BuildContext context, BoxConstraints constraints) {
-          return Center(
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 620),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 24,
-                  vertical: 28,
-                ),
-                child: Column(
+  @override
+  Widget build(BuildContext context) {
+    final HajjColors palette = context.hajjColors;
+    final ColorScheme scheme = context.appColorScheme;
+
+    return Dialog(
+      backgroundColor: scheme.surface,
+      surfaceTintColor: Colors.transparent,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
+      insetPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 620),
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(28, 32, 28, 24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Row(
                   children: <Widget>[
-                    _buildIntroGlow(palette),
-Row(
-                      children: <Widget>[
-                        HajiPintarCircularLogo(
-                          size: 56,
-                        ),
-                        const SizedBox(width: 12),
-                        Text(
-                          'HAJIPINTAR',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w900,
-                            letterSpacing: 2,
-                          ),
-                        ),
-                        const Spacer(),
-                        Text(
-                          '${_introPage + 1}/${pages.length}',
-                          style: TextStyle(
-                            color: Colors.white.withValues(alpha: 0.7),
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                      ],
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(16),
+                      child: Image.asset(
+                        'assets/images/app_icon.png',
+                        width: 56,
+                        height: 56,
+                        fit: BoxFit.contain,
+                        filterQuality: FilterQuality.high,
+                      ),
                     ),
-                    const SizedBox(height: 24),
+                    const SizedBox(width: 16),
                     Expanded(
-                      child: PageView.builder(
-                        controller: _introPageController,
-                        itemCount: pages.length,
-                        onPageChanged: (int page) {
-                          setState(() {
-                            _introPage = page;
-                          });
-                          _introAnimationController.forward(from: 0);
-                        },
-                        itemBuilder: (BuildContext context, int index) {
-                          final _PengenalanData page = pages[index];
-                          return FadeTransition(
-                            opacity: _introAnimationController,
-                            child: SlideTransition(
-                              position: _introSlideAnimation,
-                              child: ScaleTransition(
-                                scale: _introScaleAnimation,
-                                child: _PengenalanPage(
-                                  data: page,
-                                  palette: palette,
-                                  colors: colors,
-                                ),
-                              ),
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: List<Widget>.generate(pages.length, (
-                        int index,
-                      ) {
-                        final bool selected = _introPage == index;
-                        return AnimatedContainer(
-                          duration: const Duration(milliseconds: 220),
-                          margin: const EdgeInsets.symmetric(horizontal: 4),
-                          width: selected ? 28 : 8,
-                          height: 8,
-                          decoration: BoxDecoration(
-                            color: selected
-                                ? palette.gold
-                                : Colors.white.withValues(alpha: 0.3),
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                        );
-                      }),
-                    ),
-                    const SizedBox(height: 20),
-                    SizedBox(
-                      width: double.infinity,
-                      height: 54,
-                      child: FilledButton(
-                        onPressed: () {
-                          if (_introPage < pages.length - 1) {
-                            _introPageController.nextPage(
-                              duration: const Duration(milliseconds: 300),
-                              curve: Curves.easeOutCubic,
-                            );
-                          } else {
-                            _simpanOnboardingLanjut();
-                          }
-                        },
-                        child: Text(
-                          _introPage < pages.length - 1
-                              ? 'Seterusnya'
-                              : 'Masuk ke HajiPintar',
+                      child: Text(
+                        'PENAFIAN',
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: 0.5,
+                          color: scheme.onSurface,
                         ),
-                      ),
-                    ),
-                    TextButton(
-                      onPressed: _simpanOnboardingLanjut,
-                      child: const Text(
-                        'Langkau',
                       ),
                     ),
                   ],
                 ),
-              ),
-            ),
-          );
-        },
-      ),
-    );
-  }
-
-  Widget _buildIntroGlow(dynamic palette) {
-    return IgnorePointer(
-      child: AnimatedBuilder(
-        animation: _introAnimationController,
-        builder: (BuildContext context, Widget? child) {
-          final double pulse =
-              0.92 + (_introAnimationController.value * 0.08);
-          return Transform.scale(
-            scale: pulse,
-            child: Container(
-              width: 1,
-              height: 1,
-              decoration: BoxDecoration(
-                boxShadow: <BoxShadow>[
-                  BoxShadow(
-                    color: palette.gold.withValues(alpha: 0.22),
-                    blurRadius: 90,
-                    spreadRadius: 75,
+                const SizedBox(height: 24),
+                Text(
+                  'Haji Pintar ialah sebuah prototaip aplikasi pembelajaran '
+                  'yang dibangunkan secara bebas berasaskan kitab al-Idah '
+                  'fi Manasik al-Hajj wa al-Umrah karangan Imam an-Nawawi '
+                  '(mazhab Syafi’i).\n\n'
+                  'Aplikasi ini bukan aplikasi rasmi, produk rasmi atau '
+                  'platform yang diperakui oleh mana-mana agensi '
+                  'pengelola Haji.\n\n'
+                  'Kandungan dalam aplikasi ini hendaklah dirujuk bersama '
+                  'pembimbing Haji atau panel syariah yang berautoriti '
+                  'sebelum dijadikan rujukan hukum.',
+                  style: TextStyle(
+                    fontSize: 16,
+                    height: 1.65,
+                    color: scheme.onSurface,
                   ),
-                ],
-              ),
-            ),
-          );
-        },
-      ),
-    );
-  }
-}
-
-class _PengenalanData {
-  const _PengenalanData({
-    required this.icon,
-    required this.title,
-    required this.titleContent,
-    required this.description,
-    this.arabicQuote,
-    this.verse,
-    this.verseRef,
-  });
-
-  final HajjIconType icon;
-  final String title;
-  final String titleContent;
-  final String description;
-  final String? arabicQuote;
-  final String? verse;
-  final String? verseRef;
-}
-
-class _PengenalanPage extends StatelessWidget {
-  const _PengenalanPage({
-    required this.data,
-    required this.palette,
-    required this.colors,
-  });
-
-  final _PengenalanData data;
-  final dynamic palette;
-  final ColorScheme colors;
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: SingleChildScrollView(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            SizedBox(
-              width: 200,
-              height: 200,
-              child: Stack(
-                alignment: Alignment.center,
-                children: <Widget>[
-                  Container(
-                    width: 190,
-                    height: 190,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      gradient: SweepGradient(
-                        colors: <Color>[
-                          palette.gold.withValues(alpha: 0.15),
-                          palette.emerald.withValues(alpha: 0.15),
-                          palette.gold.withValues(alpha: 0.15),
-                        ],
-                        stops: const <double>[0.0, 0.5, 1.0],
+                ),
+                const SizedBox(height: 28),
+                SizedBox(
+                  width: double.infinity,
+                  height: 52,
+                  child: FilledButton(
+                    style: FilledButton.styleFrom(
+                      backgroundColor: palette.emerald,
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
                       ),
-                      border: Border.all(
-                        color: palette.gold.withValues(alpha: 0.35),
-                        width: 1.5,
-                      ),
-                      boxShadow: <BoxShadow>[
-                        BoxShadow(
-                          color: palette.gold.withValues(alpha: 0.2),
-                          blurRadius: 35,
-                          spreadRadius: 8,
-                        ),
-                        BoxShadow(
-                          color: palette.emerald.withValues(alpha: 0.12),
-                          blurRadius: 50,
-                          spreadRadius: 12,
-                        ),
-                      ],
-                    ),
-                    child: Center(
-                      child: Container(
-                        width: 130,
-                        height: 130,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          gradient: RadialGradient(
-                            colors: <Color>[
-                              palette.emerald.withValues(alpha: 0.35),
-                              palette.emerald.withValues(alpha: 0.12),
-                            ],
-                          ),
-                          border: Border.all(
-                            color: palette.gold.withValues(alpha: 0.3),
-                            width: 1.5,
-                          ),
-                          boxShadow: <BoxShadow>[
-                            BoxShadow(
-                              color: palette.emerald.withValues(alpha: 0.2),
-                              blurRadius: 20,
-                            ),
-                          ],
-                        ),
-                        child: Center(
-                          child: HajjIcon(
-                            type: data.icon,
-                            color: palette.gold,
-                            size: 62,
-                            strokeWidth: 4.5,
-                          ),
-                        ),
+                      textStyle: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w800,
+                        letterSpacing: 0.4,
                       ),
                     ),
+                    onPressed: () => Navigator.of(context).pop(true),
+                    child: const Text('SAYA FAHAM & TERUSKAN'),
                   ),
-                  Positioned(
-                    top: 0,
-                    right: 0,
-                    child: _IntroSpark(color: palette.gold, size: 12),
-                  ),
-                  Positioned(
-                    bottom: 10,
-                    left: 6,
-                    child: _IntroSpark(color: palette.emerald, size: 9),
-                  ),
-                  Positioned(
-                    top: 55,
-                    left: 10,
-                    child: _IntroSpark(
-                      color: palette.gold.withValues(alpha: 0.6),
-                      size: 8,
-                    ),
-                  ),
-                  Positioned(
-                    bottom: 40,
-                    right: 16,
-                    child: _IntroSpark(
-                      color: palette.emerald.withValues(alpha: 0.6),
-                      size: 7,
-                    ),
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
-            const SizedBox(height: 32),
-            if (data.arabicQuote != null) ...<Widget>[
-              Text(
-                data.arabicQuote!,
-                textDirection: TextDirection.rtl,
-                textAlign: TextAlign.center,
-                style: GoogleFonts.amiri(
-                  color: palette.gold.withValues(alpha: 0.85),
-                  fontSize: 28,
-                  height: 1.5,
-                ),
-              ),
-              const SizedBox(height: 4),
-            ],
-            if (data.verse != null) ...<Widget>[
-              Container(
-                constraints: const BoxConstraints(maxWidth: 500),
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 10,
-                ),
-                decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.06),
-                  borderRadius: BorderRadius.circular(14),
-                  border: Border.all(
-                    color: palette.gold.withValues(alpha: 0.12),
-                    width: 0.8,
-                  ),
-                ),
-                child: Column(
-                  children: <Widget>[
-                    Text(
-                      data.verse!,
-                      textDirection: TextDirection.rtl,
-                      textAlign: TextAlign.center,
-                      style: GoogleFonts.amiri(
-                        color: palette.gold.withValues(alpha: 0.85),
-                        fontSize: 22,
-                        height: 1.5,
-                      ),
-                    ),
-                    const SizedBox(height: 6),
-                    Text(
-                      data.verseRef!,
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: Colors.white.withValues(alpha: 0.55),
-                        fontSize: 11.5,
-                        height: 1.4,
-                        fontStyle: FontStyle.italic,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 14),
-            ],
-            Container(
-              constraints: const BoxConstraints(maxWidth: 500),
-              padding: const EdgeInsets.symmetric(
-                horizontal: 20,
-                vertical: 14,
-              ),
-              decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.06),
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(
-                  color: palette.gold.withValues(alpha: 0.12),
-                  width: 0.8,
-                ),
-              ),
-              child: Text(
-                data.titleContent,
-                textAlign: TextAlign.center,
-                style: GoogleFonts.playfairDisplay(
-                  color: colors.onSurface,
-                  fontSize: 30,
-                  fontWeight: FontWeight.w700,
-                  letterSpacing: 0.3,
-                ),
-              ),
-            ),
-            const SizedBox(height: 14),
-Container(
-              constraints: const BoxConstraints(maxWidth: 500),
-              padding: const EdgeInsets.symmetric(
-                horizontal: 20,
-                vertical: 14,
-              ),
-              decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.04),
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: Text(
-                data.description,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: Colors.white.withValues(alpha: 0.85),
-                  fontSize: 15.5,
-                  height: 1.65,
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _IntroSpark extends StatelessWidget {
-  const _IntroSpark({required this.color, required this.size});
-
-  final Color color;
-  final double size;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: size,
-      height: size,
-      decoration: BoxDecoration(
-        color: color,
-        shape: BoxShape.circle,
-        boxShadow: <BoxShadow>[
-          BoxShadow(
-            color: color.withValues(alpha: 0.65),
-            blurRadius: 10,
           ),
-        ],
-      ),
-    );
-  }
-}
-
-class HajiPintarCircularLogo extends StatelessWidget {
-  const HajiPintarCircularLogo({
-    super.key,
-    this.size = 120,
-  });
-
-  final double size;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: size,
-      height: size,
-      padding: EdgeInsets.all(size * 0.12),
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        color: Colors.white,
-        border: Border.all(
-          color: context.hajjColors.gold.withValues(alpha: 0.5),
-          width: 2,
-        ),
-      ),
-      child: Center(
-        child: Image.asset(
-          'assets/images/app_icon.png',
-          fit: BoxFit.contain,
-          alignment: Alignment.center,
         ),
       ),
     );

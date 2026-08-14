@@ -187,7 +187,10 @@ class InteractiveIhramMenu extends StatelessWidget {
             ],
           ),
         ),
-        child: SafeArea(
+        child: Stack(
+          children: <Widget>[
+            const IslamicPatternOverlay(),
+            SafeArea(
           child: Column(
             children: <Widget>[
               _buildHeader(
@@ -281,6 +284,8 @@ class InteractiveIhramMenu extends StatelessWidget {
               ),
             ],
           ),
+        ),
+          ],
         ),
       ),
     );

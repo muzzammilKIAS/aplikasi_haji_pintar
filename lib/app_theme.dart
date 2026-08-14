@@ -58,58 +58,61 @@ class HajjColors extends ThemeExtension<HajjColors> {
   final Color cardSurface;
   final Color cardBorder;
 
+  // Palet biru elegan + aksen pelbagai warna (emas, mawar, teal) —
+  // dikongsi oleh seluruh aplikasi (dashboard dan semua paparan dalaman)
+  // supaya tema kekal konsisten merentasi skrin.
   static const HajjColors light = HajjColors(
-    gradientStart: Color(0xFFF7F5EF),
-    gradientMiddle: Color(0xFFEEF6F2),
-    gradientEnd: Color(0xFFF5EEE1),
+    gradientStart: Color(0xFFEAF4FD),
+    gradientMiddle: Color(0xFFF6FAFF),
+    gradientEnd: Color(0xFFEFF2FC),
     glassSurface: Color(0xFFFFFFFF),
-    glassBorder: Color(0xFFD7E1DC),
-    mutedText: Color(0xFF5F716B),
-    gold: Color(0xFFC4953A),
-    emerald: Color(0xFF176B5B),
+    glassBorder: Color(0xFFD9E6F5),
+    mutedText: Color(0xFF5E7089),
+    gold: Color(0xFFC98A2E),
+    emerald: Color(0xFF2D6FE0),
     danger: Color(0xFFB64949),
-    softSurface: Color(0xFFF4E8CF),
-    shadow: Color(0x1F000000),
+    softSurface: Color(0xFFDCEBFB),
+    shadow: Color(0x1F0B3D91),
     onAccent: Color(0xFFFFFFFF),
-    textPrimary: Color(0xFF19332E),
-    textSecondary: Color(0xFF5F716B),
-    divider: Color(0xFFE5EBE8),
-    success: Color(0xFF2E7D5B),
+    textPrimary: Color(0xFF152A47),
+    textSecondary: Color(0xFF5E7089),
+    divider: Color(0xFFE1EDF8),
+    success: Color(0xFF2E9E7C),
     warning: Color(0xFFC5822D),
-    sand: Color(0xFFE8D7B8),
-    sandSoft: Color(0xFFF5EEE1),
-    skySoft: Color(0xFFE6F1F5),
-    sageSoft: Color(0xFFE7EFE6),
-    secondaryColor: Color(0xFF3F8C8A),
-    secondarySoft: Color(0xFFDCEEEE),
+    sand: Color(0xFFF0DDB0),
+    sandSoft: Color(0xFFF7ECD6),
+    skySoft: Color(0xFFDCEEFC),
+    sageSoft: Color(0xFFD9F0EA),
+    secondaryColor: Color(0xFFE0608F),
+    secondarySoft: Color(0xFFFBE1EA),
     cardSurface: Color(0xFFFFFFFF),
-    cardBorder: Color(0xFFD7E1DC),
+    cardBorder: Color(0xFFD9E6F5),
   );
 
   static const HajjColors dark = HajjColors(
-    gradientStart: Color(0xFF020F0C),
-    gradientMiddle: Color(0xFF0A2E27),
-    gradientEnd: Color(0xFF031210),
+    gradientStart: Color(0xFF060B1A),
+    gradientMiddle: Color(0xFF0B1636),
+    gradientEnd: Color(0xFF060B1A),
     glassSurface: Color(0x17FFFFFF),
     glassBorder: Color(0x26FFFFFF),
-    mutedText: Color(0xFFAAB9B4),
-    gold: Color(0xFFE3C177),
-    emerald: Color(0xFF37DBA8),
+    mutedText: Color(0xFFA6B3D0),
+    gold: Color(0xFFFFC96B),
+    emerald: Color(0xFF6FA8FF),
     danger: Color(0xFFFF6571),
-    softSurface: Color(0xFF163B34),
-    shadow: Color(0x66000000),
-    onAccent: Color(0xFF041513),
-    textPrimary: Color(0xFFF5F2EA),
-    textSecondary: Color(0xFFAAB9B4),
+    softSurface: Color(0xFF16264A),
+    shadow: Color(0x66000B2E),
+    onAccent: Color(0xFF041226),
+    textPrimary: Color(0xFFF2F6FF),
+    textSecondary: Color(0xFFA6B3D0),
     divider: Color(0x26FFFFFF),
-    success: Color(0xFF37DBA8),
-    warning: Color(0xFFE3C177),
-    sand: Color(0xFF2A3A35),
-    sandSoft: Color(0xFF1A2A25),
-    skySoft: Color(0xFF1A252B),
-    sageSoft: Color(0xFF1A2A22),
-    secondaryColor: Color(0xFF5BBFB8),
-    secondarySoft: Color(0xFF1A3A38),
+    success: Color(0xFF4FE0CC),
+    warning: Color(0xFFFFC96B),
+    sand: Color(0xFF3A2E1E),
+    sandSoft: Color(0xFF241C12),
+    skySoft: Color(0xFF16223B),
+    sageSoft: Color(0xFF123531),
+    secondaryColor: Color(0xFFFF8FC5),
+    secondarySoft: Color(0xFF3A1B2C),
     cardSurface: Color(0x17FFFFFF),
     cardBorder: Color(0x26FFFFFF),
   );
@@ -236,7 +239,7 @@ class AppTheme {
     final bool isDark = brightness == Brightness.dark;
 
     final ColorScheme scheme = ColorScheme.fromSeed(
-      seedColor: isDark ? const Color(0xFF37DBA8) : const Color(0xFF176B5B),
+      seedColor: isDark ? const Color(0xFF6FA8FF) : const Color(0xFF2D6FE0),
       brightness: brightness,
     ).copyWith(
       primary: palette.emerald,
@@ -245,12 +248,12 @@ class AppTheme {
       onSecondary: isDark
           ? const Color(0xFF201A0D)
           : const Color(0xFFFFFFFF),
-      surface: isDark ? const Color(0xFF102822) : palette.cardSurface,
-      onSurface: isDark ? const Color(0xFFF5F2EA) : palette.textPrimary,
+      surface: isDark ? const Color(0xFF0F1A38) : palette.cardSurface,
+      onSurface: isDark ? const Color(0xFFF2F6FF) : palette.textPrimary,
       surfaceContainerHighest: isDark
-          ? const Color(0xFF183A33)
+          ? const Color(0xFF182A55)
           : palette.sandSoft,
-      outline: isDark ? const Color(0xFF789088) : palette.cardBorder,
+      outline: isDark ? const Color(0xFF6B7FA8) : palette.cardBorder,
       error: palette.danger,
     );
 

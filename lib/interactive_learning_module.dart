@@ -90,7 +90,10 @@ class InteractiveLearningMenu extends StatelessWidget {
             ],
           ),
         ),
-        child: SafeArea(
+        child: Stack(
+          children: <Widget>[
+            const IslamicPatternOverlay(),
+            SafeArea(
           child: Column(
             children: <Widget>[
               _buildHeader(context, subtitle: topicTitle),
@@ -188,6 +191,8 @@ class InteractiveLearningMenu extends StatelessWidget {
               ),
             ],
           ),
+        ),
+          ],
         ),
       ),
     );

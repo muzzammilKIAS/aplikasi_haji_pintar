@@ -92,33 +92,32 @@ class LearningModuleScreen extends StatelessWidget {
       accent: Color(0xFFB18443),
       sections: <LearningSection>[
         LearningSection(
-          title: 'Rukun Haji',
+          title: 'Rukun Haji (lima)',
           points: <String>[
-            'Niat ihram Haji.',
+            'Ihram (niat).',
             'Wukuf di Arafah.',
             'Tawaf Ifadah.',
             'Sa’i antara Safa dan Marwah.',
-            'Bercukur atau bergunting.',
-            'Tertib pada kebanyakan rukun.',
+            'Bercukur atau bergunting (halq/taqsir).',
           ],
         ),
         LearningSection(
-          title: 'Wajib Haji',
+          title: 'Wajib Haji (enam)',
           points: <String>[
-            'Berniat ihram di miqat.',
-            'Menjaga larangan ihram.',
-            'Bermalam di Muzdalifah.',
-            'Melontar Jamrah Kubra.',
-            'Bermalam di Mina.',
-            'Melontar ketiga-tiga jamrah.',
+            'Berihram dari miqat yang ditetapkan.',
+            'Jam’ (berada) siang dan malam di Arafah sebelum meninggalkannya.',
+            'Bermalam (mabit) di Muzdalifah.',
+            'Bermalam (mabit) di Mina pada malam-malam Tasyriq.',
+            'Melontar ketiga-tiga jamrah mengikut susunan.',
             'Melaksanakan Tawaf Wada’.',
           ],
         ),
         LearningSection(
           title: 'Perbezaan ringkas',
           points: <String>[
-            'Rukun yang ditinggalkan menyebabkan Haji tidak sempurna sehingga rukun itu dilaksanakan.',
-            'Wajib Haji yang ditinggalkan boleh menyebabkan kewajipan dam, tertakluk kepada keadaan dan hukum.',
+            'Rukun yang ditinggalkan menyebabkan Haji tidak sempurna sehingga rukun itu dilaksanakan — tertib (susunan) hanya syarat bagi kebanyakan rukun, bukan rukun keenam yang berasingan.',
+            'Wajib Haji yang ditinggalkan boleh menyebabkan kewajipan dam, tertakluk kepada keadaan dan hukum — Hajinya tetap sah.',
+            'Larangan ihram (محظورات) adalah topik berasingan daripada wajib Haji, masing-masing dengan kifaratnya sendiri.',
           ],
         ),
       ],
@@ -132,22 +131,25 @@ class LearningModuleScreen extends StatelessWidget {
       ],
       academicInsight:
           'Rukun dan Wajib Haji membentuk rangka kerja fiqh yang '
-          'menentukan kesahan dan kesempurnaan ibadah. Umumnya, '
-          'mazhab Syafi\u2019i — yang diamalkan secara meluas di '
-          'Malaysia — mengira enam rukun Haji seperti disenaraikan di '
-          'atas, dengan syarat "tertib" (susunan yang betul) hanya '
-          'terpakai bagi kebanyakan rukun tersebut. Wajib Haji pula '
+          'menentukan kesahan dan kesempurnaan ibadah. Menurut al-Idah '
+          'karangan Imam an-Nawawi, rukun Haji ada lima: Ihram, Wukuf di '
+          'Arafah, Tawaf Ifadah, Sa\u2019i, dan bercukur/bergunting — '
+          'Imam an-Nawawi sengaja tidak mengira "tertib" (susunan) '
+          'sebagai rukun keenam yang berasingan, sebaliknya ia hanya '
+          'syarat sah bagi kebanyakan rukun tersebut. Wajib Haji pula '
           'berbeza daripada rukun kerana ia boleh digantikan dengan dam '
-          'jika ditinggalkan tanpa uzur, sementara Hajinya tetap sah. '
-          'Perbezaan pendapat kecil turut wujud antara mazhab mengenai '
-          'sesetengah perkara (contoh: status Tawaf Wada\u2019 sebagai '
-          'wajib atau sunat bagi golongan tertentu), justeru jemaah '
-          'digalakkan merujuk pembimbing Haji bertauliah bagi isu yang '
-          'lebih terperinci.',
+          'jika ditinggalkan tanpa uzur, sementara Hajinya tetap sah — '
+          'termasuk berihram dari miqat, jam\u2019 di Arafah, mabit '
+          'Muzdalifah, mabit Mina, melontar ketiga-tiga jamrah, dan '
+          'Tawaf Wada\u2019. Perbezaan pendapat kecil turut wujud antara '
+          'mazhab mengenai sesetengah perkara (contoh: status Tawaf '
+          'Wada\u2019 sebagai wajib atau sunat bagi golongan tertentu), '
+          'justeru jemaah digalakkan merujuk pembimbing Haji bertauliah '
+          'bagi isu yang lebih terperinci.',
       reflectionQuestions: <String>[
-        'Kenapa "tertib" (susunan yang betul) penting dalam '
-            'pelaksanaan rukun Haji, dan apakah kesannya jika susunan '
-            'ini tidak dipatuhi?',
+        'Mengapakah Imam an-Nawawi tidak mengira "tertib" (susunan) '
+            'sebagai rukun keenam yang berasingan, sebaliknya hanya '
+            'syarat bagi kebanyakan rukun Haji?',
         'Bagaimana pemahaman tentang perbezaan rukun dan wajib '
             'membantu jemaah mengelakkan kekeliruan semasa berada di '
             'Tanah Suci?',
@@ -162,25 +164,28 @@ class LearningModuleScreen extends StatelessWidget {
       accent: Color(0xFFC05C65),
       sections: <LearningSection>[
         LearningSection(
-          title: 'Penjagaan diri',
+          title: 'Tujuh Larangan Ihram (al-Muharramat as-Sab’ah)',
           points: <String>[
-            'Tidak memakai wangi-wangian selepas berniat ihram.',
-            'Tidak memotong kuku atau mencabut rambut tanpa keperluan yang dibenarkan.',
-            'Menjaga pakaian ihram mengikut ketetapan bagi lelaki dan wanita.',
+            '1. Pakaian — lelaki dilarang memakai pakaian berjahit yang mengikut bentuk badan; wanita pula dilarang menutup wajah dan memakai sarung tangan.',
+            '2. Wangian — tidak memakai atau menyapu bahan berbau wangi pada badan, pakaian atau makanan selepas niat ihram.',
+            '3. Meminyakkan rambut — tidak meminyakkan atau meletak bahan solek pada rambut kepala dan janggut.',
+            '4. Mencukur & memotong kuku — tidak mencukur/mencabut rambut badan atau memotong kuku tanpa uzur syarie.',
+            '5. Akad nikah — tidak boleh menikah atau menikahkan orang lain semasa dalam ihram.',
+            '6. Jimak dan pendahuluannya — dilarang sepenuhnya sehingga tahallul; membatalkan Haji jika berlaku sebelum tahallul awal.',
+            '7. Memburu — dilarang membunuh atau memburu binatang buruan darat yang halal dimakan.',
           ],
         ),
         LearningSection(
-          title: 'Hubungan dan akhlak',
+          title: 'Persamaan lelaki dan wanita',
           points: <String>[
-            'Menjauhi hubungan suami isteri dan perkara yang membangkitkan syahwat.',
-            'Tidak melakukan akad nikah semasa dalam ihram.',
+            'Wanita dikenakan ketujuh-tujuh larangan yang sama seperti lelaki, kecuali dua perkara: dibenarkan memakai pakaian berjahit dan menutup kepala, tetapi dilarang menutup wajah dan memakai sarung tangan.',
+            'Kejahilan hukum atau terlupa memaafkan dosa tetapi tidak semestinya menggugurkan fidyah bagi sesetengah larangan — segera hentikan sebaik menyedari kesilapan.',
+          ],
+        ),
+        LearningSection(
+          title: 'Adab dan akhlak sepanjang ihram',
+          points: <String>[
             'Menjaga percakapan, kesabaran dan adab sepanjang ibadah.',
-          ],
-        ),
-        LearningSection(
-          title: 'Alam sekitar',
-          points: <String>[
-            'Tidak memburu binatang buruan darat ketika dalam ihram.',
             'Menjaga kebersihan dan tidak merosakkan kawasan suci.',
           ],
         ),
@@ -199,18 +204,25 @@ class LearningModuleScreen extends StatelessWidget {
         ),
       ],
       academicInsight:
-          'Larangan-larangan ihram yang pelbagai — daripada wangian dan '
-          'penjagaan rambut/kuku, hubungan suami isteri, sehingga '
-          'larangan memburu — secara kolektif berfungsi sebagai latihan '
-          'mujahadah (pengekangan diri) yang intensif. Jemaah dilatih '
-          'meninggalkan tabiat harian demi menghayati status ihram '
-          'sebagai keadaan suci yang istimewa, mengingatkan kepada '
-          'keadaan fitrah manusia yang bersih daripada sebarang '
-          'perhiasan duniawi. Dari sudut fiqh, jumhur ulama bersepakat '
-          'bahawa kesalahan yang dilakukan secara terlupa, tidak '
-          'sengaja, atau kerana jahil (tidak tahu hukum) dimaafkan dan '
-          'tidak diwajibkan dam — namun jemaah wajib berhenti serta '
-          'merta sebaik sahaja menyedari kesilapan tersebut.',
+          'Fasal Muharramat al-Ihram dalam al-Idah menyusun larangan '
+          'ihram kepada tujuh jenis (an-naw\u2019 al-awwal hingga '
+          'as-sabi\u2019): pakaian, wangian, minyak rambut, cukur/potong '
+          'kuku, akad nikah, jimak dan pendahuluannya, serta memburu '
+          '— masing-masing dengan hukum kifarat yang tersendiri. Secara '
+          'kolektif ia berfungsi sebagai latihan mujahadah (pengekangan '
+          'diri) yang intensif. Jemaah dilatih meninggalkan tabiat '
+          'harian demi menghayati status ihram sebagai keadaan suci '
+          'yang istimewa, mengingatkan kepada fitrah manusia yang '
+          'bersih daripada sebarang perhiasan duniawi. Imam an-Nawawi '
+          'turut menegaskan bahawa fidyah bukanlah "tiket" yang '
+          'mengharuskan pelanggaran — sesiapa yang sengaja melanggar '
+          'sambil berkata "aku akan bayar fidyah" tetap berdosa '
+          'walaupun fidyahnya sah, kerana fidyah tidak mengangkat '
+          'keharaman perbuatan itu sendiri. Jumhur ulama turut '
+          'bersepakat bahawa kesalahan yang dilakukan secara terlupa, '
+          'tidak sengaja, atau kerana jahil (tidak tahu hukum) '
+          'dimaafkan dan tidak diwajibkan dam — namun jemaah wajib '
+          'berhenti serta merta sebaik sahaja menyedari kesilapan.',
       reflectionQuestions: <String>[
         'Bagaimana pelbagai larangan ihram (wangian, memburu, dan '
             'lain-lain) secara kolektif melatih jemaah dalam aspek '
@@ -235,11 +247,11 @@ class LearningModuleScreen extends StatelessWidget {
           ],
         ),
         LearningSection(
-          title: 'Sebab umum',
+          title: 'Dua kategori utama dam',
           points: <String>[
-            'Meninggalkan sesuatu yang diwajibkan.',
-            'Melakukan larangan ihram.',
-            'Melaksanakan Haji Tamattu’ atau Qiran dalam keadaan yang berkaitan.',
+            'Dam tertib-taqdir — bagi meninggalkan wajib Haji (contoh: tidak bermalam di Muzdalifah/Mina): wajib sembelih kambing; jika tak mampu, puasa 3 hari semasa Haji dan 7 hari selepas pulang.',
+            'Dam takhyir-taqdir — bagi larangan ihram akibat uzur (contoh: mencukur kerana sakit): pilih antara sembelih, sedekah kepada 6 orang miskin, atau puasa 3 hari.',
+            'Dam Tamattu’ dan Qiran — wajib ke atas jemaah yang menggabungkan Umrah dan Haji dalam satu musim tanpa kembali ke miqat asal.',
           ],
         ),
         LearningSection(
@@ -261,19 +273,20 @@ class LearningModuleScreen extends StatelessWidget {
         ),
       ],
       academicInsight:
-          'Syariat dam mencerminkan sifat rahmat Allah SWT dalam '
-          'ibadah Haji — kesilapan atau kekurangan yang berlaku tidak '
+          'Syariat dam mencerminkan sifat rahmat Allah SWT dalam ibadah '
+          'Haji — kesilapan atau kekurangan yang berlaku tidak '
           'semestinya membatalkan seluruh ibadah, sebaliknya boleh '
-          'diselesaikan melalui mekanisme tertentu. Secara umum, ulama '
-          'fiqh membahagikan dam kepada beberapa kategori mengikut '
-          'punca dan pilihan penyelesaiannya: sebahagian memerlukan '
-          'urutan tertentu (tartib), sebahagian membenarkan pilihan '
-          'antara sembelihan, puasa atau sedekah (takhyir), bergantung '
-          'kepada jenis kesalahan. Asas pensyariatan dam turut '
-          'disebut dalam Al-Baqarah ayat 196 berkaitan Haji '
-          'Tamattu\u2019. Sikap paling bijaksana bagi jemaah ialah '
-          'mencatat sebarang keraguan dan merujuk pihak berautoriti, '
-          'bukan membuat kesimpulan sendiri yang mungkin tidak tepat.',
+          'diselesaikan melalui mekanisme tertentu. Bab Ketujuh al-Idah '
+          'membahagikan dam kepada dua kategori utama: dam tertib dan '
+          'taqdir (bagi meninggalkan wajib Haji, urutannya mesti '
+          'diikuti — sembelih dahulu, jika tak mampu barulah berpuasa) '
+          'dan dam takhyir dan taqdir (bagi larangan ihram akibat '
+          'uzur, jemaah bebas memilih antara tiga kaedah tanpa '
+          'urutan). Asas pensyariatan dam turut disebut dalam '
+          'Al-Baqarah ayat 196 berkaitan Haji Tamattu\u2019. Sikap '
+          'paling bijaksana bagi jemaah ialah mencatat sebarang '
+          'keraguan dan merujuk pihak berautoriti, bukan membuat '
+          'kesimpulan sendiri yang mungkin tidak tepat.',
       reflectionQuestions: <String>[
         'Apakah hikmah disyariatkan dam sebagai jalan penyelesaian, '
             'berbanding terus membatalkan ibadah Haji jemaah yang '
@@ -362,15 +375,15 @@ class LearningModuleScreen extends StatelessWidget {
     LearningModuleData(
       number: '06',
       title: 'Penilaian Akhir',
-      subtitle: 'Jawab 20 soalan dan capai sekurang-kurangnya 80% untuk lulus.',
+      subtitle: 'Jawab 21 soalan dan capai sekurang-kurangnya 80% untuk lulus.',
       icon: HajjIconType.quiz,
       accent: Color(0xFFCE7A38),
       sections: <LearningSection>[
         LearningSection(
           title: 'Format penilaian',
           points: <String>[
-            'Penilaian mengandungi 20 soalan pilihan jawapan.',
-            'Markah lulus ialah 80% atau sekurang-kurangnya 16 jawapan betul.',
+            'Penilaian mengandungi 21 soalan pilihan jawapan.',
+            'Markah lulus ialah 80% atau sekurang-kurangnya 17 jawapan betul.',
           ],
         ),
         LearningSection(
@@ -404,7 +417,10 @@ class LearningModuleScreen extends StatelessWidget {
             ],
           ),
         ),
-        child: SafeArea(
+        child: Stack(
+          children: <Widget>[
+            const IslamicPatternOverlay(),
+            SafeArea(
           child: SingleChildScrollView(
             padding: const EdgeInsets.fromLTRB(20, 16, 20, 40),
             child: Center(
@@ -563,6 +579,8 @@ class LearningModuleScreen extends StatelessWidget {
               ),
             ),
           ),
+        ),
+          ],
         ),
       ),
     );
@@ -984,151 +1002,107 @@ class _LearningIntroCard extends StatelessWidget {
   }
 }
 
-class _LearningModuleCard extends StatefulWidget {
+class _LearningModuleCard extends StatelessWidget {
   const _LearningModuleCard({required this.module, required this.onTap});
 
   final LearningModuleData module;
   final VoidCallback onTap;
 
   @override
-  State<_LearningModuleCard> createState() => _LearningModuleCardState();
-}
-
-class _LearningModuleCardState extends State<_LearningModuleCard> {
-  bool hovering = false;
-
-  @override
   Widget build(BuildContext context) {
     final HajjColors palette = context.hajjColors;
     final ColorScheme colors = context.appColorScheme;
-    final LearningModuleData module = widget.module;
 
-    return MouseRegion(
-      onEnter: (_) {
-        setState(() {
-          hovering = true;
-        });
-      },
-      onExit: (_) {
-        setState(() {
-          hovering = false;
-        });
-      },
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 220),
-        transform: Matrix4.translationValues(0, hovering ? -5 : 0, 0),
-        child: Material(
-          color: Colors.transparent,
-          child: InkWell(
-            onTap: widget.onTap,
-            borderRadius: BorderRadius.circular(24),
-            child: Container(
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: palette.glassSurface,
-                borderRadius: BorderRadius.circular(24),
-                border: Border.all(
-                  color: hovering
-                      ? module.accent.withValues(alpha: 0.45)
-                      : palette.glassBorder,
+    return HajjHoverCard(
+      accent: module.accent,
+      onTap: onTap,
+      borderRadius: 24,
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Row(
+            children: <Widget>[
+              Container(
+                width: 50,
+                height: 50,
+                decoration: BoxDecoration(
+                  color: module.accent.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(15),
+                  border: Border.all(
+                    color: module.accent.withValues(alpha: 0.28),
+                  ),
                 ),
-                boxShadow: <BoxShadow>[
-                  BoxShadow(
-                    color: palette.shadow,
-                    blurRadius: 24,
-                    offset: const Offset(0, 12),
-                  ),
-                ],
+                child: HajjIcon(
+                  type: module.icon,
+                  color: module.accent,
+                  size: 29,
+                ),
               ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Row(
-                    children: <Widget>[
-                      Container(
-                        width: 50,
-                        height: 50,
-                        decoration: BoxDecoration(
-                          color: module.accent.withValues(alpha: 0.12),
-                          borderRadius: BorderRadius.circular(15),
-                          border: Border.all(
-                            color: module.accent.withValues(alpha: 0.28),
-                          ),
-                        ),
-                        child: HajjIcon(
-                          type: module.icon,
-                          color: module.accent,
-                          size: 29,
-                        ),
-                      ),
-                      const Spacer(),
-                      Text(
-                        module.number,
-                        style: GoogleFonts.playfairDisplay(
-                          color: module.accent.withValues(alpha: 0.80),
-                          fontStyle: FontStyle.italic,
-                          fontWeight: FontWeight.w700,
-                          letterSpacing: 0.5,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 20),
-                  Text(
-                    module.title,
-                    style: GoogleFonts.playfairDisplay(
-                      color: colors.onSurface,
-                      fontSize: 18,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    module.subtitle,
-                    style: TextStyle(
-                      color: palette.mutedText,
-                      fontSize: 13,
-                      height: 1.5,
-                    ),
-                  ),
-                  const SizedBox(height: 18),
-                  Row(
-                    children: <Widget>[
-                      Icon(
-                        Icons.menu_book_rounded,
-                        color: palette.mutedText,
-                        size: 15,
-                      ),
-                      const SizedBox(width: 5),
-                      Text(
-                        '${module.sections.length} bahagian',
-                        style: TextStyle(
-                          color: palette.mutedText,
-                          fontSize: 11,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                      const Spacer(),
-                      Text(
-                        module.number == '06' ? 'Mula penilaian' : 'Buka modul',
-                        style: TextStyle(
-                          color: module.accent,
-                          fontWeight: FontWeight.w800,
-                        ),
-                      ),
-                      const SizedBox(width: 7),
-                      Icon(
-                        Icons.arrow_forward_rounded,
-                        color: module.accent,
-                        size: 18,
-                      ),
-                    ],
-                  ),
-                ],
+              const Spacer(),
+              Text(
+                module.number,
+                style: GoogleFonts.playfairDisplay(
+                  color: module.accent.withValues(alpha: 0.80),
+                  fontStyle: FontStyle.italic,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 0.5,
+                ),
               ),
+            ],
+          ),
+          const SizedBox(height: 20),
+          Text(
+            module.title,
+            style: GoogleFonts.playfairDisplay(
+              color: colors.onSurface,
+              fontSize: 18,
+              fontWeight: FontWeight.w700,
             ),
           ),
-        ),
+          const SizedBox(height: 8),
+          Text(
+            module.subtitle,
+            style: TextStyle(
+              color: palette.mutedText,
+              fontSize: 13,
+              height: 1.5,
+            ),
+          ),
+          const SizedBox(height: 18),
+          Row(
+            children: <Widget>[
+              Icon(
+                Icons.menu_book_rounded,
+                color: palette.mutedText,
+                size: 15,
+              ),
+              const SizedBox(width: 5),
+              Text(
+                '${module.sections.length} bahagian',
+                style: TextStyle(
+                  color: palette.mutedText,
+                  fontSize: 11,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              const Spacer(),
+              Text(
+                module.number == '06' ? 'Mula penilaian' : 'Buka modul',
+                style: TextStyle(
+                  color: module.accent,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+              const SizedBox(width: 7),
+              Icon(
+                Icons.arrow_forward_rounded,
+                color: module.accent,
+                size: 18,
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
@@ -1265,9 +1239,12 @@ class _PrototypeNotice extends StatelessWidget {
           const SizedBox(width: 11),
           Expanded(
             child: Text(
-              'Kandungan ini ialah ringkasan prototaip. '
-              'Semak kandungan akhir bersama pembimbing '
-              'Haji atau panel syariah yang berautoriti.',
+              'Kandungan ini adalah prototaip yang diambil '
+              'daripada kitab al-Idah fi Manasik al-Hajj wa '
+              'al-Umrah karangan Imam an-Nawawi (mazhab '
+              'Syafi’i). Semak kandungan akhir bersama '
+              'pembimbing Haji atau panel syariah yang '
+              'berautoriti sebelum dijadikan rujukan hukum.',
               style: TextStyle(
                 color: palette.mutedText,
                 fontSize: 12,

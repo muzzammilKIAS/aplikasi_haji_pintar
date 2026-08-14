@@ -89,7 +89,10 @@ class _OfflineMapScreenState extends State<OfflineMapScreen> {
             ],
           ),
         ),
-        child: SafeArea(
+        child: Stack(
+          children: <Widget>[
+            const IslamicPatternOverlay(),
+            SafeArea(
           child: Column(
             children: <Widget>[
               _buildHeader(context),
@@ -102,6 +105,8 @@ class _OfflineMapScreenState extends State<OfflineMapScreen> {
               ),
             ],
           ),
+        ),
+          ],
         ),
       ),
     );

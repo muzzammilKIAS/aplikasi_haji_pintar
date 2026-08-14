@@ -251,7 +251,10 @@ class MyCertificatesScreen extends StatelessWidget {
             ],
           ),
         ),
-        child: SafeArea(
+        child: Stack(
+          children: <Widget>[
+            const IslamicPatternOverlay(),
+            SafeArea(
           child: SingleChildScrollView(
             padding: const EdgeInsets.fromLTRB(20, 16, 20, 40),
             child: Center(
@@ -459,6 +462,8 @@ class MyCertificatesScreen extends StatelessWidget {
               ),
             ),
           ),
+        ),
+          ],
         ),
       ),
     );

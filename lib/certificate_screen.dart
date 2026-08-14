@@ -376,7 +376,10 @@ class _CertificateScreenState extends State<CertificateScreen> {
             ],
           ),
         ),
-        child: SafeArea(
+        child: Stack(
+          children: <Widget>[
+            const IslamicPatternOverlay(),
+            SafeArea(
           child: SingleChildScrollView(
             padding: const EdgeInsets.fromLTRB(20, 16, 20, 40),
             child: Center(
@@ -673,6 +676,8 @@ class _CertificateScreenState extends State<CertificateScreen> {
               ),
             ),
           ),
+        ),
+          ],
         ),
       ),
     );
