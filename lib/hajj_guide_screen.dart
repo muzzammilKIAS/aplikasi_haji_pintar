@@ -776,7 +776,7 @@ class _HajjGuideScreenState extends State<HajjGuideScreen> {
           'akibat uzur — mencukur kepala kerana sakit — yang membolehkan '
           'jemaah memilih antara menyembelih, bersedekah kepada enam '
           'orang miskin, atau berpuasa tiga hari). Setiap larangan '
-          'ihram (محظورات) yang dilanggar mempunyai kifaratnya yang '
+          'ihram (muharramat / محظورات) yang dilanggar mempunyai kifaratnya yang '
           'tersendiri mengikut jenis pelanggaran — sama ada memakai '
           'pakaian berjahit, memotong kuku, memburu, atau melakukan '
           'hubungan suami isteri sebelum tahallul awal, yang membawa '
@@ -966,7 +966,7 @@ class _HajjGuideScreenState extends State<HajjGuideScreen> {
 /// menggunakan struktur data ([HajjGuideStepData], [GuideDua]), skrin
 /// perincian ([HajjGuideDetailScreen]) dan widget-widget (`_TimelineStep`,
 /// `_GuideProgressCard`, `_GuidePrototypeNotice`) yang sama seperti modul
-/// Haji, selaras dengan Bab 4 (العمرة) kitab al-Idah karangan Imam
+/// Haji, selaras dengan Bab 4 (al-Umrah / العمرة) kitab al-Idah karangan Imam
 /// an-Nawawi.
 class UmrahGuideScreen extends StatefulWidget {
   const UmrahGuideScreen({required this.guideBox, super.key});
@@ -2286,9 +2286,9 @@ class _GuidePrototypeNotice extends StatelessWidget {
           Expanded(
             child: Text(
               'Panduan ini adalah prototaip yang diambil '
-              'daripada kitab al-Idah fi Manasik al-Hajj wa '
-              'al-Umrah karangan Imam an-Nawawi (mazhab '
-              'Syafi’i). Urutan dan hukum akhir hendaklah '
+              'daripada kitab al-Idah fi Manasik al-Hajj wa al-Umrah '
+              '(الإيضاح في مناسك الحج والعمرة) karangan Imam an-Nawawi '
+              '(الإمام النووي). Urutan dan hukum akhir hendaklah '
               'disemak bersama pembimbing Haji atau panel '
               'syariah yang berautoriti sebelum dijadikan '
               'rujukan hukum.',

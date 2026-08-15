@@ -2133,9 +2133,9 @@ class _PrototypeNotice extends StatelessWidget {
           Expanded(
             child: Text(
               'Kandungan ini adalah prototaip yang diambil '
-              'daripada kitab al-Idah fi Manasik al-Hajj wa '
-              'al-Umrah karangan Imam an-Nawawi (mazhab '
-              'Syafi’i). Semak kandungan akhir bersama '
+              'daripada kitab al-Idah fi Manasik al-Hajj wa al-Umrah '
+              '(الإيضاح في مناسك الحج والعمرة) karangan Imam an-Nawawi '
+              '(الإمام النووي). Semak kandungan akhir bersama '
               'pembimbing Haji atau panel syariah yang '
               'berautoriti sebelum dijadikan rujukan hukum.',
               style: TextStyle(

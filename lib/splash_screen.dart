@@ -636,8 +636,9 @@ class _DisclaimerDialog extends StatelessWidget {
                 Text(
                   'Haji Pintar ialah sebuah prototaip aplikasi pembelajaran '
                   'yang dibangunkan secara bebas berasaskan kitab al-Idah '
-                  'fi Manasik al-Hajj wa al-Umrah karangan Imam an-Nawawi '
-                  '(mazhab Syafi’i).\n\n'
+                  'fi Manasik al-Hajj wa al-Umrah '
+                  '(الإيضاح في مناسك الحج والعمرة) karangan Imam an-Nawawi '
+                  '(الإمام النووي).\n\n'
                   'Aplikasi ini bukan aplikasi rasmi, produk rasmi atau '
                   'platform yang diperakui oleh mana-mana agensi '
                   'pengelola Haji.\n\n'
