@@ -962,6 +962,535 @@ class _HajjGuideScreenState extends State<HajjGuideScreen> {
   }
 }
 
+/// Panduan Umrah — silibus berasingan daripada Panduan Haji, tetapi
+/// menggunakan struktur data ([HajjGuideStepData], [GuideDua]), skrin
+/// perincian ([HajjGuideDetailScreen]) dan widget-widget (`_TimelineStep`,
+/// `_GuideProgressCard`, `_GuidePrototypeNotice`) yang sama seperti modul
+/// Haji, selaras dengan Bab 4 (العمرة) kitab al-Idah karangan Imam
+/// an-Nawawi.
+class UmrahGuideScreen extends StatefulWidget {
+  const UmrahGuideScreen({required this.guideBox, super.key});
+
+  final Box<dynamic> guideBox;
+
+  /// Kunci storan Hive berasingan daripada Panduan Haji supaya kemajuan
+  /// kedua-dua silibus tidak bercampur.
+  static const String storageKey = 'completed_umrah_steps';
+
+  static int get totalSteps => _UmrahGuideScreenState.steps.length;
+
+  @override
+  State<UmrahGuideScreen> createState() => _UmrahGuideScreenState();
+}
+
+class _UmrahGuideScreenState extends State<UmrahGuideScreen> {
+  final Set<int> completedSteps = <int>{};
+
+  static const List<HajjGuideStepData> steps = <HajjGuideStepData>[
+    HajjGuideStepData(
+      number: '01',
+      title: 'Niat & Persediaan Umrah',
+      location: 'Sebelum berangkat',
+      icon: HajjIconType.preparation,
+      accent: Color(0xFF2F8F79),
+      summary:
+          'Sediakan diri dan fahami rukun Umrah sebelum bergerak ke miqat.',
+      actions: <String>[
+        'Fahami rukun Umrah: Ihram, Tawaf, Sa’i dan Tahallul.',
+        'Sediakan pakaian ihram dan keperluan asas perjalanan.',
+        'Rancang jadual supaya tidak tergesa-gesa semasa di miqat.',
+        'Bertaubat dan bersihkan diri daripada dosa sebelum berangkat.',
+      ],
+      checklist: <String>[
+        'Rukun Umrah difahami.',
+        'Pakaian ihram disediakan.',
+        'Jadual perjalanan disemak.',
+        'Persediaan rohani (taubat, niat ikhlas) dilakukan.',
+      ],
+      reminder:
+          'Umrah tidak mempunyai wukuf, mabit Muzdalifah atau Mina — '
+          'jangan keliru dengan susunan ibadah Haji.',
+      duas: <GuideDua>[
+        GuideDua(
+          title: 'Doa Musafir',
+          arabic:
+              'اللَّهُمَّ إِنَّا نَسْأَلُكَ فِي سَفَرِنَا هَـٰذَا الْبِرَّ '
+              'وَالتَّقْوَىٰ، وَمِنَ الْعَمَلِ مَا تَرْضَىٰ',
+          translation:
+              'Ya Allah, sesungguhnya kami memohon kepada-Mu dalam '
+              'perjalanan kami ini kebaikan dan ketakwaan, serta amalan '
+              'yang Engkau redai.',
+          source: 'Riwayat Muslim',
+        ),
+      ],
+      academicInsight:
+          'Dalam Bab keempat al-Idah, Imam an-Nawawi mengambil pendapat '
+          'yang sahih (al-madzhab as-sahih) daripada dua pendapat Imam '
+          'as-Syafi’i bahawa Umrah adalah fardu ke atas yang '
+          'berkemampuan sama seperti Haji, berdasarkan firman Allah SWT: '
+          '"Sempurnakanlah ibadat Haji dan Umrah kerana Allah" '
+          '(al-Baqarah: 196) dan sabda Nabi SAW kepada seorang lelaki: '
+          '"Berhajilah untuk bapamu dan ber-umrahlah." Kewajipan ini '
+          'hanya sekali seumur hidup, tetapi disunatkan memperbanyakkan '
+          'Umrah — lebih-lebih lagi dalam bulan Ramadan, berdasarkan '
+          'hadis: "Umrah dalam Ramadan menyamai (pahala) Haji bersamaku" '
+          '(riwayat al-Bukhari dan Muslim daripada Ibnu Abbas r.a).',
+      reflectionQuestions: <String>[
+        'Mengapakah Imam an-Nawawi mengambil pendapat bahawa Umrah '
+            'adalah fardu, sama seperti Haji, walaupun terdapat khilaf '
+            'ulama dalam isu ini?',
+        'Apakah hikmah digalakkan memperbanyakkan Umrah, terutama '
+            'dalam bulan Ramadan?',
+      ],
+    ),
+    HajjGuideStepData(
+      number: '02',
+      title: 'Ihram di Miqat Umrah',
+      location: 'Miqat / Tanah Halal',
+      icon: HajjIconType.ihram,
+      accent: Color(0xFFB18443),
+      summary:
+          'Berihram dari miqat yang betul dan berniat khusus Umrah.',
+      actions: <String>[
+        'Bagi yang datang dari luar Makkah, berihram di salah satu '
+            'daripada 5 miqat makani (sama seperti miqat Haji).',
+        'Bagi penduduk atau yang sudah berada di Makkah, keluar dahulu '
+            'ke Tanah Halal terdekat (contoh: Tan’im) sebelum berniat.',
+        'Mulakan talbiyah sebaik sahaja berniat Umrah.',
+        'Jaga larangan ihram sepanjang tempoh Umrah.',
+      ],
+      checklist: <String>[
+        'Miqat yang betul dikenal pasti.',
+        'Niat Umrah dilakukan sebelum melepasi/keluar had miqat.',
+        'Talbiyah dibaca.',
+        'Larangan ihram difahami.',
+      ],
+      reminder:
+          'Penduduk Makkah TIDAK boleh berniat Umrah dari dalam Tanah '
+          'Haram — wajib keluar dahulu ke Tanah Halal walaupun sejengkal.',
+      duas: <GuideDua>[
+        GuideDua(
+          title: 'Lafaz Niat Umrah',
+          arabic: 'اللَّهُمَّ لَبَّيْكَ عُمْرَةً',
+          translation: 'Ya Allah, aku sahut seruan-Mu untuk menunaikan Umrah.',
+          source: 'Lafaz yang diajarkan dalam kitab-kitab fiqh manasik',
+        ),
+        GuideDua(
+          title: 'Talbiyah',
+          arabic:
+              'لَبَّيْكَ اللَّهُمَّ لَبَّيْكَ، لَبَّيْكَ لَا شَرِيكَ لَكَ '
+              'لَبَّيْكَ، إِنَّ الْحَمْدَ وَالنِّعْمَةَ لَكَ وَالْمُلْكَ، '
+              'لَا شَرِيكَ لَكَ',
+          translation:
+              'Aku sahut panggilan-Mu ya Allah, aku sahut panggilan-Mu. '
+              'Aku sahut panggilan-Mu, tiada sekutu bagi-Mu, aku sahut '
+              'panggilan-Mu. Sesungguhnya segala puji, nikmat dan '
+              'kerajaan adalah milik-Mu, tiada sekutu bagi-Mu.',
+          source: 'Riwayat al-Bukhari dan Muslim',
+        ),
+      ],
+      academicInsight:
+          'Fasal Miqat Umrah dalam al-Idah menjelaskan Umrah mempunyai '
+          'dua miqat seperti Haji — zamani (masa, tetapi tanpa had '
+          'tertentu sepanjang tahun) dan makani (tempat). Bagi yang '
+          'datang dari luar Makkah, miqat makaninya sama seperti miqat '
+          'Haji. Namun bagi sesiapa yang sudah berada di Makkah — sama '
+          'ada penduduk tetap atau pendatang — miqat Umrahnya ialah '
+          'Tanah Halal terdekat, kerana Umrah menuntut penggabungan '
+          'antara Tanah Halal dan Tanah Haram (berbeza daripada Haji '
+          'yang miqatnya boleh dari Makkah sendiri). Mazhab Syafi’i '
+          'meletakkan Ji’ranah sebagai tempat paling afdal untuk '
+          'berihram Umrah kerana Nabi SAW pernah berihram dari sana, '
+          'diikuti Tan’im, kemudian Hudaibiyah — bersempena athar '
+          'Rasulullah SAW yang mengarahkan Aisyah r.anha keluar ke '
+          'Tan’im untuk berihram Umrah.',
+      reflectionQuestions: <String>[
+        'Mengapakah penduduk Makkah tidak boleh berniat Umrah dari '
+            'dalam Tanah Haram, berbeza dengan miqat Haji yang boleh '
+            'dari Makkah sendiri?',
+        'Apakah hikmah di sebalik keperluan menggabungkan Tanah Halal '
+            'dan Tanah Haram dalam ibadah Umrah?',
+      ],
+    ),
+    HajjGuideStepData(
+      number: '03',
+      title: 'Tawaf Umrah',
+      location: 'Masjidil Haram',
+      icon: HajjIconType.tawaf,
+      accent: Color(0xFF7A6CB1),
+      summary: 'Laksanakan Tawaf tujuh pusingan mengelilingi Kaabah.',
+      actions: <String>[
+        'Laksanakan Tawaf sebanyak tujuh pusingan bermula dari Hajar Aswad.',
+        'Gunakan kaunter Tawaf bagi membantu kiraan.',
+        'Solat sunat dua rakaat selepas Tawaf di belakang Maqam Ibrahim.',
+        'Pastikan syarat sah Tawaf (suci, tutup aurat) dipenuhi.',
+      ],
+      checklist: <String>[
+        'Tujuh pusingan Tawaf selesai.',
+        'Solat sunat Tawaf dilaksanakan.',
+        'Kiraan disemak sebelum meneruskan Sa’i.',
+        'Keadaan fizikal dipantau.',
+      ],
+      reminder:
+          'Tawaf Umrah menggunakan syarat dan tatacara yang sama seperti '
+          'Tawaf dalam Haji — rujuk Panduan Haji langkah "Tawaf dan Sa’i" '
+          'untuk perincian penuh.',
+      duas: <GuideDua>[
+        GuideDua(
+          title: 'Doa Antara Rukun Yamani dan Hajar Aswad',
+          arabic:
+              'رَبَّنَا آتِنَا فِي الدُّنْيَا حَسَنَةً وَفِي الْآخِرَةِ '
+              'حَسَنَةً وَقِنَا عَذَابَ النَّارِ',
+          translation:
+              'Ya Tuhan kami, berikanlah kami kebaikan di dunia dan '
+              'kebaikan di akhirat, serta peliharalah kami daripada azab '
+              'neraka.',
+          source:
+              'Al-Baqarah 2:201; diamalkan Rasulullah SAW ketika Tawaf (Abu Dawud)',
+        ),
+      ],
+      academicInsight:
+          'Tawaf Umrah adalah rukun kedua selepas Ihram, dengan lapan '
+          'syarat sah yang sama seperti Tawaf Ifadah dalam Haji '
+          '(disebut dalam Fasal Kaifiyat Tawaf, Bab 3 al-Idah) — antaranya '
+          'menutup aurat, suci daripada hadas, memulakan dari sejajar '
+          'Hajar Aswad, dan menyempurnakan tujuh pusingan penuh. Tiada '
+          'perbezaan tatacara antara Tawaf Umrah dan Tawaf Ifadah Haji '
+          'dari sudut fiqh, kecuali Tawaf Umrah tidak didahului oleh '
+          'Wukuf di Arafah.',
+      reflectionQuestions: <String>[
+        'Apakah persamaan dan perbezaan antara Tawaf Umrah dan Tawaf '
+            'Ifadah dalam ibadah Haji?',
+        'Mengapakah penting memastikan syarat sah Tawaf (seperti suci '
+            'daripada hadas) dipenuhi sebelum memulakannya?',
+      ],
+    ),
+    HajjGuideStepData(
+      number: '04',
+      title: 'Sa’i Umrah',
+      location: 'Antara Safa dan Marwah',
+      icon: HajjIconType.sai,
+      accent: Color(0xFF3D8FA0),
+      summary: 'Laksanakan Sa’i tujuh kali antara Safa dan Marwah.',
+      actions: <String>[
+        'Mulakan Sa’i dari Safa dan sudahi di Marwah.',
+        'Sempurnakan tujuh kali perjalanan (pergi dan balik masing-masing dikira satu).',
+        'Gunakan kaunter Sa’i untuk merekod perjalanan.',
+        'Berdoa dengan doa ma’thur di Safa dan Marwah.',
+      ],
+      checklist: <String>[
+        'Tujuh kali perjalanan Sa’i selesai.',
+        'Bermula di Safa, berakhir di Marwah.',
+        'Kiraan disemak sebelum bertahallul.',
+        'Keadaan fizikal dipantau.',
+      ],
+      reminder:
+          'Sa’i Umrah wajib menyempurnakan jarak penuh antara Safa dan '
+          'Marwah tanpa berbaki walau sejengkal, sama seperti Sa’i Haji.',
+      duas: <GuideDua>[
+        GuideDua(
+          title: 'Doa Memulakan Sa’i di Safa',
+          arabic: 'إِنَّ الصَّفَا وَالْمَرْوَةَ مِنْ شَعَائِرِ اللَّهِ',
+          translation:
+              'Sesungguhnya Safa dan Marwah sebahagian daripada '
+              'syiar-syiar Allah.',
+          source: 'Al-Baqarah 2:158',
+        ),
+      ],
+      academicInsight:
+          'Sa’i ialah rukun ketiga Umrah, dengan hukum dan syarat yang '
+          'sama seperti Sa’i dalam Haji — jumhur ulama Syafi’i dan '
+          'Maliki meletakkannya sebagai rukun (bukan sekadar wajib), '
+          'berdasarkan sabda Nabi SAW: "Sa’ilah kamu, kerana Allah '
+          'telah mewajibkan Sa’i ke atas kamu." Tertib turut '
+          'disyaratkan: mesti selepas Tawaf, dan bermula dari Safa.',
+      reflectionQuestions: <String>[
+        'Mengapakah Sa’i mesti dilaksanakan selepas Tawaf, dan '
+            'apakah kesannya jika susunan ini tidak dipatuhi?',
+        'Bagaimana kisah Siti Hajar AS dalam peristiwa Sa’i '
+            'mengajar erti tawakal kepada jemaah Umrah masa kini?',
+      ],
+    ),
+    HajjGuideStepData(
+      number: '05',
+      title: 'Tahallul Umrah',
+      location: 'Selepas Sa’i',
+      icon: HajjIconType.tahallul,
+      accent: Color(0xFF5B9279),
+      summary:
+          'Bercukur atau bergunting untuk menamatkan ihram Umrah.',
+      actions: <String>[
+        'Bercukur (halq) atau bergunting (taqsir) sebaik selesai Sa’i.',
+        'Lelaki digalakkan bercukur habis kerana lebih afdal.',
+        'Wanita hanya memotong hujung rambut sekadar hujung jari.',
+        'Selepas bercukur/bergunting, semua larangan ihram terangkat.',
+      ],
+      checklist: <String>[
+        'Sa’i telah disahkan selesai.',
+        'Bercukur atau bergunting dilaksanakan.',
+        'Status tahallul (Umrah selesai) difahami.',
+        'Pakaian biasa boleh dipakai semula.',
+      ],
+      reminder:
+          'Umrah selesai sepenuhnya selepas tahallul — tiada wukuf, '
+          'mabit atau lontar jamrah seperti dalam Haji.',
+      duas: <GuideDua>[
+        GuideDua(
+          title: 'Doa Memohon Penerimaan Amalan',
+          arabic: 'اللَّهُمَّ تَقَبَّلْ مِنِّي',
+          translation: 'Ya Allah, terimalah (amalan) daripadaku.',
+          source:
+              'Doa umum memohon penerimaan amalan, sesuai diamalkan '
+              'selepas menyempurnakan Umrah',
+        ),
+      ],
+      academicInsight:
+          'Tahallul (bercukur/bergunting) ialah rukun keempat dan '
+          'terakhir Umrah menurut mazhab Syafi’i — dengan '
+          'penyempurnaannya, Umrah dikira selesai sepenuhnya dan semua '
+          'larangan ihram terangkat serta-merta, berbeza dengan Haji '
+          'yang mempunyai tahallul awal dan tahallul thani kerana lebih '
+          'banyak rukun yang perlu disempurnakan dahulu. Mencukur habis '
+          '(halq) dianggap lebih afdal bagi lelaki berdasarkan doa '
+          'khusus Rasulullah SAW: "Ya Allah, rahmatilah mereka yang '
+          'bercukur" — diulang tiga kali, berbanding sekali sahaja bagi '
+          'yang bergunting.',
+      reflectionQuestions: <String>[
+        'Mengapakah tahallul Umrah lebih ringkas berbanding Haji yang '
+            'mempunyai dua peringkat tahallul?',
+        'Apakah hikmah Rasulullah SAW mendoakan golongan yang '
+            'bercukur habis sebanyak tiga kali berbanding sekali bagi '
+            'yang bergunting?',
+      ],
+    ),
+    HajjGuideStepData(
+      number: '06',
+      title: 'Selepas Umrah',
+      location: 'Makkah',
+      icon: HajjIconType.umrahJourney,
+      accent: Color(0xFFC05C65),
+      summary:
+          'Kekalkan amalan baik dan pertimbangkan mengulangi Umrah.',
+      actions: <String>[
+        'Perbanyakkan solat, Tawaf sunat, dan doa di Masjidil Haram.',
+        'Jika mahu mengulangi Umrah, keluar semula ke Tanah Halal terdekat untuk berniat.',
+        'Elakkan menyusahkan diri atau kumpulan jika mengulangi Umrah berkali-kali.',
+        'Kekalkan kesan positif ibadah selepas pulang ke tanah air.',
+      ],
+      checklist: <String>[
+        'Amalan sunat di Masjidil Haram diteruskan.',
+        'Keputusan mengulangi Umrah (jika ada) dirancang dengan baik.',
+        'Adab dan kesopanan dijaga sepanjang tinggal di Makkah.',
+        'Azam mengekalkan istiqamah selepas pulang dibuat.',
+      ],
+      reminder:
+          'Setiap kali mengulangi Umrah, wajib keluar semula ke Tanah '
+          'Halal untuk berniat — tidak boleh berniat dari dalam Masjidil Haram.',
+      duas: <GuideDua>[
+        GuideDua(
+          title: 'Doa Penutup Majlis (Kaffaratul Majlis)',
+          arabic:
+              'سُبْحَانَكَ اللَّهُمَّ وَبِحَمْدِكَ، أَشْهَدُ أَنْ لَا '
+              'إِلَٰهَ إِلَّا أَنْتَ، أَسْتَغْفِرُكَ وَأَتُوبُ إِلَيْكَ',
+          translation:
+              'Maha Suci Engkau ya Allah, dan dengan memuji-Mu, aku '
+              'bersaksi bahawa tiada Tuhan melainkan Engkau, aku memohon '
+              'ampun dan bertaubat kepada-Mu.',
+          source: 'Riwayat at-Tirmidhi',
+        ),
+      ],
+      academicInsight:
+          'Imam an-Nawawi menegaskan sunat memperbanyakkan Umrah sekadar '
+          'tidak menyusahkan diri, berdasarkan athar Aisyah r.anha yang '
+          'pernah ber-umrah dua kali dalam tahun yang sama, satu dari '
+          'Zulhulaifah dan satu lagi dari Juhfah. Ulama turut mengaitkan '
+          '"Umrah ke Umrah adalah kifarah dosa antara keduanya" '
+          '(riwayat al-Bukhari dan Muslim) sebagai galakan berterusan, '
+          'namun sebahagian ulama seperti Imam Malik memakruhkan '
+          'pengulangan yang terlalu kerap kerana Rasulullah SAW sendiri '
+          'tidak pernah mengulanginya sedemikian dalam satu tempoh yang '
+          'singkat. Sikap pertengahan yang digalakkan ialah memperbanyak '
+          'Umrah tanpa menjadikannya beban atau mengurangkan '
+          'kekhusyukannya.',
+      reflectionQuestions: <String>[
+        'Apakah hikmah disebalik galakan memperbanyakkan Umrah, dan '
+            'mengapakah sebahagian ulama memakruhkan pengulangan yang '
+            'terlalu kerap?',
+        'Bagaimana jemaah dapat mengekalkan kesan positif ibadah Umrah '
+            'selepas pulang ke tanah air?',
+      ],
+    ),
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadCompletedSteps();
+  }
+
+  void _loadCompletedSteps() {
+    final dynamic savedValue = widget.guideBox.get(
+      UmrahGuideScreen.storageKey,
+      defaultValue: <int>[],
+    );
+
+    completedSteps.clear();
+
+    if (savedValue is List<dynamic>) {
+      for (final dynamic value in savedValue) {
+        if (value is int && value >= 0 && value < steps.length) {
+          completedSteps.add(value);
+        }
+      }
+    }
+  }
+
+  Future<void> _setStepCompleted(int index, bool completed) async {
+    setState(() {
+      if (completed) {
+        completedSteps.add(index);
+      } else {
+        completedSteps.remove(index);
+      }
+    });
+
+    final List<int> savedSteps = completedSteps.toList()..sort();
+
+    await widget.guideBox.put(UmrahGuideScreen.storageKey, savedSteps);
+  }
+
+  Future<void> _openStep(int index) async {
+    await Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (_) {
+          return HajjGuideDetailScreen(
+            steps: steps,
+            initialIndex: index,
+            completedSteps: completedSteps,
+            onCompletionChanged: _setStepCompleted,
+          );
+        },
+      ),
+    );
+
+    if (mounted) {
+      setState(_loadCompletedSteps);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final HajjColors palette = context.hajjColors;
+    final ColorScheme colors = context.appColorScheme;
+    final double progress = completedSteps.length / steps.length;
+
+    return Scaffold(
+      body: AnimatedContainer(
+        duration: const Duration(milliseconds: 320),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: <Color>[
+              palette.gradientStart,
+              palette.gradientMiddle,
+              palette.gradientEnd,
+            ],
+          ),
+        ),
+        child: Stack(
+          children: <Widget>[
+            const IslamicPatternOverlay(),
+            SafeArea(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.fromLTRB(20, 16, 20, 40),
+                child: Center(
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 820),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Row(
+                          children: <Widget>[
+                            HajjIconButton(
+                              tooltip: 'Kembali',
+                              icon: Icons.arrow_back_rounded,
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                            ),
+                            Expanded(
+                              child: Column(
+                                children: <Widget>[
+                                  Text(
+                                    'PANDUAN UMRAH',
+                                    textAlign: TextAlign.center,
+                                    style: GoogleFonts.playfairDisplay(
+                                      color: colors.onSurface,
+                                      fontWeight: FontWeight.w700,
+                                      letterSpacing: 1.5,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 3),
+                                  Text(
+                                    'Langkah demi langkah',
+                                    style: TextStyle(
+                                      color: palette.mutedText,
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(width: 46),
+                          ],
+                        ),
+                        const SizedBox(height: 24),
+                        _GuideProgressCard(
+                          completed: completedSteps.length,
+                          total: steps.length,
+                          progress: progress,
+                        ),
+                        const SizedBox(height: 24),
+                        Text(
+                          'Perjalanan Umrah',
+                          style: GoogleFonts.playfairDisplay(
+                            color: colors.onSurface,
+                            fontSize: 23,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                        const SizedBox(height: 6),
+                        Text(
+                          'Tekan langkah untuk melihat panduan dan checklist.',
+                          style: TextStyle(color: palette.mutedText),
+                        ),
+                        const SizedBox(height: 20),
+                        ...List<Widget>.generate(steps.length, (int index) {
+                          return _TimelineStep(
+                            step: steps[index],
+                            isCompleted: completedSteps.contains(index),
+                            isLast: index == steps.length - 1,
+                            onTap: () {
+                              _openStep(index);
+                            },
+                          );
+                        }),
+                        const SizedBox(height: 12),
+                        const _GuidePrototypeNotice(),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 class HajjGuideDetailScreen extends StatefulWidget {
   const HajjGuideDetailScreen({
     required this.steps,

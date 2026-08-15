@@ -285,6 +285,16 @@ class _HalamanUtamaState extends State<HalamanUtama>
     );
   }
 
+  void _bukaPanduanUmrah(BuildContext context) {
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (_) {
+          return UmrahGuideScreen(guideBox: guideBox);
+        },
+      ),
+    );
+  }
+
   void _bukaPeta(BuildContext context) {
     Navigator.of(context).push(
       MaterialPageRoute<void>(
@@ -666,6 +676,13 @@ class _HalamanUtamaState extends State<HalamanUtama>
         icon: HajjIconType.guide,
         accent: palette.gold,
         onTap: () => _bukaPanduanHaji(context),
+      ),
+      _FeatureData(
+        title: 'Panduan Umrah',
+        description: 'Silibus Umrah — Ihram, Tawaf, Sa’i hingga Tahallul.',
+        icon: HajjIconType.umrahJourney,
+        accent: palette.blue,
+        onTap: () => _bukaPanduanUmrah(context),
       ),
     ];
 

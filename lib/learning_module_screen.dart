@@ -33,6 +33,42 @@ class LearningModuleScreen extends StatelessWidget {
             'Haji ialah mengunjungi Baitullah al-Haram pada masa tertentu untuk melaksanakan ibadah tertentu.',
             'Ibadah Haji dilaksanakan dengan niat dan mengikuti tatacara yang ditetapkan.',
           ],
+          deepDive: SectionDeepDive(
+            dalil: <DalilItem>[
+              DalilItem(
+                arabic:
+                    'وَلِلَّهِ عَلَى النَّاسِ حِجُّ الْبَيْتِ مَنِ '
+                    'اسْتَطَاعَ إِلَيْهِ سَبِيلًا',
+                terjemahan:
+                    'Dan Allah mewajibkan manusia mengerjakan ibadah '
+                    'Haji ke Baitullah, iaitu sesiapa yang mampu '
+                    'mengadakan perjalanan kepadanya.',
+                sumber: 'Ali-Imran (3):97',
+              ),
+              DalilItem(
+                arabic:
+                    'يَا أَيُّهَا النَّاسُ قَدْ فَرَضَ اللَّهُ عَلَيْكُمُ '
+                    'الْحَجَّ فَحُجُّوا',
+                terjemahan:
+                    'Wahai manusia, sesungguhnya Allah telah mewajibkan '
+                    'Haji ke atas kamu, maka tunaikanlah Haji.',
+                sumber: 'Riwayat Muslim daripada Abu Hurairah r.a',
+              ),
+            ],
+            teksKitab:
+                'Imam an-Nawawi menyebut dalam Fasal "Idza arada al-Hajj" '
+                '(apabila seseorang hendak menunaikan Haji) bahawa fardu '
+                'ain baginya mempelajari kaifiyat (tatacara) Haji secara '
+                'terperinci — rukun, syarat, wajib dan perkara yang '
+                'membatalkannya — kerana "ibadah tidak sah daripada '
+                'orang yang tidak mengetahuinya".',
+            permasalahan: <String>[
+              'Sesiapa yang tidak mahir tatacara Haji wajib sama ada '
+                  'belajar terlebih dahulu, atau mengupah/mengikut '
+                  'seorang yang arif (mursyid) yang boleh dipercayai '
+                  'bagi memandu setiap langkah semasa pelaksanaan.',
+            ],
+          ),
         ),
         LearningSection(
           title: 'Syarat wajib Haji',
@@ -42,6 +78,57 @@ class LearningModuleScreen extends StatelessWidget {
             'Merdeka.',
             'Mempunyai kemampuan dari sudut kewangan, kesihatan dan keselamatan perjalanan.',
           ],
+          deepDive: SectionDeepDive(
+            dalil: <DalilItem>[
+              DalilItem(
+                arabic:
+                    'وَلِلَّهِ عَلَى النَّاسِ حِجُّ الْبَيْتِ مَنِ '
+                    'اسْتَطَاعَ إِلَيْهِ سَبِيلًا',
+                terjemahan:
+                    '...dan sesiapa yang mampu mengadakan perjalanan '
+                    'kepadanya — dalil utama syarat istita’ah '
+                    '(kemampuan).',
+                sumber: 'Ali-Imran (3):97',
+              ),
+              DalilItem(
+                arabic:
+                    'رُفِعَ الْقَلَمُ عَنْ ثَلَاثَةٍ: عَنِ النَّائِمِ '
+                    'حَتَّى يَسْتَيْقِظَ، وَعَنِ الصَّبِيِّ حَتَّى '
+                    'يَحْتَلِمَ، وَعَنِ الْمَجْنُونِ حَتَّى يَعْقِلَ',
+                terjemahan:
+                    'Diangkat pena (tidak dikira dosa) daripada tiga '
+                    'golongan: orang tidur sehingga dia bangun, '
+                    'kanak-kanak sehingga dia baligh (bermimpi), dan '
+                    'orang gila sehingga dia siuman (berakal) — asas '
+                    'syarat baligh dan berakal.',
+                sumber: 'Riwayat Abu Dawud dan at-Tirmidhi',
+              ),
+            ],
+            teksKitab:
+                'Al-Idah menyatakan: wajib haji al-Islam (kewajipan '
+                'Haji sebagai rukun Islam) mempunyai lima syarat: Islam, '
+                'baligh, berakal, merdeka, dan istita’ah (kemampuan). '
+                'Istita’ah pula terbahagi dua: istita’ah mubasyarah '
+                '(mampu melaksanakan sendiri) dan istita’ah tahsil '
+                'bighairih (mampu melalui wakil/badal, khusus bagi yang '
+                'uzur kekal atau telah meninggal dunia).',
+            permasalahan: <String>[
+              'Istita’ah mubasyarah disyaratkan lima perkara: kenderaan '
+                  '(jika jarak 2 marhalah atau lebih), bekalan (zad), '
+                  'keselamatan perjalanan (nafs, harta, kehormatan), '
+                  'kesihatan badan, dan waktu yang mencukupi untuk sampai.',
+              'Kanak-kanak dan hamba yang menunaikan Haji sah Hajinya '
+                  'tetapi tidak terkira sebagai Haji fardu (Hajjatul '
+                  'Islam) — wajib mengulang semula selepas baligh/merdeka, '
+                  'berdasarkan hadis: "Mana-mana kanak-kanak yang '
+                  'menunaikan Haji kemudian baligh, wajib ke atasnya '
+                  'Haji lagi; dan mana-mana hamba yang menunaikan Haji '
+                  'kemudian dimerdekakan, wajib ke atasnya Haji lagi."',
+              'Wanita disyaratkan tambahan: mesti disertai suami, '
+                  'mahram, atau rombongan wanita yang thiqah (dipercayai) '
+                  'sepanjang perjalanan.',
+            ],
+          ),
         ),
         LearningSection(
           title: 'Gambaran perjalanan',
@@ -51,6 +138,23 @@ class LearningModuleScreen extends StatelessWidget {
             'Bermalam di Muzdalifah dan Mina.',
             'Melontar jamrah, bertahallul, Tawaf dan Sa’i.',
           ],
+          deepDive: SectionDeepDive(
+            permasalahan: <String>[
+              'Ifrad — berihram dengan Haji sahaja, tanpa Umrah dalam '
+                  'ihram yang sama.',
+              'Tamattu’ — berihram Umrah dahulu dalam bulan-bulan Haji, '
+                  'bertahallul, kemudian berihram semula dengan Haji '
+                  'daripada Makkah; jenis ini mewajibkan dam sebagai '
+                  'tanda kesyukuran kerana tidak perlu kembali ke miqat.',
+              'Qiran — berihram dengan Haji dan Umrah serentak dalam '
+                  'satu ihram tanpa bertahallul di antaranya; turut '
+                  'mewajibkan dam yang sama seperti Tamattu’.',
+              'Jumhur ulama Syafi’i berpendapat Ifrad lebih afdal bagi '
+                  'yang berkemampuan menunaikan Umrah berasingan '
+                  'selepas itu, walaupun terdapat khilaf kecil mengenai '
+                  'keutamaan antara ketiga-tiga jenis ini.',
+            ],
+          ),
         ),
       ],
       duas: <ModuleDua>[
@@ -100,6 +204,31 @@ class LearningModuleScreen extends StatelessWidget {
             'Sa’i antara Safa dan Marwah.',
             'Bercukur atau bergunting (halq/taqsir).',
           ],
+          deepDive: SectionDeepDive(
+            teksKitabArabic: 'أَمَّا الْأَرْكَانُ: فَخَمْسَةٌ',
+            teksKitab:
+                'Dalam Fasal "A’mal al-Hajj thalathah aqsam: arkan wa '
+                'wajibat wa sunan" (amalan Haji terbahagi tiga bahagian: '
+                'rukun, wajib dan sunat), Imam an-Nawawi menyebut petikan '
+                'di atas — bermaksud "adapun rukun-rukun itu ada lima" '
+                '— iaitu Ihram, Wukuf, Tawaf Ifadah, Sa’i dan Halq. '
+                'Beliau turut menegaskan tertib (susunan) sengaja tidak '
+                'dikira sebagai rukun keenam yang berasingan.',
+            permasalahan: <String>[
+              'Rukun ialah komponen yang MESTI ada dan TIDAK boleh '
+                  'digantikan dengan dam — Haji tidak sempurna sehingga '
+                  'rukun itu dilaksanakan, walaupun terlepas musim.',
+              'Sesetengah ulama Hanbali dan sebahagian riwayat mazhab '
+                  'lain mengira "tertib" sebagai rukun tambahan; Imam '
+                  'an-Nawawi memilih pendapat yang tidak menganggapnya '
+                  'rukun berasingan, sebaliknya syarat bagi kesahan '
+                  'kebanyakan rukun tersebut.',
+              'Halq/taqsir (bercukur/bergunting) sebagai rukun (bukan '
+                  'sekadar wajib) adalah pendapat termu’tamad mazhab '
+                  'Syafi’i; sebahagian mazhab lain (seperti Hanafi) '
+                  'menganggapnya wajib sahaja yang boleh diganti dam.',
+            ],
+          ),
         ),
         LearningSection(
           title: 'Wajib Haji (enam)',
@@ -111,13 +240,35 @@ class LearningModuleScreen extends StatelessWidget {
             'Melontar ketiga-tiga jamrah mengikut susunan.',
             'Melaksanakan Tawaf Wada’.',
           ],
+          deepDive: SectionDeepDive(
+            teksKitab:
+                'Al-Idah menyenaraikan wajib Haji sebagai: dua perkara '
+                'yang disepakati (ihram dari miqat, melontar jamrah) dan '
+                'empat lagi yang diperselisihkan tetapi diambil sebagai '
+                'ashah (paling sahih) — jam’ siang-malam di Arafah, '
+                'mabit Muzdalifah, mabit malam-malam Mina, dan Tawaf '
+                'Wada’.',
+            permasalahan: <String>[
+              'Wajib berbeza daripada rukun — jika ditinggalkan tanpa '
+                  'uzur, Hajinya tetap SAH tetapi wajib membayar dam '
+                  'sebagai gantian.',
+              'Status Tawaf Wada’ sebagai wajib turut diperselisihkan '
+                  'ulama — sebahagian menganggapnya sunat bagi golongan '
+                  'tertentu (contoh: wanita haid yang tidak sempat '
+                  'bertawaf sebelum bertolak).',
+              'Mabit di Muzdalifah dianggap sempurna sekadar hadir '
+                  'sesaat sahaja selepas tengah malam, manakala mabit di '
+                  'Mina memerlukan kehadiran majoriti (kebanyakan) '
+                  'malam tersebut menurut pendapat mu’tamad.',
+            ],
+          ),
         ),
         LearningSection(
           title: 'Perbezaan ringkas',
           points: <String>[
             'Rukun yang ditinggalkan menyebabkan Haji tidak sempurna sehingga rukun itu dilaksanakan — tertib (susunan) hanya syarat bagi kebanyakan rukun, bukan rukun keenam yang berasingan.',
             'Wajib Haji yang ditinggalkan boleh menyebabkan kewajipan dam, tertakluk kepada keadaan dan hukum — Hajinya tetap sah.',
-            'Larangan ihram (محظورات) adalah topik berasingan daripada wajib Haji, masing-masing dengan kifaratnya sendiri.',
+            'Larangan ihram (muharramat / محظورات) adalah topik berasingan daripada wajib Haji, masing-masing dengan kifaratnya sendiri.',
           ],
         ),
       ],
@@ -174,6 +325,61 @@ class LearningModuleScreen extends StatelessWidget {
             '6. Jimak dan pendahuluannya — dilarang sepenuhnya sehingga tahallul; membatalkan Haji jika berlaku sebelum tahallul awal.',
             '7. Memburu — dilarang membunuh atau memburu binatang buruan darat yang halal dimakan.',
           ],
+          deepDive: SectionDeepDive(
+            dalil: <DalilItem>[
+              DalilItem(
+                arabic:
+                    'فَلَا رَفَثَ وَلَا فُسُوقَ وَلَا جِدَالَ فِي '
+                    'الْحَجِّ',
+                terjemahan:
+                    '...maka tidak boleh berkata kotor, berbuat fasiq '
+                    'dan berbantah-bantahan dalam masa mengerjakan Haji '
+                    '— asas larangan jimak dan perbuatan tidak elok '
+                    'semasa ihram.',
+                sumber: 'Al-Baqarah (2):197',
+              ),
+              DalilItem(
+                arabic:
+                    'يَا أَيُّهَا الَّذِينَ آمَنُوا لَا تَقْتُلُوا '
+                    'الصَّيْدَ وَأَنتُمْ حُرُمٌ',
+                terjemahan:
+                    'Wahai orang-orang yang beriman, janganlah kamu '
+                    'membunuh binatang buruan sedang kamu dalam ihram '
+                    '(Haji atau Umrah).',
+                sumber: 'Al-Ma’idah (5):95',
+              ),
+              DalilItem(
+                arabic:
+                    'لَا يَلْبَسُ الْقَمِيصَ وَلَا الْعَمَائِمَ وَلَا '
+                    'السَّرَاوِيلَاتِ وَلَا الْبَرَانِسَ وَلَا الْخِفَافَ',
+                terjemahan:
+                    '(Orang yang berihram) tidak boleh memakai qamis '
+                    '(baju berjahit), serban, seluar, burnus (jubah '
+                    'bertudung) atau khuf (kasut menutup buku lali).',
+                sumber: 'Riwayat al-Bukhari daripada Ibnu Umar r.a',
+              ),
+            ],
+            teksKitab:
+                'Al-Idah menyusun larangan ihram dalam Fasal '
+                '"Muharramat al-Ihram" kepada tujuh jenis (an-naw’ '
+                'al-awwal hingga as-sabi’): pakaian, wangian, minyak '
+                'rambut, cukur/potong kuku, akad nikah, jimak dan '
+                'pendahuluannya, serta memburu — masing-masing dengan '
+                'kifarat tersendiri.',
+            permasalahan: <String>[
+              'Fidyah tidak menghalalkan pelanggaran — sesiapa yang '
+                  'sengaja melanggar sambil berkata "aku akan bayar '
+                  'fidyah" tetap berdosa walaupun fidyahnya sah, kerana '
+                  'fidyah tidak mengangkat keharaman perbuatan itu '
+                  'sendiri.',
+              'Setiap 7 kategori mempunyai kifarat berlainan: sebahagian '
+                  'wajib fidyah walau sedikit (contoh: mencukur beberapa '
+                  'helai rambut), sebahagian mengikut nilai barang yang '
+                  'dimusnahkan (memburu), dan jimak sebelum tahallul '
+                  'awal membatalkan Haji serta wajib qada pada tahun '
+                  'berikutnya di samping dam.',
+            ],
+          ),
         ),
         LearningSection(
           title: 'Persamaan lelaki dan wanita',
@@ -181,6 +387,33 @@ class LearningModuleScreen extends StatelessWidget {
             'Wanita dikenakan ketujuh-tujuh larangan yang sama seperti lelaki, kecuali dua perkara: dibenarkan memakai pakaian berjahit dan menutup kepala, tetapi dilarang menutup wajah dan memakai sarung tangan.',
             'Kejahilan hukum atau terlupa memaafkan dosa tetapi tidak semestinya menggugurkan fidyah bagi sesetengah larangan — segera hentikan sebaik menyedari kesilapan.',
           ],
+          deepDive: SectionDeepDive(
+            dalil: <DalilItem>[
+              DalilItem(
+                arabic:
+                    'لَا تَنْتَقِبُ الْمَرْأَةُ الْمُحْرِمَةُ وَلَا '
+                    'تَلْبَسُ الْقُفَّازَيْنِ',
+                terjemahan:
+                    'Wanita yang berihram tidak boleh memakai niqab '
+                    '(penutup muka) dan tidak boleh memakai sarung '
+                    'tangan.',
+                sumber: 'Riwayat al-Bukhari daripada Ibnu Umar r.a',
+              ),
+            ],
+            permasalahan: <String>[
+              'Jumhur ulama Syafi’i bersepakat kesalahan yang '
+                  'dilakukan secara terlupa, tidak sengaja, atau kerana '
+                  'jahil (tidak tahu hukum) dimaafkan dosanya dan tidak '
+                  'diwajibkan dam bagi larangan tertentu — namun wajib '
+                  'berhenti serta-merta sebaik menyedari kesilapan; '
+                  'bagi larangan lain (seperti memburu) fidyah tetap '
+                  'wajib walaupun tidak sengaja.',
+              'Jika wanita perlu menutup wajah kerana fitnah/pandangan '
+                  'lelaki ajnabi, dibenarkan menggunakan kain yang '
+                  'dijarakkan daripada wajah (tidak melekat terus pada '
+                  'kulit), bukan niqab biasa.',
+            ],
+          ),
         ),
         LearningSection(
           title: 'Adab dan akhlak sepanjang ihram',
@@ -245,6 +478,41 @@ class LearningModuleScreen extends StatelessWidget {
             'Dam ialah bayaran atau sembelihan tertentu yang dikenakan dalam keadaan tertentu ketika Haji atau Umrah.',
             'Hukum dan bentuk dam bergantung pada punca, keadaan dan kemampuan jemaah.',
           ],
+          deepDive: SectionDeepDive(
+            dalil: <DalilItem>[
+              DalilItem(
+                arabic:
+                    'فَمَن كَانَ مِنكُم مَّرِيضًا أَوْ بِهِ أَذًى مِّن '
+                    'رَّأْسِهِ فَفِدْيَةٌ مِّن صِيَامٍ أَوْ صَدَقَةٍ '
+                    'أَوْ نُسُكٍ',
+                terjemahan:
+                    '...maka sesiapa di antara kamu yang sakit atau ada '
+                    'gangguan di kepalanya (lalu terpaksa bercukur), '
+                    'wajiblah dia membayar fidyah, iaitu berpuasa, atau '
+                    'bersedekah, atau berkorban.',
+                sumber: 'Al-Baqarah (2):196',
+              ),
+              DalilItem(
+                arabic:
+                    'فَإِذَا أَمِنتُمْ فَمَن تَمَتَّعَ بِالْعُمْرَةِ '
+                    'إِلَى الْحَجِّ فَمَا اسْتَيْسَرَ مِنَ الْهَدْيِ',
+                terjemahan:
+                    'Kemudian apabila kamu berada dalam keadaan aman, '
+                    'maka sesiapa yang ingin mengerjakan Umrah sebelum '
+                    'Haji (dalam bulan-bulan Haji), wajiblah dia '
+                    'menyembelih korban yang mudah didapati — dalil dam '
+                    'Tamattu’.',
+                sumber: 'Al-Baqarah (2):196',
+              ),
+            ],
+            teksKitab:
+                'Bab Ketujuh al-Idah — "Fima yajib ala man taraka min '
+                'nusukihi ma’muran aw irtakaba muharraman" (perkara '
+                'yang wajib ke atas sesiapa yang meninggalkan perkara '
+                'diperintah atau melakukan perkara yang dilarang) — '
+                'menjelaskan dam sebagai mekanisme penyelesaian, bukan '
+                'pembatal ibadah.',
+          ),
         ),
         LearningSection(
           title: 'Dua kategori utama dam',
@@ -253,6 +521,23 @@ class LearningModuleScreen extends StatelessWidget {
             'Dam takhyir-taqdir — bagi larangan ihram akibat uzur (contoh: mencukur kerana sakit): pilih antara sembelih, sedekah kepada 6 orang miskin, atau puasa 3 hari.',
             'Dam Tamattu’ dan Qiran — wajib ke atas jemaah yang menggabungkan Umrah dan Haji dalam satu musim tanpa kembali ke miqat asal.',
           ],
+          deepDive: SectionDeepDive(
+            permasalahan: <String>[
+              'Dam tertib-taqdir dinamakan "tertib" kerana susunannya '
+                  'wajib diikuti — sembelih dahulu, jika tidak mampu '
+                  'barulah beralih kepada puasa; tidak boleh terus '
+                  'memilih puasa walaupun mampu berpuasa dengan mudah.',
+              'Dam takhyir-taqdir pula membenarkan jemaah memilih '
+                  'terus antara tiga kaedah tanpa perlu mengikut '
+                  'susunan tertentu, kerana puncanya (uzur) berbeza '
+                  'sifatnya daripada meninggalkan wajib.',
+              'Dam Tamattu’/Qiran tergolong dalam kategori "dam '
+                  'nusuk" (dam kesyukuran), bukan dam jenayah/kesalahan '
+                  '— justeru masih boleh dimakan sebahagian dagingnya '
+                  'oleh yang berkorban, berbeza daripada dam kifarat '
+                  'yang wajib dihabiskan kepada fakir miskin.',
+            ],
+          ),
         ),
         LearningSection(
           title: 'Tindakan jemaah',
@@ -308,6 +593,33 @@ class LearningModuleScreen extends StatelessWidget {
             'Perbanyakkan talbiyah selepas berniat ihram sehingga tiba waktu yang berkaitan dengan ibadah.',
             'Hayati maksud menyahut panggilan Allah dengan penuh rendah diri.',
           ],
+          deepDive: SectionDeepDive(
+            dalil: <DalilItem>[
+              DalilItem(
+                arabic:
+                    'لَبَّيْكَ اللَّهُمَّ لَبَّيْكَ، لَبَّيْكَ لَا '
+                    'شَرِيكَ لَكَ لَبَّيْكَ، إِنَّ الْحَمْدَ '
+                    'وَالنِّعْمَةَ لَكَ وَالْمُلْكَ، لَا شَرِيكَ لَكَ',
+                terjemahan:
+                    'Aku sahut panggilan-Mu ya Allah, aku sahut '
+                    'panggilan-Mu. Aku sahut panggilan-Mu, tiada '
+                    'sekutu bagi-Mu, aku sahut panggilan-Mu. '
+                    'Sesungguhnya segala puji, nikmat dan kerajaan '
+                    'adalah milik-Mu, tiada sekutu bagi-Mu.',
+                sumber: 'Riwayat al-Bukhari dan Muslim daripada Ibnu Umar r.a',
+              ),
+            ],
+            permasalahan: <String>[
+              'Talbiyah disunatkan diperbanyak dan dikuatkan suara bagi '
+                  'lelaki (mengikut kemampuan tanpa membebankan diri), '
+                  'manakala wanita cukup sekadar didengari oleh dirinya '
+                  'sendiri.',
+              'Talbiyah diputuskan (dihentikan) apabila memulakan Tawaf '
+                  '— berbeza pendapat sama ada dihentikan serentak '
+                  'dengan permulaan Tawaf atau selepas melihat Kaabah, '
+                  'dan mazhab Syafi’i mengambil pendapat yang pertama.',
+            ],
+          ),
         ),
         LearningSection(
           title: 'Doa kebaikan dunia dan akhirat',
@@ -315,6 +627,35 @@ class LearningModuleScreen extends StatelessWidget {
             'رَبَّنَا آتِنَا فِي الدُّنْيَا حَسَنَةً وَفِي الْآخِرَةِ حَسَنَةً وَقِنَا عَذَابَ النَّارِ',
             'Ya Tuhan kami, berikanlah kami kebaikan di dunia dan kebaikan di akhirat serta peliharalah kami daripada azab neraka.',
           ],
+          deepDive: SectionDeepDive(
+            dalil: <DalilItem>[
+              DalilItem(
+                arabic:
+                    'رَبَّنَا آتِنَا فِي الدُّنْيَا حَسَنَةً وَفِي '
+                    'الْآخِرَةِ حَسَنَةً وَقِنَا عَذَابَ النَّارِ',
+                terjemahan:
+                    'Wahai Tuhan kami, berikanlah kepada kami kebaikan '
+                    'di dunia dan kebaikan di akhirat, dan peliharalah '
+                    'kami daripada azab neraka.',
+                sumber: 'Al-Baqarah (2):201',
+              ),
+              DalilItem(
+                terjemahan:
+                    'Doa ini adalah doa yang paling kerap dibaca oleh '
+                    'Rasulullah SAW.',
+                sumber:
+                    'Riwayat al-Bukhari dan Muslim daripada Anas bin '
+                    'Malik r.a',
+              ),
+            ],
+            permasalahan: <String>[
+              'Ulama tafsir menjelaskan "kebaikan di dunia" merangkumi '
+                  'kesihatan, rezeki halal, ilmu bermanfaat dan '
+                  'keluarga soleh; "kebaikan di akhirat" pula merujuk '
+                  'syurga dan keredaan Allah — doa ini ringkas tetapi '
+                  'merangkumi seluruh kebaikan hidup.',
+            ],
+          ),
         ),
         LearningSection(
           title: 'Amalan umum',
@@ -323,6 +664,28 @@ class LearningModuleScreen extends StatelessWidget {
             'Perbanyakkan istighfar, selawat, tasbih, tahmid dan takbir.',
             'Utamakan keikhlasan dan kefahaman berbanding menghafal tanpa menghayati.',
           ],
+          deepDive: SectionDeepDive(
+            dalil: <DalilItem>[
+              DalilItem(
+                arabic: 'الدُّعَاءُ هُوَ الْعِبَادَةُ',
+                terjemahan:
+                    'Doa itu adalah ibadah — menunjukkan kedudukan doa '
+                    'setaraf dengan ibadah lain seperti solat dan '
+                    'puasa.',
+                sumber: 'Riwayat at-Tirmidhi dan Abu Dawud',
+              ),
+            ],
+            permasalahan: <String>[
+              'Ulama membahagikan doa kepada dua kategori: doa ma’thur '
+                  '(bersumberkan Al-Quran dan hadis sahih) dan doa '
+                  'peribadi dalam bahasa sendiri — kedua-duanya '
+                  'digalakkan digabungkan, bukan salah satu sahaja.',
+              'Berdoa dalam bahasa yang tidak difahami (menghafal '
+                  'semata-mata tanpa erti) tidak salah dari sudut hukum, '
+                  'tetapi kurang sempurna dari sudut kekhusyukan — '
+                  'justeru memahami makna doa lebih diutamakan.',
+            ],
+          ),
         ),
       ],
       duas: <ModuleDua>[
@@ -726,14 +1089,33 @@ class LearningDetailScreen extends StatelessWidget {
                     const SizedBox(height: 18),
 
                     // --- BAHAGIAN NOTA PEMBELAJARAN ---
-                    ...module.sections.map((LearningSection section) {
-                      return Padding(
-                        padding: const EdgeInsets.only(bottom: 14),
-                        child: _LearningSectionCard(
-                          section: section,
-                          accent: module.accent,
+                    ...module.sections.expand((LearningSection section) {
+                      return <Widget>[
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 10),
+                          child: _LearningSectionCard(
+                            section: section,
+                            accent: module.accent,
+                          ),
                         ),
-                      );
+                        // Kad "Perbahasan Lanjut" — kotak BERASINGAN, hanya
+                        // dipaparkan jika tajuk ini ada kandungan lanjut.
+                        // Diinden sedikit ke kanan (margin kiri) supaya
+                        // kelihatan sebagai kotak sisipan berlainan
+                        // daripada kad penerangan utama di atasnya.
+                        if (section.deepDive != null)
+                          Padding(
+                            padding: const EdgeInsets.only(
+                              left: 22,
+                              bottom: 14,
+                            ),
+                            child: _DeepDiveCard(
+                              deepDive: section.deepDive!,
+                            ),
+                          )
+                        else
+                          const SizedBox(height: 4),
+                      ];
                     }),
 
                     // --- DOA MA'THUR BERKAITAN TOPIK ---
@@ -886,10 +1268,72 @@ class LearningModuleData {
 }
 
 class LearningSection {
-  const LearningSection({required this.title, required this.points});
+  const LearningSection({
+    required this.title,
+    required this.points,
+    this.deepDive,
+  });
 
   final String title;
   final List<String> points;
+
+  /// Kajian lanjut (dalil, teks kitab, permasalahan) bagi tajuk ini.
+  /// `null` bermakna tiada kajian lanjut disediakan untuk tajuk ini —
+  /// penerangan ringkas di `points` di atas sudah memadai. Dipaparkan
+  /// dalam kad BERASINGAN daripada kad senarai `points`, supaya
+  /// pembaca awam kekal cukup dengan penerangan ringkas manakala
+  /// pembaca yang mahu menelaah lebih mendalam boleh membuka kad ini.
+  final SectionDeepDive? deepDive;
+}
+
+/// Kandungan kajian lanjut bagi satu tajuk (`LearningSection`) — dalil
+/// (ayat Al-Quran/hadis dengan sumber), petikan/rujukan teks kitab, dan
+/// permasalahan/khilaf fiqh yang berkaitan. Direka untuk pembaca yang
+/// mahu menelaah lebih mendalam daripada penerangan ringkas sedia ada.
+class SectionDeepDive {
+  const SectionDeepDive({
+    this.dalil = const <DalilItem>[],
+    this.teksKitab,
+    this.teksKitabArabic,
+    this.permasalahan = const <String>[],
+  });
+
+  /// Senarai dalil (ayat Al-Quran, hadis) — setiap satu berstruktur
+  /// (teks Arab, terjemahan, sumber) supaya teks Arab boleh dipaparkan
+  /// dengan fon yang betul, berasingan daripada terjemahannya.
+  final List<DalilItem> dalil;
+
+  /// Penerangan/parafrasa ringkas (Bahasa Melayu) daripada fasal atau
+  /// bab kitab al-Idah yang berkaitan, termasuk nama fasal itu sendiri.
+  final String? teksKitab;
+
+  /// Petikan teks Arab sebenar daripada kitab al-Idah (jika ada),
+  /// dipaparkan berasingan daripada [teksKitab] dengan fon Arab.
+  final String? teksKitabArabic;
+
+  /// Permasalahan, khilaf ulama, atau isu fiqh lanjut yang berkaitan
+  /// dengan tajuk ini.
+  final List<String> permasalahan;
+}
+
+/// Satu dalil (ayat Al-Quran atau hadis) lengkap dengan teks Arab,
+/// terjemahan Bahasa Melayu, dan sumber/rujukannya.
+class DalilItem {
+  const DalilItem({
+    this.arabic,
+    required this.terjemahan,
+    required this.sumber,
+  });
+
+  /// Teks Arab asal berserta tashkeel (jika ada). `null` jika dalil ini
+  /// dirujuk secara umum tanpa petikan lafaz penuh.
+  final String? arabic;
+
+  /// Terjemahan makna dalam Bahasa Melayu.
+  final String terjemahan;
+
+  /// Sumber/rujukan (contoh: "Al-Baqarah 2:196" atau "Riwayat al-Bukhari").
+  final String sumber;
 }
 
 class _LearningIntroCard extends StatelessWidget {
@@ -1212,6 +1656,455 @@ class _LearningSectionCard extends StatelessWidget {
             );
           }),
         ],
+      ),
+    );
+  }
+}
+
+/// Kad "Perbahasan Lanjut" — BERASINGAN sepenuhnya daripada
+/// [_LearningSectionCard] di atas. Tertutup (collapsed) secara lalai
+/// supaya pembaca awam tidak terganggu; pembaca yang mahu menelaah
+/// dalil, teks kitab dan permasalahan lanjut boleh membukanya sendiri.
+/// Label kecil "KAD SUBTAJUK" (DALIL / TEKS KITAB / PERMASALAHAN) di
+/// dalam kad Perbahasan Lanjut \u2014 ikon dalam badge bulat + tajuk berhuruf
+/// besar, gaya konsisten merentasi ketiga-tiga subseksyen.
+class _DeepDiveSubheading extends StatelessWidget {
+  const _DeepDiveSubheading({
+    required this.icon,
+    required this.label,
+    required this.accent,
+    this.iconSize = 13,
+  });
+
+  final IconData icon;
+  final String label;
+  final Color accent;
+  final double iconSize;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: <Widget>[
+        Container(
+          width: 24,
+          height: 24,
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            color: accent.withValues(alpha: 0.16),
+            shape: BoxShape.circle,
+          ),
+          child: Icon(icon, size: iconSize, color: accent),
+        ),
+        const SizedBox(width: 8),
+        Text(
+          label,
+          style: TextStyle(
+            color: accent,
+            fontSize: 11,
+            fontWeight: FontWeight.w800,
+            letterSpacing: 0.8,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+/// Satu kad mini memaparkan satu [DalilItem] \u2014 teks Arab (fon Amiri,
+/// susunan kanan-ke-kiri) di atas, terjemahan Bahasa Melayu di bawah,
+/// dan sumber rujukan di penghujung. Latar/sempadan disesuaikan
+/// mengikut mod gelap/terang supaya kekal jelas dibaca dalam kedua-dua
+/// tema.
+class _DalilTile extends StatelessWidget {
+  const _DalilTile({required this.item, required this.accent});
+
+  final DalilItem item;
+  final Color accent;
+
+  @override
+  Widget build(BuildContext context) {
+    final HajjColors palette = context.hajjColors;
+    final ColorScheme colors = context.appColorScheme;
+    final bool isDark = context.isDarkMode;
+
+    return Container(
+      width: double.infinity,
+      margin: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.all(13),
+      decoration: BoxDecoration(
+        color: isDark
+            ? Colors.white.withValues(alpha: 0.04)
+            : accent.withValues(alpha: 0.045),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(
+          color: isDark
+              ? Colors.white.withValues(alpha: 0.10)
+              : accent.withValues(alpha: 0.14),
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: <Widget>[
+          if (item.arabic != null) ...<Widget>[
+            Text(
+              item.arabic!,
+              textAlign: TextAlign.right,
+              textDirection: TextDirection.rtl,
+              style: GoogleFonts.amiri(
+                color: colors.onSurface,
+                fontSize: 19,
+                height: 1.9,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Container(height: 1, color: accent.withValues(alpha: 0.12)),
+            const SizedBox(height: 8),
+          ],
+          Text(
+            item.terjemahan,
+            style: TextStyle(
+              color: colors.onSurface,
+              fontSize: 12.5,
+              height: 1.55,
+            ),
+          ),
+          const SizedBox(height: 6),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Icon(Icons.bookmark_rounded, size: 12, color: accent),
+              const SizedBox(width: 5),
+              Expanded(
+                child: Text(
+                  item.sumber,
+                  style: TextStyle(
+                    color: palette.mutedText,
+                    fontSize: 11,
+                    fontStyle: FontStyle.italic,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Cip kecil ikon + label memaparkan subseksyen yang tersedia di dalam
+/// kad Perbahasan Lanjut \u2014 kekal kelihatan pada header walaupun kad masih
+/// tertutup, supaya pembaca tahu apa yang ada di dalamnya tanpa perlu
+/// membukanya dahulu.
+class _DeepDivePreviewChip extends StatelessWidget {
+  const _DeepDivePreviewChip({
+    required this.icon,
+    required this.label,
+    required this.accent,
+  });
+
+  final IconData icon;
+  final String label;
+  final Color accent;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.only(right: 6),
+      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+      decoration: BoxDecoration(
+        color: accent.withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(999),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          Icon(icon, size: 11, color: accent),
+          const SizedBox(width: 4),
+          Text(
+            label,
+            style: TextStyle(
+              color: accent,
+              fontSize: 10,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Kad "Perbahasan Lanjut" \u2014 BERASINGAN sepenuhnya daripada penerangan
+/// ringkas sedia ada. Tertutup (collapsed) secara lalai supaya pembaca
+/// awam tidak terganggu; pembaca yang mahu menelaah dalil, teks kitab
+/// dan permasalahan lanjut boleh membukanya sendiri. Reka bentuk dan
+/// warna disesuaikan mengikut mod gelap/terang.
+class _DeepDiveCard extends StatefulWidget {
+  const _DeepDiveCard({required this.deepDive});
+
+  final SectionDeepDive deepDive;
+
+  @override
+  State<_DeepDiveCard> createState() => _DeepDiveCardState();
+}
+
+class _DeepDiveCardState extends State<_DeepDiveCard> {
+  bool expanded = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final HajjColors palette = context.hajjColors;
+    final ColorScheme colors = context.appColorScheme;
+    final bool isDark = context.isDarkMode;
+    final SectionDeepDive data = widget.deepDive;
+    // Warna identiti tetap "Perbahasan Lanjut" — sengaja TIDAK ikut
+    // aksen modul (yang berbeza-beza), supaya kotak ini kekal konsisten
+    // dan pekat merentasi semua modul, pada kedua-dua mod gelap/terang.
+    final Color accent = palette.gold;
+
+    return Container(
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: isDark
+            ? accent.withValues(alpha: 0.16)
+            : accent.withValues(alpha: 0.10),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: isDark
+              ? accent.withValues(alpha: 0.55)
+              : accent.withValues(alpha: 0.45),
+          width: 1.4,
+        ),
+        boxShadow: <BoxShadow>[
+          BoxShadow(
+            color: accent.withValues(alpha: isDark ? 0.18 : 0.12),
+            blurRadius: 18,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(20),
+          onTap: () {
+            setState(() {
+              expanded = !expanded;
+            });
+          },
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Row(
+                  children: <Widget>[
+                    Container(
+                      width: 34,
+                      height: 34,
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                        color: accent.withValues(alpha: isDark ? 0.20 : 0.13),
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        Icons.auto_stories_rounded,
+                        color: accent,
+                        size: 18,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Text(
+                            'Perbahasan Lanjut',
+                            style: TextStyle(
+                              color: colors.onSurface,
+                              fontWeight: FontWeight.w800,
+                              fontSize: 14,
+                            ),
+                          ),
+                          const SizedBox(height: 3),
+                          // Pratonton ikon subseksyen yang tersedia \u2014
+                          // kekal kelihatan walaupun kad masih tertutup,
+                          // supaya pembaca tahu apa yang ada di dalam
+                          // tanpa perlu membukanya dahulu.
+                          Wrap(
+                            crossAxisAlignment: WrapCrossAlignment.center,
+                            runSpacing: 4,
+                            children: <Widget>[
+                              if (data.dalil.isNotEmpty)
+                                _DeepDivePreviewChip(
+                                  icon: Icons.menu_book_rounded,
+                                  label: 'Dalil',
+                                  accent: accent,
+                                ),
+                              if (data.teksKitab != null)
+                                _DeepDivePreviewChip(
+                                  icon: Icons.rate_review_rounded,
+                                  label: 'Teks kitab',
+                                  accent: accent,
+                                ),
+                              if (data.permasalahan.isNotEmpty)
+                                _DeepDivePreviewChip(
+                                  icon: Icons.warning_amber_rounded,
+                                  label: 'Permasalahan',
+                                  accent: accent,
+                                ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                    AnimatedRotation(
+                      turns: expanded ? 0.5 : 0,
+                      duration: const Duration(milliseconds: 220),
+                      child: Icon(
+                        Icons.keyboard_arrow_down_rounded,
+                        color: accent,
+                        size: 24,
+                      ),
+                    ),
+                  ],
+                ),
+                AnimatedSize(
+                  duration: const Duration(milliseconds: 220),
+                  curve: Curves.easeOutCubic,
+                  child: !expanded
+                      ? const SizedBox(width: double.infinity)
+                      : Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            const SizedBox(height: 14),
+                            Container(
+                              height: 1,
+                              color: accent.withValues(alpha: 0.15),
+                            ),
+                            const SizedBox(height: 16),
+                            if (data.dalil.isNotEmpty) ...<Widget>[
+                              _DeepDiveSubheading(
+                                icon: Icons.menu_book_rounded,
+                                label: 'DALIL',
+                                accent: accent,
+                              ),
+                              const SizedBox(height: 10),
+                              ...data.dalil.map(
+                                (DalilItem item) =>
+                                    _DalilTile(item: item, accent: accent),
+                              ),
+                              const SizedBox(height: 4),
+                            ],
+                            if (data.teksKitab != null) ...<Widget>[
+                              _DeepDiveSubheading(
+                                icon: Icons.rate_review_rounded,
+                                label: 'TEKS KITAB',
+                                accent: accent,
+                              ),
+                              const SizedBox(height: 10),
+                              Container(
+                                width: double.infinity,
+                                padding: const EdgeInsets.all(13),
+                                decoration: BoxDecoration(
+                                  color: isDark
+                                      ? Colors.white.withValues(alpha: 0.04)
+                                      : accent.withValues(alpha: 0.045),
+                                  borderRadius: BorderRadius.circular(14),
+                                  border: Border.all(
+                                    color: isDark
+                                        ? Colors.white.withValues(alpha: 0.10)
+                                        : accent.withValues(alpha: 0.14),
+                                  ),
+                                ),
+                                child: Column(
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment.stretch,
+                                  children: <Widget>[
+                                    if (data.teksKitabArabic != null) ...<Widget>[
+                                      Text(
+                                        data.teksKitabArabic!,
+                                        textAlign: TextAlign.right,
+                                        textDirection: TextDirection.rtl,
+                                        style: GoogleFonts.amiri(
+                                          color: colors.onSurface,
+                                          fontSize: 19,
+                                          height: 1.9,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 8),
+                                      Container(
+                                        height: 1,
+                                        color: accent.withValues(alpha: 0.12),
+                                      ),
+                                      const SizedBox(height: 8),
+                                    ],
+                                    Text(
+                                      data.teksKitab!,
+                                      style: TextStyle(
+                                        color: colors.onSurface,
+                                        fontSize: 12.5,
+                                        height: 1.6,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(height: 14),
+                            ],
+                            if (data.permasalahan.isNotEmpty) ...<Widget>[
+                              _DeepDiveSubheading(
+                                icon: Icons.warning_amber_rounded,
+                                iconSize: 15,
+                                label: 'PERMASALAHAN',
+                                accent: accent,
+                              ),
+                              const SizedBox(height: 10),
+                              ...data.permasalahan.map(
+                                (String item) => Padding(
+                                  padding: const EdgeInsets.only(bottom: 10),
+                                  child: Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: <Widget>[
+                                      Padding(
+                                        padding: const EdgeInsets.only(top: 5),
+                                        child: Container(
+                                          width: 6,
+                                          height: 6,
+                                          decoration: BoxDecoration(
+                                            color: accent,
+                                            shape: BoxShape.circle,
+                                          ),
+                                        ),
+                                      ),
+                                      const SizedBox(width: 10),
+                                      Expanded(
+                                        child: Text(
+                                          item,
+                                          style: TextStyle(
+                                            color: colors.onSurface,
+                                            fontSize: 12.5,
+                                            height: 1.55,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ],
+                        ),
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }
@@ -1548,7 +2441,7 @@ class _ModuleReflectionCard extends StatelessWidget {
         children: <Widget>[
           Row(
             children: <Widget>[
-              Icon(Icons.psychology_alt_rounded, color: accent, size: 22),
+              Icon(Icons.check_circle_rounded, color: accent, size: 22),
               const SizedBox(width: 10),
               Expanded(
                 child: Text(
