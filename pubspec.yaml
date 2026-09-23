@@ -20,6 +20,7 @@ dependencies:
   latlong2: ^0.10.1
   hijri: ^3.0.1
   google_fonts: ^6.2.1
+  webview_flutter: ^4.13.0
 
 dev_dependencies:
   flutter_test:

@@ -950,6 +950,530 @@ class LearningModuleScreen extends StatelessWidget {
   }
 }
 
+/// Modul Belajar Umrah — kotak silibus berasingan daripada Modul Belajar
+/// Haji, tetapi menggunakan struktur data ([LearningModuleData],
+/// [LearningSection], [SectionDeepDive]), ikon ([HajjIconType]) dan
+/// widget-widget (`_LearningIntroCard`, `_LearningModuleCard`,
+/// [LearningDetailScreen]) yang sama seperti Modul Belajar Haji, selaras
+/// dengan Bab 4 (Umrah / العمرة) kitab al-Idah karangan Imam an-Nawawi.
+///
+/// Nombor modul sengaja bermula dengan "U" (U1-U4) supaya tidak berlanggar
+/// dengan `_interactiveConfigFor` yang dipetakan khusus untuk nombor modul
+/// Haji ('01'-'06') — Modul Umrah tiada kuiz interaktif buat masa ini.
+class UmrahLearningModuleScreen extends StatelessWidget {
+  const UmrahLearningModuleScreen({super.key});
+
+  static const List<LearningModuleData> modules = <LearningModuleData>[
+    LearningModuleData(
+      number: 'U1',
+      title: 'Asas Umrah',
+      subtitle: 'Kenali maksud, hukum, miqat dan gambaran perjalanan Umrah.',
+      icon: HajjIconType.kaaba,
+      accent: Color(0xFF2F8F79),
+      sections: <LearningSection>[
+        LearningSection(
+          title: 'Pengertian Umrah',
+          points: <String>[
+            'Umrah ialah menziarahi Baitullah untuk melaksanakan ihram, Tawaf, Sa’i dan bercukur/bergunting.',
+            'Umrah turut dikenali sebagai "Haji Kecil" kerana rukunnya sebahagian daripada rukun Haji.',
+          ],
+          deepDive: SectionDeepDive(
+            dalil: <DalilItem>[
+              DalilItem(
+                arabic:
+                    'وَأَتِمُّوا الْحَجَّ وَالْعُمْرَةَ لِلَّهِ',
+                terjemahan:
+                    'Dan sempurnakanlah ibadat Haji dan Umrah kerana Allah.',
+                sumber: 'Al-Baqarah (2):196',
+              ),
+              DalilItem(
+                terjemahan:
+                    'Berhajilah untuk bapamu dan ber-Umrahlah — jawapan '
+                    'Nabi SAW kepada seorang lelaki yang bapanya telah '
+                    'tua dan tidak mampu menunaikan Haji atau Umrah.',
+                sumber: 'Riwayat Abu Dawud dan at-Tirmidhi',
+              ),
+            ],
+            teksKitab:
+                'Bab Keempat al-Idah (Fasal al-Umrah) mengambil pendapat '
+                'yang sahih (al-madzhab as-sahih) daripada dua pendapat '
+                'Imam as-Syafi’i bahawa Umrah adalah fardu ke atas yang '
+                'berkemampuan, sama seperti Haji, dan hanya wajib sekali '
+                'seumur hidup.',
+            permasalahan: <String>[
+              'Imam Malik dan Imam Abu Hanifah berpendapat Umrah adalah '
+                  'sunat, bukan fardu — khilaf ini tidak menjejaskan '
+                  'kesahan Umrah, hanya status wajib/sunatnya.',
+              'Digalakkan memperbanyakkan Umrah sunat tambahan selepas '
+                  'menunaikan Umrah fardu, terutama dalam bulan Ramadan.',
+            ],
+          ),
+        ),
+        LearningSection(
+          title: 'Miqat Umrah',
+          points: <String>[
+            'Miqat makani sama seperti miqat Haji bagi yang datang dari luar Makkah.',
+            'Bagi yang sudah berada di Makkah, wajib keluar ke Tanah Halal terdekat sebelum berniat.',
+            'Miqat zamani: sepanjang tahun, tiada had waktu tertentu (berbeza daripada Haji).',
+          ],
+          deepDive: SectionDeepDive(
+            teksKitabArabic:
+                'لِلْعُمْرَةِ الْمُفْرَدَةِ عَنِ الْحَجّ مِيقَاتَانِ '
+                'زَمَانِي وَمَكَانِي',
+            teksKitab:
+                'Umrah yang berasingan daripada Haji mempunyai dua miqat: '
+                'zamani dan makani. Mazhab Syafi’i meletakkan Ji’ranah '
+                'sebagai tempat paling afdal untuk berihram Umrah kerana '
+                'Nabi SAW pernah berihram dari sana, diikuti Tan’im, '
+                'kemudian Hudaibiyah.',
+            permasalahan: <String>[
+              'Jemaah yang sedang berihram Haji tidak boleh turut '
+                  'berniat Umrah serentak — mesti menyempurnakan Haji '
+                  'dahulu.',
+              'Selepas nafar (bertolak) daripada Mina, jemaah boleh '
+                  'mengerjakan Umrah pada baki hari Tasyriq, tetapi lebih '
+                  'afdal menunggu sehingga hari Tasyriq berakhir.',
+            ],
+          ),
+        ),
+        LearningSection(
+          title: 'Gambaran Perjalanan Umrah',
+          points: <String>[
+            'Berihram dari miqat dengan niat Umrah.',
+            'Tawaf tujuh pusingan mengelilingi Kaabah.',
+            'Sa’i tujuh kali antara Safa dan Marwah.',
+            'Bercukur atau bergunting — Umrah selesai dengan SATU tahallul sahaja.',
+          ],
+          deepDive: SectionDeepDive(
+            teksKitabArabic:
+                'فَإِذَا فَعَلَ ذَلِكَ تَمَّتْ عُمْرَتُهُ وَحَل مِنْهَا '
+                'حَلاًّ كَامِلاً وَلَمْ يَبْقَ مِنْهَا شَيْءٌ وَلَيْسَ '
+                'لَهَا إِلاَّ تَحَللٌ وَاحِدٌ',
+            teksKitab:
+                'Apabila selesai bercukur/bergunting, sempurnalah '
+                'Umrahnya dan terlepas sepenuhnya daripada ihram, tiada '
+                'tinggal apa-apa lagi daripadanya, dan Umrah tidak '
+                'mempunyai melainkan SATU tahallul — berbeza daripada '
+                'Haji yang mempunyai tahallul awal dan tahallul thani.',
+          ),
+        ),
+      ],
+      duas: <ModuleDua>[
+        ModuleDua(
+          title: 'Doa Haji dan Umrah Mabrur',
+          arabic: 'اللَّهُمَّ اجْعَلْهَا عُمْرَةً مَبْرُورَةً',
+          translation: 'Ya Allah, jadikanlah Umrah ini Umrah yang mabrur.',
+          source: 'Doa umum yang diajarkan dalam kitab-kitab manasik',
+        ),
+      ],
+      academicInsight:
+          'Umrah sering digelar "Haji Kecil" kerana empat daripada enam '
+          'rukun Haji — Ihram, Tawaf, Sa’i dan Halq — turut menjadi '
+          'rukun Umrah sepenuhnya, hanya tanpa Wukuf di Arafah dan '
+          'Halq bercukur yang dikira sebagai rukun kelima Haji sahaja '
+          'apabila tiada rukun-rukun berkaitan Mina. Kelebihan Umrah '
+          'turut disebut Rasulullah SAW: "Umrah ke Umrah adalah kifarah '
+          'dosa antara keduanya" (riwayat al-Bukhari dan Muslim), dan '
+          '"Umrah dalam Ramadan menyamai (pahala) Haji bersamaku" '
+          '(riwayat al-Bukhari dan Muslim daripada Ibnu Abbas r.a).',
+      reflectionQuestions: <String>[
+        'Mengapakah Umrah digelar "Haji Kecil", dan apakah rukun Haji '
+            'yang tidak terdapat dalam Umrah?',
+        'Apakah hikmah Umrah tidak terikat dengan bulan-bulan tertentu, '
+            'berbeza dengan Haji?',
+      ],
+    ),
+    LearningModuleData(
+      number: 'U2',
+      title: 'Rukun & Wajib Umrah',
+      subtitle: 'Fahami perkara yang menentukan sah atau sempurnanya Umrah.',
+      icon: HajjIconType.rukun,
+      accent: Color(0xFFB18443),
+      sections: <LearningSection>[
+        LearningSection(
+          title: 'Rukun Umrah (Empat)',
+          points: <String>[
+            'Ihram (niat).',
+            'Tawaf.',
+            'Sa’i.',
+            'Bercukur atau bergunting (halq/taqsir).',
+          ],
+          deepDive: SectionDeepDive(
+            teksKitabArabic:
+                'وَأَرْكَانُ العُمْرَةِ أَرْبَعَةٌ: الإِْحْرَامُ '
+                'وَالطَّوَافُ وَالسَّعْيُ وَالْحَلْقُ إِذَا قُلْنَا '
+                'بِالأَصَحِّ إِنَّهُ نُسُكٌ',
+            teksKitab:
+                'Rukun Umrah ada empat: Ihram, Tawaf, Sa’i, dan '
+                'bercukur — mengikut pendapat yang asah (paling sahih) '
+                'bahawa bercukur itu adalah nusuk (sebahagian ibadah), '
+                'bukan sekadar wajib.',
+            permasalahan: <String>[
+              'Sama seperti Haji, tertib (susunan) sengaja tidak dikira '
+                  'sebagai rukun kelima yang berasingan oleh Imam '
+                  'an-Nawawi — kerana tiada tertib khusus antara Halq '
+                  'dan Tawaf, walaupun tertib disyaratkan bagi '
+                  'kebanyakan rukun yang lain.',
+            ],
+          ),
+        ),
+        LearningSection(
+          title: 'Wajib Umrah (Satu)',
+          points: <String>[
+            'Berihram dari miqat yang betul — satu-satunya wajib Umrah.',
+          ],
+          deepDive: SectionDeepDive(
+            teksKitabArabic:
+                'وَوَاجِبَاتُهَا التَّقَيُّدُ بِالإِْحْرَامِ مِنَ '
+                'الْمِيقَاتِ وَسُنَنُهَا مَا زَادَ عَلَى ذَلِكَ',
+            teksKitab:
+                'Wajib Umrah ialah terikat dengan ihram dari miqat yang '
+                'betul; manakala sunatnya pula ialah apa-apa yang lebih '
+                'daripada itu.',
+            permasalahan: <String>[
+              'Umrah jauh lebih ringkas berbanding Haji yang mempunyai '
+                  'enam wajib (ihram dari miqat, jam’ di Arafah, mabit '
+                  'Muzdalifah, mabit Mina, lontar tiga jamrah, Tawaf '
+                  'Wada’) — kerana Umrah tiada Wukuf, mabit atau '
+                  'lontaran jamrah.',
+            ],
+          ),
+        ),
+        LearningSection(
+          title: 'Perbezaan dengan Haji',
+          points: <String>[
+            'Umrah tiada Wukuf di Arafah, tiada mabit Muzdalifah/Mina, dan tiada lontar jamrah.',
+            'Umrah hanya satu tahallul; Haji mempunyai dua (tahallul awal dan tahallul thani).',
+            'Umrah boleh dilakukan bila-bila masa sepanjang tahun; Haji terikat bulan-bulan tertentu.',
+          ],
+        ),
+      ],
+      duas: <ModuleDua>[
+        ModuleDua(
+          title: 'Doa Memulakan Tawaf',
+          arabic: 'بِسْمِ اللَّهِ وَاللَّهُ أَكْبَرُ',
+          translation: 'Dengan nama Allah, dan Allah Maha Besar.',
+          source: 'Amalan yang diajar dalam kitab-kitab manasik',
+        ),
+      ],
+      academicInsight:
+          'Perbandingan rukun dan wajib antara Umrah dan Haji '
+          'menunjukkan Umrah sebagai versi "dipermudahkan" daripada '
+          'Haji — empat rukun berbanding lima, dan satu wajib '
+          'berbanding enam. Kesederhanaan ini menjelaskan mengapa '
+          'Umrah boleh dilaksanakan berulang kali sepanjang tahun tanpa '
+          'membebankan jemaah, sekali gus menepati sifat Islam yang '
+          'memudahkan umatnya beribadah.',
+      reflectionQuestions: <String>[
+        'Mengapakah Umrah hanya mempunyai satu wajib berbanding enam '
+            'wajib Haji, dan apakah kaitannya dengan struktur rukunnya '
+            'yang lebih ringkas?',
+        'Bagaimana kesederhanaan Umrah berbanding Haji mencerminkan '
+            'sifat kemudahan dalam syariat Islam?',
+      ],
+    ),
+    LearningModuleData(
+      number: 'U3',
+      title: 'Larangan Ihram Umrah',
+      subtitle: 'Kenali perkara yang perlu dijaga sepanjang ihram Umrah.',
+      icon: HajjIconType.ihram,
+      accent: Color(0xFFC05C65),
+      sections: <LearningSection>[
+        LearningSection(
+          title: 'Tujuh Larangan Ihram (sama seperti Haji)',
+          points: <String>[
+            '1. Pakaian — lelaki dilarang memakai pakaian berjahit; wanita dilarang menutup wajah dan memakai sarung tangan.',
+            '2. Wangian — tidak memakai atau menyapu bahan berbau wangi selepas niat ihram.',
+            '3. Meminyakkan rambut — tidak meminyakkan rambut kepala dan janggut.',
+            '4. Mencukur & memotong kuku — tidak dibenarkan tanpa uzur syarie.',
+            '5. Akad nikah — tidak boleh menikah atau menikahkan orang lain.',
+            '6. Jimak dan pendahuluannya — dilarang sepenuhnya sehingga tahallul.',
+            '7. Memburu — dilarang membunuh atau memburu binatang buruan darat.',
+          ],
+          deepDive: SectionDeepDive(
+            teksKitab:
+                'Larangan ihram (muharramat / محظورات) bagi Umrah adalah '
+                'sama persis dengan larangan ihram Haji yang disenaraikan '
+                'dalam Fasal Muharramat al-Ihram, Bab Kedua al-Idah — '
+                'rujuk Modul Belajar Haji, "Larangan Ihram" untuk '
+                'perincian penuh setiap kategori.',
+            permasalahan: <String>[
+              'Jimak sebelum tahallul membatalkan (fasid) Umrah — '
+                  'jemaah tetap wajib meneruskan Umrah yang rosak itu '
+                  'sehingga selesai, kemudian wajib meng-qada’ pada '
+                  'masa lain serta membayar dam badanah (unta), lebih '
+                  'berat daripada kifarat larangan ihram yang lain.',
+              'Jika telah bercukur dua helai rambut sebelum jimak berlaku '
+                  'pada helai ketiga, Umrah tetap dikira rosak — kerana '
+                  'rukun halq belum sempurna sepenuhnya.',
+            ],
+          ),
+        ),
+      ],
+      duas: <ModuleDua>[
+        ModuleDua(
+          title: 'Doa Perlindungan Daripada Bisikan Syaitan',
+          arabic:
+              'رَبِّ أَعُوذُ بِكَ مِنْ هَمَزَاتِ الشَّيَاطِينِ، وَأَعُوذُ '
+              'بِكَ رَبِّ أَنْ يَحْضُرُونِ',
+          translation:
+              'Ya Tuhanku, aku berlindung kepada-Mu daripada bisikan '
+              'syaitan, dan aku berlindung kepada-Mu ya Tuhanku, '
+              'daripada kehadiran mereka di sisiku.',
+          source: 'Al-Mu’minun 23:97–98',
+        ),
+      ],
+      academicInsight:
+          'Bab keempat al-Idah menjelaskan hukum fasad (rosaknya) '
+          'Umrah akibat jimak sebelum tahallul disamakan dengan hukum '
+          'fasad Haji — jemaah wajib meneruskan ibadah yang rosak '
+          'itu (tidak boleh membatalkan terus), kemudian meng-qada’nya '
+          'pada masa lain, di samping membayar dam badanah. Ini '
+          'menegaskan keseriusan menjaga larangan ihram sepanjang '
+          'tempoh Umrah, walaupun tempohnya lebih singkat berbanding '
+          'Haji.',
+      reflectionQuestions: <String>[
+        'Mengapakah hukum fasad Umrah akibat jimak disamakan dengan '
+            'fasad Haji, walaupun Umrah adalah ibadah yang lebih '
+            'ringkas?',
+        'Apakah pengajaran daripada kewajipan meneruskan ibadah yang '
+            'rosak sehingga selesai, berbanding terus membatalkannya?',
+      ],
+    ),
+    LearningModuleData(
+      number: 'U4',
+      title: 'Doa & Zikir Umrah',
+      subtitle: 'Rujukan ringkas doa dan zikir sepanjang Umrah.',
+      icon: HajjIconType.doa,
+      accent: Color(0xFF3887B6),
+      sections: <LearningSection>[
+        LearningSection(
+          title: 'Talbiyah Umrah',
+          points: <String>[
+            'اللَّهُمَّ لَبَّيْكَ عُمْرَةً',
+            'Ya Allah, aku sahut seruan-Mu untuk menunaikan Umrah.',
+          ],
+          deepDive: SectionDeepDive(
+            permasalahan: <String>[
+              'Lafaz niat Umrah berbeza daripada niat Haji hanya pada '
+                  'kalimah penutup — "Umratan" bagi Umrah, "Hajjan" bagi '
+                  'Haji — manakala talbiyah utama selepasnya kekal sama.',
+            ],
+          ),
+        ),
+        LearningSection(
+          title: 'Doa Antara Rukun Yamani dan Hajar Aswad',
+          points: <String>[
+            'رَبَّنَا آتِنَا فِي الدُّنْيَا حَسَنَةً وَفِي الْآخِرَةِ حَسَنَةً وَقِنَا عَذَابَ النَّارِ',
+            'Ya Tuhan kami, berikanlah kami kebaikan di dunia dan kebaikan di akhirat, serta peliharalah kami daripada azab neraka.',
+          ],
+        ),
+        LearningSection(
+          title: 'Amalan Umum',
+          points: <String>[
+            'Berdoa menggunakan bahasa yang difahami.',
+            'Perbanyakkan istighfar, selawat, tasbih, tahmid dan takbir.',
+            'Utamakan keikhlasan dan kefahaman berbanding menghafal tanpa menghayati.',
+          ],
+        ),
+      ],
+      academicInsight:
+          'Talbiyah dan doa-doa Umrah pada dasarnya sama dengan Haji, '
+          'kerana kedua-dua ibadah berkongsi rukun Ihram, Tawaf dan '
+          'Sa’i yang serupa. Perbezaan hanya pada niat awal (Umratan '
+          'vs Hajjan) dan ketiadaan doa-doa khusus lokasi yang hanya '
+          'wujud dalam Haji (seperti doa hari Arafah dan zikir di '
+          'Masy’aril Haram), kerana Umrah tidak melalui lokasi-lokasi '
+          'tersebut.',
+      reflectionQuestions: <String>[
+        'Apakah persamaan dan perbezaan antara talbiyah Umrah dan '
+            'talbiyah Haji?',
+        'Mengapakah sebahagian doa khusus Haji (seperti doa hari '
+            'Arafah) tidak terdapat dalam Umrah?',
+      ],
+    ),
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    final HajjColors palette = context.hajjColors;
+    final ColorScheme colors = context.appColorScheme;
+
+    return Scaffold(
+      body: AnimatedContainer(
+        duration: const Duration(milliseconds: 320),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: <Color>[
+              palette.gradientStart,
+              palette.gradientMiddle,
+              palette.gradientEnd,
+            ],
+          ),
+        ),
+        child: Stack(
+          children: <Widget>[
+            const IslamicPatternOverlay(),
+            SafeArea(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.fromLTRB(20, 16, 20, 40),
+                child: Center(
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 1050),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Row(
+                          children: <Widget>[
+                            HajjIconButton(
+                              tooltip: 'Kembali',
+                              icon: Icons.arrow_back_rounded,
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                            ),
+                            Expanded(
+                              child: Column(
+                                children: <Widget>[
+                                  Text(
+                                    'BELAJAR UMRAH',
+                                    textAlign: TextAlign.center,
+                                    style: GoogleFonts.playfairDisplay(
+                                      color: colors.onSurface,
+                                      fontWeight: FontWeight.w700,
+                                      letterSpacing: 1.5,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 3),
+                                  Text(
+                                    'Belajar, faham dan jadikan panduan',
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      color: palette.mutedText,
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(width: 46),
+                          ],
+                        ),
+                        const SizedBox(height: 26),
+                        _LearningIntroCard(moduleCount: modules.length),
+                        const SizedBox(height: 24),
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: <Widget>[
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: <Widget>[
+                                  Text(
+                                    'Modul Pembelajaran',
+                                    style: GoogleFonts.playfairDisplay(
+                                      color: colors.onSurface,
+                                      fontSize: 23,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 6),
+                                  Text(
+                                    'Pilih satu modul dan belajar mengikut topik.',
+                                    style: TextStyle(color: palette.mutedText),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 11,
+                                vertical: 7,
+                              ),
+                              decoration: BoxDecoration(
+                                color: palette.emerald.withValues(alpha: 0.10),
+                                borderRadius: BorderRadius.circular(30),
+                                border: Border.all(
+                                  color: palette.emerald.withValues(
+                                    alpha: 0.22,
+                                  ),
+                                ),
+                              ),
+                              child: Text(
+                                '${modules.length} topik',
+                                style: TextStyle(
+                                  color: palette.emerald,
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w800,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 18),
+                        LayoutBuilder(
+                          builder:
+                              (
+                                BuildContext context,
+                                BoxConstraints constraints,
+                              ) {
+                                final int columns = constraints.maxWidth >= 820
+                                    ? 3
+                                    : constraints.maxWidth >= 540
+                                    ? 2
+                                    : 1;
+
+                                const double spacing = 14;
+
+                                final double width =
+                                    (constraints.maxWidth -
+                                        spacing * (columns - 1)) /
+                                    columns;
+
+                                return Wrap(
+                                  spacing: spacing,
+                                  runSpacing: spacing,
+                                  children: modules.map((
+                                    LearningModuleData module,
+                                  ) {
+                                    return SizedBox(
+                                      width: width,
+                                      child: _LearningModuleCard(
+                                        module: module,
+                                        onTap: () {
+                                          Navigator.of(context).push(
+                                            MaterialPageRoute<void>(
+                                              builder: (_) {
+                                                return LearningDetailScreen(
+                                                  module: module,
+                                                );
+                                              },
+                                            ),
+                                          );
+                                        },
+                                      ),
+                                    );
+                                  }).toList(),
+                                );
+                              },
+                        ),
+                        const SizedBox(height: 22),
+                        const _PrototypeNotice(),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 class LearningDetailScreen extends StatelessWidget {
   const LearningDetailScreen({required this.module, super.key});
 

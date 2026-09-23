@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "shamela": {
+      "command": "node",
+      "args": ["/Users/sufyanthawry/Library/Application Support/Shamela/mcp/shamela-mcp/dist/index.js"],
+      "env": {
+        "SHAMELA_INSTALL_ROOT": "/Users/sufyanthawry/Library/Application Support/Shamela",
+        "SHAMELA_JRE": "/Users/sufyanthawry/Library/Application Support/Shamela/app/mac/arm64/jre/2/bin/java"
+      }
+    }
+  }
+}

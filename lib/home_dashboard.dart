@@ -8,6 +8,7 @@ import 'package:hijri/hijri_calendar.dart';
 import 'app_theme.dart';
 import 'final_assessment_screen.dart';
 import 'hajj_guide_screen.dart';
+import 'hajj_journey_viewer.dart';
 import 'islamic_icons.dart';
 import 'learning_module_screen.dart';
 import 'main.dart';
@@ -249,6 +250,14 @@ class _HalamanUtamaState extends State<HalamanUtama>
     );
   }
 
+  void _bukaModulBelajarUmrah(BuildContext context) {
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (_) => const UmrahLearningModuleScreen(),
+      ),
+    );
+  }
+
   void _bukaPenilaianAkhir(BuildContext context) {
     Navigator.of(context).push(
       MaterialPageRoute<void>(
@@ -303,6 +312,14 @@ class _HalamanUtamaState extends State<HalamanUtama>
     );
   }
 
+  void _bukaSimulasiHaji3D(BuildContext context) {
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (_) => const HajjJourneyViewer(),
+      ),
+    );
+  }
+
   void _bukaSai(BuildContext context) {
     Navigator.of(context).push(
       MaterialPageRoute<void>(
@@ -338,6 +355,15 @@ class _HalamanUtamaState extends State<HalamanUtama>
         ? savedGuideSteps.length
         : 0;
     final int guideTotal = HajjGuideScreen.totalSteps;
+
+    final dynamic savedUmrahSteps = guideBox.get(
+      UmrahGuideScreen.storageKey,
+      defaultValue: <int>[],
+    );
+    final int umrahCompleted = savedUmrahSteps is List<dynamic>
+        ? savedUmrahSteps.length
+        : 0;
+    final int umrahTotal = UmrahGuideScreen.totalSteps;
 
     final dynamic savedBestScore = assessmentBox.get(
       'best_score',
@@ -538,11 +564,17 @@ class _HalamanUtamaState extends State<HalamanUtama>
                                 palette: palette,
                                 guideCompleted: guideCompleted,
                                 guideTotal: guideTotal,
+                                umrahCompleted: umrahCompleted,
+                                umrahTotal: umrahTotal,
                                 tawafRounds: tawafRounds,
                                 saiTrips: saiTrips,
                                 bestScore: bestScore,
                                 passedAssessment: passedAssessment,
                                 onTapCertificate: () => _bukaSijilSaya(context),
+                                onTapHajjGuide: () =>
+                                    _bukaPanduanHaji(context),
+                                onTapUmrahGuide: () =>
+                                    _bukaPanduanUmrah(context),
                                 onTapAssessment: () =>
                                     _bukaPenilaianAkhir(context),
                               );
@@ -664,6 +696,13 @@ class _HalamanUtamaState extends State<HalamanUtama>
         onTap: () => _bukaPeta(context),
       ),
       _FeatureData(
+        title: 'Simulasi Haji 3D',
+        description: 'Imbas perjalanan ibadah dari miqat hingga wada’ dengan zoom interaktif.',
+        icon: HajjIconType.kaaba,
+        accent: palette.gold,
+        onTap: () => _bukaSimulasiHaji3D(context),
+      ),
+      _FeatureData(
         title: 'Modul Belajar',
         description: 'Asas, rukun, wajib, larangan ihram, dam dan doa.',
         icon: HajjIconType.learning,
@@ -683,6 +722,13 @@ class _HalamanUtamaState extends State<HalamanUtama>
         icon: HajjIconType.umrahJourney,
         accent: palette.blue,
         onTap: () => _bukaPanduanUmrah(context),
+      ),
+      _FeatureData(
+        title: 'Modul Belajar Umrah',
+        description: 'Asas, rukun, wajib, larangan ihram dan doa Umrah.',
+        icon: HajjIconType.doa,
+        accent: palette.teal,
+        onTap: () => _bukaModulBelajarUmrah(context),
       ),
     ];
 
@@ -1760,22 +1806,30 @@ class _RecentActivityCard extends StatelessWidget {
     required this.palette,
     required this.guideCompleted,
     required this.guideTotal,
+    required this.umrahCompleted,
+    required this.umrahTotal,
     required this.tawafRounds,
     required this.saiTrips,
     required this.bestScore,
     required this.passedAssessment,
     required this.onTapCertificate,
+    required this.onTapHajjGuide,
+    required this.onTapUmrahGuide,
     required this.onTapAssessment,
   });
 
   final _DashPalette palette;
   final int guideCompleted;
   final int guideTotal;
+  final int umrahCompleted;
+  final int umrahTotal;
   final int tawafRounds;
   final int saiTrips;
   final int bestScore;
   final bool passedAssessment;
   final VoidCallback onTapCertificate;
+  final VoidCallback onTapHajjGuide;
+  final VoidCallback onTapUmrahGuide;
   final VoidCallback onTapAssessment;
 
   @override
@@ -1789,6 +1843,17 @@ class _RecentActivityCard extends StatelessWidget {
         trailing: guideTotal == 0
             ? '0%'
             : '${(guideCompleted / guideTotal * 100).round()}%',
+        onTap: onTapHajjGuide,
+      ),
+      _ActivityRow(
+        icon: HajjIconType.umrahJourney,
+        color: palette.purple,
+        title: 'Panduan Umrah',
+        subtitle: '$umrahCompleted daripada $umrahTotal langkah selesai',
+        trailing: umrahTotal == 0
+            ? '0%'
+            : '${(umrahCompleted / umrahTotal * 100).round()}%',
+        onTap: onTapUmrahGuide,
       ),
       _ActivityRow(
         icon: HajjIconType.tawaf,
