@@ -21,6 +21,7 @@ dependencies:
   hijri: ^3.0.1
   google_fonts: ^6.2.1
   webview_flutter: ^4.13.0
+  webview_flutter_web: ^0.2.3+4
 
 dev_dependencies:
   flutter_test:
