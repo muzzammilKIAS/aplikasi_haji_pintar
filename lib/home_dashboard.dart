@@ -462,14 +462,12 @@ class _HalamanUtamaState extends State<HalamanUtama>
                           0.45,
                         ),
                         const SizedBox(height: 22),
-                        _staggered(const _DashGreeting(), 0.04, 0.50),
-                        const SizedBox(height: 16),
-                        _staggered(const _DateCountdownStrip(), 0.06, 0.52),
+                        _staggered(const _DateCountdownStrip(), 0.04, 0.52),
                         const SizedBox(height: 22),
                         _staggered(
                           LayoutBuilder(
                             builder: (BuildContext context, BoxConstraints constraints) {
-                              final bool stack = constraints.maxWidth < 560;
+                              final bool stack = constraints.maxWidth < 300;
                               final List<Widget> charts = <Widget>[
                                 _StatBarCard(
                                   title: 'Tawaf',
@@ -672,16 +670,10 @@ class _HalamanUtamaState extends State<HalamanUtama>
     double width,
     _DashPalette palette,
   ) {
-    int columns;
-    if (width >= 768) {
-      columns = 3;
-    } else if (width >= 360) {
-      columns = 2;
-    } else {
-      columns = 1;
-    }
-
-    const double spacing = 16;
+    // 8 jubin: 4 lajur di skrin lebar dan 2 di telefon supaya setiap
+    // baris penuh tanpa slot kosong.
+    final int columns = width >= 700 ? 4 : 2;
+    const double spacing = 14;
     final double cardWidth = (width - spacing * (columns - 1)) / columns;
 
     final List<_FeatureData> features = <_FeatureData>[
@@ -743,20 +735,38 @@ class _HalamanUtamaState extends State<HalamanUtama>
       ),
     ];
 
-    return Wrap(
-      spacing: spacing,
-      runSpacing: spacing,
-      children: features.map((_FeatureData feature) {
-        return SizedBox(
-          width: cardWidth,
-          child: _FeatureCard(
-            data: feature,
-            palette: palette,
-            compact: columns == 1,
+    final List<Widget> rows = <Widget>[];
+    for (int start = 0; start < features.length; start += columns) {
+      final List<_FeatureData> rowItems = features.sublist(
+        start,
+        math.min(start + columns, features.length),
+      );
+      rows.add(
+        Padding(
+          padding: EdgeInsets.only(top: start == 0 ? 0 : spacing),
+          child: IntrinsicHeight(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: <Widget>[
+                for (int i = 0; i < columns; i++) ...<Widget>[
+                  if (i > 0) const SizedBox(width: spacing),
+                  Expanded(
+                    child: i < rowItems.length
+                        ? _FeatureCard(
+                            data: rowItems[i],
+                            palette: palette,
+                            compact: cardWidth < 220,
+                          )
+                        : const SizedBox.shrink(),
+                  ),
+                ],
+              ],
+            ),
           ),
-        );
-      }).toList(),
-    );
+        ),
+      );
+    }
+    return Column(children: rows);
   }
 }
 
@@ -914,42 +924,8 @@ class _DashHeader extends StatelessWidget {
 }
 
 /// Sapaan ringkas ("Assalamualaikum" + sapaan mengikut waktu).
-class _DashGreeting extends StatelessWidget {
-  const _DashGreeting();
-
-  @override
-  Widget build(BuildContext context) {
-    final _DashPalette palette = _DashPalette.of(context);
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        Text(
-          'Assalamualaikum,',
-          style: GoogleFonts.playfairDisplay(
-            color: palette.blue,
-            fontSize: 17,
-            fontStyle: FontStyle.italic,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-        Text(
-          sapaanMengikutMasa(),
-          style: GoogleFonts.playfairDisplay(
-            color: palette.textPrimary,
-            fontSize: 30,
-            height: 1.15,
-            fontWeight: FontWeight.w700,
-            letterSpacing: -0.5,
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-/// Jalur padat memaparkan tarikh Masihi/Hijrah semasa dan anggaran baki
-/// hari menuju Wukuf di Arafah akan datang.
+/// Kad hero: salam, tarikh Masihi/Hijrah semasa dan baki hari menuju
+/// Wukuf di Arafah akan datang.
 class _DateCountdownStrip extends StatefulWidget {
   const _DateCountdownStrip();
 
@@ -1078,77 +1054,183 @@ class _DateCountdownStripState extends State<_DateCountdownStrip> {
     );
     final int bakiHari = tarikhSasaran.difference(tarikhSemasa).inDays;
 
+    final Widget greeting = Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: <Widget>[
+        Text(
+          'Assalamualaikum,',
+          style: GoogleFonts.playfairDisplay(
+            color: palette.blue,
+            fontSize: 16,
+            fontStyle: FontStyle.italic,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+        const SizedBox(height: 2),
+        Text(
+          sapaanMengikutMasa(),
+          style: GoogleFonts.playfairDisplay(
+            color: palette.textPrimary,
+            fontSize: 30,
+            height: 1.15,
+            fontWeight: FontWeight.w700,
+            letterSpacing: -0.5,
+          ),
+        ),
+        const SizedBox(height: 14),
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            Icon(
+              Icons.calendar_today_rounded,
+              size: 15,
+              color: palette.blue,
+            ),
+            const SizedBox(width: 8),
+            Flexible(
+              child: Text.rich(
+                TextSpan(
+                  children: <InlineSpan>[
+                    TextSpan(
+                      text: _formatTarikhPenuhMasihi(_now),
+                      style: TextStyle(
+                        color: palette.textPrimary,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    TextSpan(
+                      text: '  ·  ${_hijriNow.hDay} '
+                          '${_hijriNow.getLongMonthName()} '
+                          '${_hijriNow.hYear}H',
+                      style: TextStyle(color: palette.textMuted),
+                    ),
+                  ],
+                ),
+                style: const TextStyle(fontSize: 13),
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+
+    Widget countdown({required bool wide}) {
+      final Widget number = Text(
+        '$bakiHari',
+        style: GoogleFonts.playfairDisplay(
+          color: palette.textPrimary,
+          fontSize: wide ? 46 : 38,
+          height: 1.0,
+          fontWeight: FontWeight.w700,
+          fontFeatures: const <FontFeature>[FontFeature.liningFigures()],
+        ),
+      );
+      final Widget caption = Text(
+        'hari lagi ke Wukuf\ndi Arafah',
+        textAlign: wide ? TextAlign.center : TextAlign.start,
+        style: TextStyle(
+          color: palette.textMuted,
+          fontSize: 12,
+          height: 1.35,
+          fontWeight: FontWeight.w600,
+        ),
+      );
+      final Widget badge = Container(
+        width: 40,
+        height: 40,
+        decoration: BoxDecoration(
+          color: palette.gold.withValues(alpha: 0.16),
+          shape: BoxShape.circle,
+        ),
+        child: Icon(
+          Icons.hourglass_bottom_rounded,
+          size: 20,
+          color: palette.gold,
+        ),
+      );
+
+      return Semantics(
+        label: '$bakiHari hari lagi ke Wukuf di Arafah',
+        excludeSemantics: true,
+        child: Container(
+          padding: wide
+              ? const EdgeInsets.symmetric(horizontal: 26, vertical: 20)
+              : const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          decoration: BoxDecoration(
+            color: Color.alphaBlend(
+              palette.gold.withValues(alpha: 0.08),
+              palette.cardSurface,
+            ),
+            borderRadius: BorderRadius.circular(22),
+            border: Border.all(color: palette.gold.withValues(alpha: 0.28)),
+          ),
+          child: wide
+              ? Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    badge,
+                    const SizedBox(height: 10),
+                    number,
+                    const SizedBox(height: 6),
+                    caption,
+                  ],
+                )
+              : Row(
+                  children: <Widget>[
+                    badge,
+                    const SizedBox(width: 12),
+                    number,
+                    const SizedBox(width: 12),
+                    Expanded(child: caption),
+                  ],
+                ),
+        ),
+      );
+    }
+
     return _DashCard(
       palette: palette,
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-      child: LayoutBuilder(
-        builder: (BuildContext context, BoxConstraints constraints) {
-          final bool compact = constraints.maxWidth < 420;
-
-          final Widget tarikhPanel = Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              Text(
-                _formatTarikhPenuhMasihi(_now),
-                style: TextStyle(
-                  color: palette.textPrimary,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w700,
-                ),
+      borderRadius: 28,
+      padding: EdgeInsets.zero,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(28),
+        child: Stack(
+          children: <Widget>[
+            Positioned(
+              right: -70,
+              top: -70,
+              child: IslamicCornerMotif(
+                color: palette.blue.withValues(alpha: 0.10),
+                size: 260,
               ),
-              const SizedBox(height: 2),
-              Text(
-                '${_hijriNow.hDay} ${_hijriNow.getLongMonthName()} ${_hijriNow.hYear}H',
-                style: TextStyle(
-                  color: palette.textMuted,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w500,
-                ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(24),
+              child: LayoutBuilder(
+                builder: (BuildContext context, BoxConstraints constraints) {
+                  if (constraints.maxWidth < 560) {
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: <Widget>[
+                        greeting,
+                        const SizedBox(height: 20),
+                        countdown(wide: false),
+                      ],
+                    );
+                  }
+                  return Row(
+                    children: <Widget>[
+                      Expanded(child: greeting),
+                      const SizedBox(width: 24),
+                      countdown(wide: true),
+                    ],
+                  );
+                },
               ),
-            ],
-          );
-
-          final Widget countdown = Container(
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-            decoration: BoxDecoration(
-              color: palette.gold.withValues(alpha: 0.12),
-              borderRadius: BorderRadius.circular(999),
-              border: Border.all(color: palette.gold.withValues(alpha: 0.30)),
             ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                Icon(Icons.hourglass_bottom_rounded, size: 15, color: palette.gold),
-                const SizedBox(width: 7),
-                Text(
-                  '$bakiHari hari ke Wukuf',
-                  style: TextStyle(
-                    color: palette.gold,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w800,
-                  ),
-                ),
-              ],
-            ),
-          );
-
-          if (compact) {
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                tarikhPanel,
-                const SizedBox(height: 10),
-                countdown,
-              ],
-            );
-          }
-
-          return Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[tarikhPanel, countdown],
-          );
-        },
+          ],
+        ),
       ),
     );
   }
@@ -1261,95 +1343,99 @@ class _StatBarCard extends StatelessWidget {
       label: '$title: $completed daripada $total selesai',
       excludeSemantics: true,
       child: _DashCard(
-      palette: palette,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Row(
-            children: <Widget>[
-              Container(
-                width: 38,
-                height: 38,
-                decoration: BoxDecoration(
-                  color: accent.withValues(alpha: 0.12),
-                  borderRadius: BorderRadius.circular(12),
+        palette: palette,
+        padding: const EdgeInsets.all(18),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Row(
+              children: <Widget>[
+                Container(
+                  width: 36,
+                  height: 36,
+                  decoration: BoxDecoration(
+                    color: accent.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: HajjIcon(type: icon, color: accent, size: 20),
                 ),
-                child: HajjIcon(type: icon, color: accent, size: 20),
-              ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Text(
-                      title,
-                      style: TextStyle(
-                        color: palette.textPrimary,
-                        fontWeight: FontWeight.w800,
-                        fontSize: 15,
-                      ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    title,
+                    style: TextStyle(
+                      color: palette.textPrimary,
+                      fontWeight: FontWeight.w800,
+                      fontSize: 15,
                     ),
-                    Text(
-                      subtitle,
-                      style: TextStyle(
-                        color: palette.textMuted,
-                        fontSize: 12,
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ],
+                  ),
                 ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 4),
-          Text(
-            '$completed/$total',
-            style: TextStyle(
-              color: palette.textPrimary,
-              fontSize: 22,
-              fontWeight: FontWeight.w800,
+              ],
             ),
-          ),
-          const SizedBox(height: 12),
-          SizedBox(
-            height: 70,
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.end,
+            const SizedBox(height: 14),
+            Text.rich(
+              TextSpan(
+                children: <InlineSpan>[
+                  TextSpan(
+                    text: '$completed',
+                    style: GoogleFonts.playfairDisplay(
+                      color: palette.textPrimary,
+                      fontSize: 34,
+                      height: 1.0,
+                      fontWeight: FontWeight.w700,
+                      fontFeatures: const <FontFeature>[
+                        FontFeature.liningFigures(),
+                      ],
+                    ),
+                  ),
+                  TextSpan(
+                    text: ' / $total',
+                    style: TextStyle(
+                      color: palette.textMuted,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              subtitle,
+              style: TextStyle(
+                color: palette.textMuted,
+                fontSize: 12,
+                height: 1.35,
+              ),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
+            const SizedBox(height: 14),
+            Row(
               children: List<Widget>.generate(total, (int index) {
                 final bool done = index < completed;
                 return Expanded(
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 3),
-                    child: TweenAnimationBuilder<double>(
-                      tween: Tween<double>(begin: 0, end: done ? 1 : 0.22),
+                    padding: EdgeInsets.only(
+                      right: index == total - 1 ? 0 : 5,
+                    ),
+                    child: AnimatedContainer(
                       duration: reduceMotion
                           ? Duration.zero
-                          : Duration(milliseconds: 500 + index * 60),
+                          : Duration(milliseconds: 400 + index * 60),
                       curve: HajjMotion.ease,
-                      builder: (BuildContext context, double value, _) {
-                        return FractionallySizedBox(
-                          heightFactor: value.clamp(0.05, 1.0),
-                          alignment: Alignment.bottomCenter,
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: done
-                                  ? accent
-                                  : accent.withValues(alpha: 0.16),
-                              borderRadius: BorderRadius.circular(5),
-                            ),
-                          ),
-                        );
-                      },
+                      height: 8,
+                      decoration: BoxDecoration(
+                        color: done ? accent : accent.withValues(alpha: 0.16),
+                        borderRadius: BorderRadius.circular(99),
+                      ),
                     ),
                   ),
                 );
               }),
             ),
-          ),
-        ],
-      ),
+          ],
+        ),
       ),
     );
   }
@@ -1505,8 +1591,7 @@ class _FeatureCard extends StatefulWidget {
   final _FeatureData data;
   final _DashPalette palette;
 
-  /// Susun atur senarai (ikon kiri, teks kanan) untuk grid satu lajur di
-  /// telefon, supaya kad tidak tinggi dan kosong.
+  /// Jubin sempit (telefon): sembunyikan penerangan supaya jubin padat.
   final bool compact;
 
   @override
@@ -1551,74 +1636,72 @@ class _FeatureCardState extends State<_FeatureCard> {
           ];
 
     final Widget iconTile = Container(
-      width: 46,
-      height: 46,
+      width: 44,
+      height: 44,
       decoration: BoxDecoration(
         color: accent.withValues(alpha: 0.12),
-        borderRadius: BorderRadius.circular(15),
+        borderRadius: BorderRadius.circular(14),
       ),
-      child: HajjIcon(type: widget.data.icon, color: accent, size: 26),
+      child: HajjIcon(type: widget.data.icon, color: accent, size: 24),
     );
 
-    final Widget title = Text(
-      widget.data.title,
-      style: GoogleFonts.playfairDisplay(
-        color: palette.textPrimary,
-        fontSize: 17,
-        fontWeight: FontWeight.w700,
+    final Widget arrow = AnimatedContainer(
+      duration: HajjMotion.of(context, HajjMotion.medium),
+      curve: HajjMotion.ease,
+      width: 30,
+      height: 30,
+      decoration: BoxDecoration(
+        color: hovering ? accent : accent.withValues(alpha: 0.10),
+        shape: BoxShape.circle,
+      ),
+      child: Icon(
+        Icons.arrow_forward_rounded,
+        size: 16,
+        color: hovering ? palette.cardSurface : accent,
       ),
     );
 
-    final Widget description = Text(
-      widget.data.description,
-      style: TextStyle(color: palette.textMuted, fontSize: 13, height: 1.4),
-      maxLines: 2,
-      overflow: TextOverflow.ellipsis,
-    );
-
-    final Widget content = widget.compact
-        ? Padding(
-            padding: const EdgeInsets.fromLTRB(16, 16, 12, 16),
-            child: Row(
-              children: <Widget>[
-                iconTile,
-                const SizedBox(width: 14),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      title,
-                      const SizedBox(height: 4),
-                      description,
-                    ],
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Icon(
-                  Icons.chevron_right_rounded,
-                  color: accent.withValues(alpha: 0.7),
-                ),
-              ],
+    final Widget content = Padding(
+      padding: EdgeInsets.all(widget.compact ? 16 : 18),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              iconTile,
+              const Spacer(),
+              ExcludeSemantics(child: arrow),
+            ],
+          ),
+          SizedBox(height: widget.compact ? 14 : 18),
+          Text(
+            widget.data.title,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: GoogleFonts.playfairDisplay(
+              color: palette.textPrimary,
+              fontSize: widget.compact ? 16 : 17,
+              height: 1.25,
+              fontWeight: FontWeight.w700,
             ),
-          )
-        : Padding(
-            padding: const EdgeInsets.all(18),
-            // Tinggi tetap supaya semua kad dalam grid sama besar tanpa
-            // mengira panjang teks penerangan.
-            child: SizedBox(
-              height: 158,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  iconTile,
-                  const SizedBox(height: 16),
-                  title,
-                  const SizedBox(height: 6),
-                  Expanded(child: description),
-                ],
+          ),
+          if (!widget.compact) ...<Widget>[
+            const SizedBox(height: 6),
+            Text(
+              widget.data.description,
+              style: TextStyle(
+                color: palette.textMuted,
+                fontSize: 13,
+                height: 1.45,
               ),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
             ),
-          );
+          ],
+        ],
+      ),
+    );
 
     return MouseRegion(
       onEnter: (_) => setState(() => pointerOver = true),
@@ -1637,16 +1720,16 @@ class _FeatureCardState extends State<_FeatureCard> {
           child: ClipRRect(
             borderRadius: BorderRadius.circular(22),
             child: Stack(
+              fit: StackFit.expand,
               children: <Widget>[
-                // Motif bintang lapan penjuru di bucu kad, sedikit
-                // melimpah keluar supaya kelihatan semula jadi dipotong
-                // oleh bucu bulat kad.
+                // Bintang lapan penjuru berpusat pada butang anak panah,
+                // menjadikannya lencana kecil.
                 Positioned(
-                  top: widget.compact ? -26 : -22,
-                  right: widget.compact ? -26 : -22,
+                  top: (widget.compact ? 16 : 18) + 15 - 31,
+                  right: (widget.compact ? 16 : 18) + 15 - 31,
                   child: IslamicCornerMotif(
-                    color: accent.withValues(alpha: widget.compact ? 0.16 : 0.22),
-                    size: widget.compact ? 60 : 92,
+                    color: accent.withValues(alpha: 0.22),
+                    size: 62,
                   ),
                 ),
                 Material(
