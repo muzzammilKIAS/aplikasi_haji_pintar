@@ -5,6 +5,8 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hive_ce_flutter/hive_ce_flutter.dart';
 
+import 'package:aplikasi_haji_pintar/certificate_renderer.dart';
+import 'package:aplikasi_haji_pintar/certificate_screen.dart';
 import 'package:aplikasi_haji_pintar/home_dashboard.dart';
 import 'package:aplikasi_haji_pintar/main.dart';
 import 'package:aplikasi_haji_pintar/theme_controller.dart';
@@ -69,6 +71,38 @@ void main() {
     for (final FadeTransition fade in fades) {
       expect(fade.opacity.value, 1.0);
     }
+  });
+
+  testWidgets('sijil guna markah terbaik, bukan percubaan terakhir', (
+    WidgetTester tester,
+  ) async {
+    // Hive writes real files; they must run outside the fake-async zone.
+    await tester.runAsync(() async {
+      await assessmentBox.putAll(<String, dynamic>{
+        'passed': true,
+        'best_score': 96,
+        'achievement_level': 'TIDAK LULUS',
+        'certificate_name': 'Aminah binti Ali',
+        'certificate_number': 'HP-2026-0001',
+      });
+    });
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: CertificateScreen(
+          assessmentBox: assessmentBox,
+          certificatesBox: certificatesBox,
+          score: 60,
+        ),
+      ),
+    );
+
+    final CertificatePreview preview = tester.widget<CertificatePreview>(
+      find.byType(CertificatePreview),
+    );
+    expect(preview.content.achievementLevel, 'CEMERLANG');
+    expect(preview.content.name, 'Aminah binti Ali');
+    expect(preview.content.certificateNumber, 'HP-2026-0001');
   });
 
   testWidgets('kad Akses Pantas diumumkan sebagai butang', (

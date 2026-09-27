@@ -1,55 +1,101 @@
-/// Koordinat dynamic text di atas template sijil rasmi.
+import 'dart:ui';
+
+/// Ruang teks dinamik di atas templat sijil (1492 × 1054 piksel).
 ///
-/// Template asal berukuran 1492 × 1054 piksel.
-/// Semua koordinat adalah dalam unit piksel template asal.
-/// Preview dan PDF mesti menggunakan nilai yang sama dan menyesuaikan
-/// mengikut skala paparan atau halaman PDF.
-class CertificateCoordinates {
-  const CertificateCoordinates._();
+/// Semua nilai dalam piksel templat asal dan diukur terus daripada
+/// assets/images/sijil-pencapaian-hajipintar.png. Pratonton dan PDF
+/// dilukis oleh [CertificatePainter] yang sama, jadi nilai di sini hanya
+/// perlu dilaras sekali.
+class CertificateLayout {
+  const CertificateLayout._();
 
   static const double templateWidth = 1492.0;
   static const double templateHeight = 1054.0;
+  static const String templateAsset =
+      'assets/images/sijil-pencapaian-hajipintar.png';
 
-  // Nama peserta — di tengah, di atas garisan panjang.
-  static const double nameX = 746.0;
-  static const double nameY = 500.0;
-  static const double nameFontSize = 42.0;
-  static const String nameFontFamily = 'PlayfairDisplay';
-  static const String nameColor = '0xFF006B57';
+  /// Nama: di tengah, duduk di atas garisan panjang (y=545, x 223–1283).
+  static const CertificateSlot name = CertificateSlot(
+    left: 246,
+    width: 1000,
+    baseline: 528,
+    fontSize: 52,
+    align: TextAlign.center,
+  );
 
-  // Tahap pencapaian — nilai sahaja selepas label tetap.
-  static const double achievementX = 895.0; // Dianjak jauh ke kanan melepasi titik bertindih
-  static const double achievementY = 718.0; // Diturunkan supaya rapat ke garisan bawah
-  static const double achievementFontSize = 14.0; // Dikecilkan dengan drastik
+  /// Tahap: selepas label "Tahap Pencapaian:" (tamat x=825), sebelum
+  /// ornamen kanan (bermula x=1015). Garis dasar sama dengan label.
+  static const CertificateSlot achievement = CertificateSlot(
+    left: 845,
+    width: 162,
+    baseline: 716,
+    fontSize: 32,
+  );
 
-  static const String achievementFontFamily = 'PlayfairDisplay';
-  static const String achievementColor = '0xFFB46A16';
+  /// Tarikh: di atas garisan x 579–707; boleh melepasi hujung garisan
+  /// sehingga sebelum pembahagi menegak (x≈745).
+  static const CertificateSlot date = CertificateSlot(
+    left: 584,
+    width: 152,
+    baseline: 791,
+    fontSize: 19,
+  );
 
-  // Tarikh — nilai sahaja selepas label tetap.
-  static const double dateX = 665.0; // Dianjak jauh ke kanan melepasi label 'Tarikh:'
-  static const double dateY = 782.0; // Diturunkan supaya duduk tegak di atas garisan
-  static const double dateFontSize = 12.0; // Dikecilkan dengan drastik
+  /// Nombor sijil: di atas garisan x 937–1055, dengan sedikit limpahan.
+  static const CertificateSlot number = CertificateSlot(
+    left: 942,
+    width: 132,
+    baseline: 791,
+    fontSize: 19,
+  );
 
-  static const String dateFontFamily = 'PlusJakartaSans';
-  static const String dateColor = '0xFF16231F';
+  static const Color nameColor = Color(0xFF006B57);
+  static const Color achievementColor = Color(0xFFB46A16);
+  static const Color detailColor = Color(0xFF16231F);
+}
 
-  // Nombor sijil — nilai sahaja selepas label tetap.
-  static const double certificateNumberX = 1030.0; // Dianjak jauh ke kanan melepasi label 'No. Sijil:'
-  static const double certificateNumberY = 782.0; // Diturunkan supaya duduk tegak di atas garisan
-  static const double certificateNumberFontSize = 12.0; // Dikecilkan dengan drastik
+/// Satu ruang teks: kotak mendatar dan garis dasar abjad (baseline).
+/// Teks yang lebih lebar daripada [width] dikecilkan supaya muat.
+class CertificateSlot {
+  const CertificateSlot({
+    required this.left,
+    required this.width,
+    required this.baseline,
+    required this.fontSize,
+    this.align = TextAlign.left,
+  });
 
-  static const String certificateNumberFontFamily = 'PlusJakartaSans';
-  static const String certificateNumberColor = '0xFF16231F';
+  final double left;
+  final double width;
+  final double baseline;
+  final double fontSize;
+  final TextAlign align;
+}
 
-  /// Memilih saiz font nama berdasarkan panjang aksara.
-  static double nameFontSizeForLength(int length) {
-    if (length <= 24) {
-      return 42.0;
-    } else if (length <= 36) {
-      return 36.0;
-    } else if (length <= 48) {
-      return 31.0;
-    }
-    return 27.0;
+/// Tahap pencapaian mengikut markah — sama dengan ambang penilaian akhir.
+String achievementLevelForScore(int score) {
+  if (score >= 95) {
+    return 'CEMERLANG';
+  } else if (score >= 90) {
+    return 'SANGAT BAIK';
   }
+  return 'LULUS';
+}
+
+String formatCertificateDate(DateTime date) {
+  const List<String> months = <String>[
+    'Januari',
+    'Februari',
+    'Mac',
+    'April',
+    'Mei',
+    'Jun',
+    'Julai',
+    'Ogos',
+    'September',
+    'Oktober',
+    'November',
+    'Disember',
+  ];
+  return '${date.day} ${months[date.month - 1]} ${date.year}';
 }

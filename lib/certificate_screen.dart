@@ -1,14 +1,13 @@
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart' show rootBundle;
 import 'package:hive_ce_flutter/hive_ce_flutter.dart';
 import 'package:pdf/pdf.dart';
-import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
 
 import 'app_theme.dart';
 import 'certificate_constants.dart';
+import 'certificate_renderer.dart';
 import 'shared_widgets.dart';
 
 class CertificateScreen extends StatefulWidget {
@@ -105,6 +104,18 @@ class _CertificateScreenState extends State<CertificateScreen> {
       'certificate_score': certificateScore,
     });
 
+    // Keep the "Sijil Saya" record in sync so it shows and prints the name.
+    final dynamic uuid = widget.assessmentBox.get('certificate_uuid');
+    final dynamic record = uuid == null
+        ? null
+        : widget.certificatesBox.get(uuid);
+    if (record is Map) {
+      await widget.certificatesBox.put(uuid, <dynamic, dynamic>{
+        ...record,
+        'participant_name': name,
+      });
+    }
+
     return _CertificateData(
       name: name,
       score: certificateScore,
@@ -123,27 +134,6 @@ class _CertificateScreenState extends State<CertificateScreen> {
     return 'HP-${date.year}-$suffix';
   }
 
-  String _formatDate(DateTime date) {
-    const List<String> months = <String>[
-      'Januari',
-      'Februari',
-      'Mac',
-      'April',
-      'Mei',
-      'Jun',
-      'Julai',
-      'Ogos',
-      'September',
-      'Oktober',
-      'November',
-      'Disember',
-    ];
-
-    return '${date.day} '
-        '${months[date.month - 1]} '
-        '${date.year}';
-  }
-
   String _safeFileName(String name) {
     final String cleaned = name
         .toLowerCase()
@@ -153,128 +143,20 @@ class _CertificateScreenState extends State<CertificateScreen> {
     return cleaned.isEmpty ? 'jemaah_haji' : cleaned;
   }
 
-  Future<Uint8List> _buildPdf(_CertificateData data) async {
-    final pw.Document document = pw.Document(
-      title: 'Sijil Pencapaian Pembelajaran Kendiri Haji',
-      author: 'Haji Pintar',
-      creator: 'Aplikasi Haji Pintar',
-      subject: 'Sijil pencapaian pembelajaran kendiri',
+  DateTime _issuedAtOrNow() {
+    final dynamic saved = widget.assessmentBox.get('certificate_issued_at');
+    return saved is String
+        ? DateTime.tryParse(saved) ?? DateTime.now()
+        : DateTime.now();
+  }
+
+  CertificateContent _contentFor(_CertificateData data) {
+    return CertificateContent(
+      name: data.name,
+      achievementLevel: achievementLevelForScore(data.score),
+      date: formatCertificateDate(data.issuedAt),
+      certificateNumber: data.certificateNumber,
     );
-
-    final ByteData templateData = await rootBundle.load(
-      'assets/images/sijil-pencapaian-hajipintar.png',
-    );
-
-    final ByteData playfairBoldData = await rootBundle.load(
-      'assets/fonts/PlayfairDisplay-Bold.ttf',
-    );
-    final ByteData jakartaBoldData = await rootBundle.load(
-      'assets/fonts/PlusJakartaSans-Bold.ttf',
-    );
-
-    final pw.Font playfairBold = pw.Font.ttf(playfairBoldData);
-    final pw.Font jakartaBold = pw.Font.ttf(jakartaBoldData);
-
-    final pw.MemoryImage templateImage = pw.MemoryImage(
-      templateData.buffer.asUint8List(),
-    );
-
-    final String name = data.name.toUpperCase();
-    final String date = _formatDate(data.issuedAt);
-    final String certNumber = data.certificateNumber;
-
-    const double pageWidth = 297.0 * PdfPageFormat.mm;
-    const double pageHeight = 210.0 * PdfPageFormat.mm;
-    const double scaleX = pageWidth / CertificateCoordinates.templateWidth;
-    const double scaleY = pageHeight / CertificateCoordinates.templateHeight;
-
-    final double nameSize = CertificateCoordinates.nameFontSizeForLength(
-      name.length,
-    );
-
-    document.addPage(
-      pw.Page(
-        pageFormat: PdfPageFormat.a4.landscape,
-        margin: pw.EdgeInsets.zero,
-        build: (pw.Context context) {
-          return pw.Stack(
-            children: <pw.Widget>[
-              pw.Positioned.fill(
-                child: pw.Image(templateImage, fit: pw.BoxFit.cover),
-              ),
-              // Nama peserta — text-anchor middle, dominant-baseline middle.
-              pw.Positioned(
-                top: CertificateCoordinates.nameY * scaleY - nameSize * scaleY * 0.4,
-                left: CertificateCoordinates.nameX * scaleX - 200 * scaleX,
-                child: pw.Container(
-                  width: 400 * scaleX,
-                  alignment: pw.Alignment.center,
-                  child: pw.Text(
-                    name,
-                    textAlign: pw.TextAlign.center,
-                    style: pw.TextStyle(
-                      font: playfairBold,
-                      fontSize: nameSize * scaleY,
-                      color: const PdfColor.fromInt(0xFF006B57),
-                    ),
-                  ),
-                ),
-              ),
-              // Tahap pencapaian — text-anchor start.
-              pw.Positioned(
-                top: CertificateCoordinates.achievementY * scaleY -
-                    CertificateCoordinates.achievementFontSize * scaleY * 0.4,
-                left: CertificateCoordinates.achievementX * scaleX,
-                child: pw.Text(
-                  data.score >= 95
-                      ? 'CEMERLANG'
-                      : data.score >= 90
-                          ? 'SANGAT BAIK'
-                          : 'LULUS',
-                  style: pw.TextStyle(
-                    font: playfairBold,
-                    fontSize: CertificateCoordinates.achievementFontSize * scaleY,
-                    color: const PdfColor.fromInt(0xFFB46A16),
-                  ),
-                ),
-              ),
-              // Tarikh — text-anchor start
-              pw.Positioned(
-                top: CertificateCoordinates.dateY * scaleY -
-                    CertificateCoordinates.dateFontSize * scaleY * 0.4,
-                left: CertificateCoordinates.dateX * scaleX,
-                child: pw.Text(
-                  date,
-                  textAlign: pw.TextAlign.left,
-                  style: pw.TextStyle(
-                    font: jakartaBold,
-                    fontSize: CertificateCoordinates.dateFontSize * scaleY,
-                    color: const PdfColor.fromInt(0xFF16231F),
-                  ),
-                ),
-              ),
-              // Nombor sijil — text-anchor start
-              pw.Positioned(
-                top: CertificateCoordinates.certificateNumberY * scaleY -
-                    CertificateCoordinates.certificateNumberFontSize * scaleY * 0.4,
-                left: CertificateCoordinates.certificateNumberX * scaleX,
-                child: pw.Text(
-                  certNumber,
-                  textAlign: pw.TextAlign.left,
-                  style: pw.TextStyle(
-                    font: jakartaBold,
-                    fontSize: CertificateCoordinates.certificateNumberFontSize * scaleY,
-                    color: const PdfColor.fromInt(0xFF16231F),
-                  ),
-                ),
-              ),
-            ],
-          );
-        },
-      ),
-    );
-
-    return document.save();
   }
 
   Future<void> _previewCertificate() async {
@@ -289,7 +171,7 @@ class _CertificateScreenState extends State<CertificateScreen> {
         name: 'Sijil Pencapaian Haji Pintar',
         format: PdfPageFormat.a4.landscape,
         onLayout: (PdfPageFormat format) {
-          return _buildPdf(data);
+          return buildCertificatePdf(_contentFor(data));
         },
       );
     });
@@ -303,7 +185,9 @@ class _CertificateScreenState extends State<CertificateScreen> {
     await _runBusyAction(() async {
       final _CertificateData data = await _prepareCertificateData();
 
-      final Uint8List bytes = await _buildPdf(data);
+      final Uint8List bytes = await buildCertificatePdf(
+        _contentFor(data),
+      );
 
       await Printing.sharePdf(
         bytes: bytes,
@@ -488,16 +372,17 @@ class _CertificateScreenState extends State<CertificateScreen> {
                       ),
                     ),
                     const SizedBox(height: 16),
-                    _CertificatePreview(
-                      name: nameController.text.trim().toUpperCase(),
-                      achievementLevel: widget.assessmentBox.get(
-                        'achievement_level',
-                        defaultValue: 'LULUS',
-                      ),
-                      date: _formatDate(DateTime.now()),
-                      certificateNumber: widget.assessmentBox.get(
-                        'certificate_number',
-                        defaultValue: '',
+                    CertificatePreview(
+                      content: CertificateContent(
+                        name: nameController.text.trim(),
+                        achievementLevel: achievementLevelForScore(
+                          certificateScore,
+                        ),
+                        date: formatCertificateDate(_issuedAtOrNow()),
+                        certificateNumber: widget.assessmentBox.get(
+                          'certificate_number',
+                          defaultValue: '',
+                        ),
                       ),
                     ),
                     const SizedBox(height: 24),
@@ -678,144 +563,6 @@ class _CertificateScreenState extends State<CertificateScreen> {
           ),
         ),
           ],
-        ),
-      ),
-    );
-  }
-}
-
-class _CertificatePreview extends StatelessWidget {
-  const _CertificatePreview({
-    required this.name,
-    required this.achievementLevel,
-    required this.date,
-    required this.certificateNumber,
-  });
-
-  final String name;
-  final String achievementLevel;
-  final String date;
-  final String certificateNumber;
-
-  @override
-  Widget build(BuildContext context) {
-    return AspectRatio(
-      aspectRatio: CertificateCoordinates.templateWidth /
-          CertificateCoordinates.templateHeight,
-      child: Container(
-        width: double.infinity,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: context.hajjColors.gold.withValues(alpha: 0.20),
-          ),
-        ),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(16),
-          child: LayoutBuilder(
-            builder: (BuildContext context, BoxConstraints constraints) {
-              final double width = constraints.maxWidth;
-              final double height = constraints.maxHeight;
-
-              return Stack(
-                fit: StackFit.expand,
-                children: <Widget>[
-                  Image.asset(
-                    'assets/images/sijil-pencapaian-hajipintar.png',
-                    fit: BoxFit.contain,
-                  ),
-                  // Nama peserta — text-anchor middle, dominant-baseline middle.
-                  if (name.isNotEmpty)
-                    Positioned(
-                      left: width * CertificateCoordinates.nameX /
-                              CertificateCoordinates.templateWidth -
-                          350,
-                      top: height * CertificateCoordinates.nameY /
-                              CertificateCoordinates.templateHeight -
-                          CertificateCoordinates.nameFontSizeForLength(
-                                name.length,
-                              ) /
-                              2,
-                      child: SizedBox(
-                        width: 700,
-                        child: Text(
-                          name,
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontFamily: CertificateCoordinates.nameFontFamily,
-                            fontSize: CertificateCoordinates
-                                .nameFontSizeForLength(name.length),
-                            fontWeight: FontWeight.w700,
-                            color: const Color(0xFF006B57),
-                            height: 1.0,
-                          ),
-                        ),
-                      ),
-                    ),
-                  // Tahap pencapaian — text-anchor start, dominant-baseline middle.
-                  Positioned(
-                    left: width * CertificateCoordinates.achievementX /
-                        CertificateCoordinates.templateWidth,
-                    top: height * CertificateCoordinates.achievementY /
-                            CertificateCoordinates.templateHeight -
-                        CertificateCoordinates.achievementFontSize / 2,
-                    child: Text(
-                      achievementLevel,
-                      style: const TextStyle(
-                        fontFamily: CertificateCoordinates
-                            .achievementFontFamily,
-                        fontSize: CertificateCoordinates
-                            .achievementFontSize,
-                        fontWeight: FontWeight.w700,
-                        color: Color(0xFFB46A16),
-                        height: 1.0,
-                      ),
-                    ),
-                  ),
-                  // Tarikh — dibetulkan ke text-anchor start
-                  Positioned(
-                    left: width * CertificateCoordinates.dateX /
-                        CertificateCoordinates.templateWidth,
-                    top: height * CertificateCoordinates.dateY /
-                            CertificateCoordinates.templateHeight -
-                        CertificateCoordinates.dateFontSize / 2,
-                    child: Text(
-                      date,
-                      textAlign: TextAlign.left,
-                      style: const TextStyle(
-                        fontFamily: CertificateCoordinates.dateFontFamily,
-                        fontSize: CertificateCoordinates.dateFontSize,
-                        fontWeight: FontWeight.w500,
-                        color: Color(0xFF16231F),
-                        height: 1.0,
-                      ),
-                    ),
-                  ),
-                  // Nombor sijil — dibetulkan ke text-anchor start
-                  Positioned(
-                    left: width * CertificateCoordinates.certificateNumberX /
-                        CertificateCoordinates.templateWidth,
-                    top: height * CertificateCoordinates.certificateNumberY /
-                            CertificateCoordinates.templateHeight -
-                        CertificateCoordinates.certificateNumberFontSize / 2,
-                    child: Text(
-                      certificateNumber,
-                      textAlign: TextAlign.left,
-                      style: const TextStyle(
-                        fontFamily: CertificateCoordinates
-                            .certificateNumberFontFamily,
-                        fontSize: CertificateCoordinates
-                            .certificateNumberFontSize,
-                        fontWeight: FontWeight.w600,
-                        color: Color(0xFF16231F),
-                        height: 1.0,
-                      ),
-                    ),
-                  ),
-                ],
-              );
-            },
-          ),
         ),
       ),
     );

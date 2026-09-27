@@ -1,14 +1,13 @@
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart' show rootBundle;
 import 'package:hive_ce_flutter/hive_ce_flutter.dart';
 import 'package:pdf/pdf.dart';
-import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
 
 import 'app_theme.dart';
 import 'certificate_constants.dart';
+import 'certificate_renderer.dart';
 import 'shared_widgets.dart';
 
 class MyCertificatesScreen extends StatelessWidget {
@@ -41,155 +40,31 @@ class MyCertificatesScreen extends StatelessWidget {
     return items;
   }
 
-  Future<Uint8List> _buildCertificatePdf(
-    Map<dynamic, dynamic> certificate,
-  ) async {
-    final pw.Document document = pw.Document(
-      title: 'Sijil Pencapaian Pembelajaran Kendiri Haji',
-      author: 'Haji Pintar',
-      creator: 'Aplikasi Haji Pintar',
-      subject: 'Sijil pencapaian pembelajaran kendiri',
-    );
-
-    final ByteData templateData = await rootBundle.load(
-      'assets/images/sijil-pencapaian-hajipintar.png',
-    );
-
-    final ByteData playfairBoldData = await rootBundle.load(
-      'assets/fonts/PlayfairDisplay-Bold.ttf',
-    );
-    final ByteData jakartaBoldData = await rootBundle.load(
-      'assets/fonts/PlusJakartaSans-Bold.ttf',
-    );
-
-    final pw.Font playfairBold = pw.Font.ttf(playfairBoldData);
-    final pw.Font jakartaBold = pw.Font.ttf(jakartaBoldData);
-
-    final pw.MemoryImage templateImage = pw.MemoryImage(
-      templateData.buffer.asUint8List(),
-    );
-
-    final String name = (certificate['participant_name'] ?? '')
-        .toString()
-        .toUpperCase();
-    final String date = _formatDate(
-      DateTime.tryParse(certificate['exam_completed_at']?.toString() ?? '') ??
-          DateTime.now(),
-    );
-    final String certNumber =
-        certificate['certificate_number']?.toString() ?? '';
-    final String level =
-        certificate['achievement_level']?.toString() ?? 'LULUS';
-
-    document.addPage(
-      pw.Page(
-        pageFormat: PdfPageFormat.a4.landscape,
-        margin: pw.EdgeInsets.zero,
-        build: (pw.Context context) {
-          const double pageWidth = 297.0 * PdfPageFormat.mm;
-          const double pageHeight = 210.0 * PdfPageFormat.mm;
-          const double scaleX = pageWidth / CertificateCoordinates.templateWidth;
-          const double scaleY =
-              pageHeight / CertificateCoordinates.templateHeight;
-
-          final double nameSize = CertificateCoordinates.nameFontSizeForLength(
-            name.length,
-          );
-
-          return pw.Stack(
-            children: <pw.Widget>[
-              pw.Positioned.fill(
-                child: pw.Image(templateImage, fit: pw.BoxFit.cover),
-              ),
-              // Nama peserta — text-anchor middle, dominant-baseline middle.
-              pw.Positioned(
-                top: CertificateCoordinates.nameY * scaleY - nameSize * scaleY * 0.4,
-                left: CertificateCoordinates.nameX * scaleX - 200 * scaleX,
-                child: pw.Container(
-                  width: 400 * scaleX,
-                  alignment: pw.Alignment.center,
-                  child: pw.Text(
-                    name,
-                    textAlign: pw.TextAlign.center,
-                    style: pw.TextStyle(
-                      font: playfairBold,
-                      fontSize: nameSize * scaleY,
-                      color: const PdfColor.fromInt(0xFF006B57),
-                    ),
-                  ),
-                ),
-              ),
-              // Tahap pencapaian — text-anchor start.
-              pw.Positioned(
-                top: CertificateCoordinates.achievementY * scaleY -
-                    CertificateCoordinates.achievementFontSize * scaleY * 0.4,
-                left: CertificateCoordinates.achievementX * scaleX,
-                child: pw.Text(
-                  level,
-                  style: pw.TextStyle(
-                    font: playfairBold,
-                    fontSize: CertificateCoordinates.achievementFontSize *
-                        scaleY,
-                    color: const PdfColor.fromInt(0xFFB46A16),
-                  ),
-                ),
-              ),
-              // Tarikh — text-anchor start
-              pw.Positioned(
-                top: CertificateCoordinates.dateY * scaleY -
-                    CertificateCoordinates.dateFontSize * scaleY * 0.4,
-                left: CertificateCoordinates.dateX * scaleX,
-                child: pw.Text(
-                  date,
-                  textAlign: pw.TextAlign.left,
-                  style: pw.TextStyle(
-                    font: jakartaBold,
-                    fontSize: CertificateCoordinates.dateFontSize * scaleY,
-                    color: const PdfColor.fromInt(0xFF16231F),
-                  ),
-                ),
-              ),
-              // Nombor sijil — text-anchor start
-              pw.Positioned(
-                top: CertificateCoordinates.certificateNumberY * scaleY -
-                    CertificateCoordinates.certificateNumberFontSize * scaleY * 0.4,
-                left: CertificateCoordinates.certificateNumberX * scaleX,
-                child: pw.Text(
-                  certNumber,
-                  textAlign: pw.TextAlign.left,
-                  style: pw.TextStyle(
-                    font: jakartaBold,
-                    fontSize: CertificateCoordinates.certificateNumberFontSize * scaleY,
-                    color: const PdfColor.fromInt(0xFF16231F),
-                  ),
-                ),
-              ),
-            ],
-          );
-        },
-      ),
-    );
-
-    return document.save();
+  /// Rekod lama disimpan dengan nama kosong; guna nama yang dimasukkan
+  /// pada skrin sijil sebagai sandaran.
+  String _nameOf(Map<dynamic, dynamic> certificate) {
+    final String name = (certificate['participant_name'] ?? '').toString();
+    if (name.trim().isNotEmpty) {
+      return name;
+    }
+    return (assessmentBox.get('certificate_name') ?? '').toString();
   }
 
-  String _formatDate(DateTime date) {
-    const List<String> months = <String>[
-      'Januari',
-      'Februari',
-      'Mac',
-      'April',
-      'Mei',
-      'Jun',
-      'Julai',
-      'Ogos',
-      'September',
-      'Oktober',
-      'November',
-      'Disember',
-    ];
-
-    return '${date.day} ${months[date.month - 1]} ${date.year}';
+  Future<Uint8List> _buildCertificatePdf(Map<dynamic, dynamic> certificate) {
+    return buildCertificatePdf(
+      CertificateContent(
+        name: _nameOf(certificate),
+        achievementLevel:
+            certificate['achievement_level']?.toString() ?? 'LULUS',
+        date: formatCertificateDate(
+          DateTime.tryParse(
+                certificate['exam_completed_at']?.toString() ?? '',
+              ) ??
+              DateTime.now(),
+        ),
+        certificateNumber: certificate['certificate_number']?.toString() ?? '',
+      ),
+    );
   }
 
   Future<void> _previewCertificate(
@@ -200,7 +75,7 @@ class MyCertificatesScreen extends StatelessWidget {
 
     await Printing.layoutPdf(
       name: 'Sijil Haji Pintar',
-      format: const PdfPageFormat(297, 210),
+      format: PdfPageFormat.a4.landscape,
       onLayout: (PdfPageFormat format) => bytes,
     );
   }
@@ -213,9 +88,7 @@ class MyCertificatesScreen extends StatelessWidget {
 
     final String certNumber =
         certificate['certificate_number']?.toString() ?? '';
-    final String name = (certificate['participant_name'] ?? '')
-        .toString()
-        .toLowerCase();
+    final String name = _nameOf(certificate).toLowerCase();
 
     final String safeName = name
         .replaceAll(RegExp(r'[^a-z0-9]+'), '_')
@@ -356,9 +229,10 @@ class MyCertificatesScreen extends StatelessWidget {
                               itemBuilder: (BuildContext context, int index) {
                                 final Map<dynamic, dynamic> cert =
                                     certificates[index];
-                                final String name =
-                                    (cert['participant_name'] ?? 'Peserta')
-                                        .toString();
+                                final String savedName = _nameOf(cert);
+                                final String name = savedName.trim().isEmpty
+                                    ? 'Peserta'
+                                    : savedName;
                                 final String certNumber =
                                     cert['certificate_number']?.toString() ??
                                     '-';
