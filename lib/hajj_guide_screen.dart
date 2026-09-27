@@ -1912,7 +1912,7 @@ class _TimelineStep extends StatelessWidget {
                         step.number,
                         style: TextStyle(
                           color: step.accent,
-                          fontSize: 11,
+                          fontSize: 12,
                           fontWeight: FontWeight.w900,
                         ),
                       ),
@@ -2036,7 +2036,7 @@ class _GuideStepHero extends StatelessWidget {
                   step.location.toUpperCase(),
                   style: TextStyle(
                     color: step.accent,
-                    fontSize: 11,
+                    fontSize: 12,
                     fontWeight: FontWeight.w900,
                     letterSpacing: 1.5,
                   ),
@@ -2135,7 +2135,7 @@ class _GuideContentCard extends StatelessWidget {
                       '${index + 1}',
                       style: TextStyle(
                         color: accent,
-                        fontSize: 10,
+                        fontSize: 12,
                         fontWeight: FontWeight.w900,
                       ),
                     ),
@@ -2348,7 +2348,7 @@ class _GuideDuaCard extends StatelessWidget {
                 duas[i].title.toUpperCase(),
                 style: TextStyle(
                   color: accent,
-                  fontSize: 11,
+                  fontSize: 12,
                   fontWeight: FontWeight.w800,
                   letterSpacing: 1.2,
                 ),
@@ -2367,12 +2367,7 @@ class _GuideDuaCard extends StatelessWidget {
                 duas[i].arabic,
                 textDirection: TextDirection.rtl,
                 textAlign: TextAlign.center,
-                style: GoogleFonts.amiri(
-                  color: colors.onSurface,
-                  fontSize: 25,
-                  height: 2.0,
-                  fontWeight: FontWeight.w600,
-                ),
+                style: HajjArabic.recitation(colors.onSurface),
               ),
             ),
             const SizedBox(height: 14),
@@ -2401,7 +2396,7 @@ class _GuideDuaCard extends StatelessWidget {
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       color: palette.mutedText,
-                      fontSize: 11,
+                      fontSize: 12,
                       height: 1.4,
                     ),
                   ),
@@ -2467,7 +2462,7 @@ class _GuideAcademicCard extends StatelessWidget {
           const SizedBox(height: 14),
           Text(
             insight,
-            textAlign: TextAlign.justify,
+            textAlign: TextAlign.start,
             style: TextStyle(
               color: palette.mutedText,
               height: 1.7,
@@ -2548,7 +2543,7 @@ class _GuideReflectionCard extends StatelessWidget {
                         '${index + 1}',
                         style: TextStyle(
                           color: accent,
-                          fontSize: 11,
+                          fontSize: 12,
                           fontWeight: FontWeight.w800,
                         ),
                       ),

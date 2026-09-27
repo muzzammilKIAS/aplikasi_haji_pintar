@@ -663,6 +663,7 @@ class _DisclaimerDialog extends StatelessWidget {
                         borderRadius: BorderRadius.circular(16),
                       ),
                       textStyle: const TextStyle(
+                        fontFamily: AppFonts.body,
                         fontSize: 16,
                         fontWeight: FontWeight.w800,
                         letterSpacing: 0.4,

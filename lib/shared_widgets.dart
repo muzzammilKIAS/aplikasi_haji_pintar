@@ -279,7 +279,8 @@ class HajjScaffold extends StatelessWidget {
     return Scaffold(
       floatingActionButton: floatingActionButton,
       body: AnimatedContainer(
-        duration: const Duration(milliseconds: 320),
+        duration: HajjMotion.of(context, HajjMotion.medium),
+        curve: HajjMotion.ease,
         decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topLeft,
@@ -327,7 +328,8 @@ class GlassContainer extends StatelessWidget {
       child: BackdropFilter(
         filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
         child: AnimatedContainer(
-          duration: const Duration(milliseconds: 260),
+          duration: HajjMotion.of(context, HajjMotion.medium),
+          curve: HajjMotion.ease,
           padding: padding,
           decoration: BoxDecoration(
             color: palette.cardSurface,
@@ -394,13 +396,18 @@ class HajjHoverCard extends StatefulWidget {
 }
 
 class _HajjHoverCardState extends State<HajjHoverCard> {
-  bool hovering = false;
+  bool pointerOver = false;
+  bool focused = false;
+
+  // Keyboard focus reuses the hover treatment so it is always visible.
+  bool get hovering => pointerOver || focused;
 
   @override
   Widget build(BuildContext context) {
     final HajjColors palette = context.hajjColors;
     final bool isDark = context.isDarkMode;
     final bool goldHover = hovering && isDark;
+    final bool lift = widget.liftOnHover && hovering && !context.reduceMotion;
 
     final Color borderColor = goldHover
         ? palette.gold.withValues(alpha: 0.85)
@@ -426,15 +433,12 @@ class _HajjHoverCardState extends State<HajjHoverCard> {
           ];
 
     return MouseRegion(
-      onEnter: (_) => setState(() => hovering = true),
-      onExit: (_) => setState(() => hovering = false),
+      onEnter: (_) => setState(() => pointerOver = true),
+      onExit: (_) => setState(() => pointerOver = false),
       child: AnimatedContainer(
-        duration: const Duration(milliseconds: 220),
-        transform: Matrix4.translationValues(
-          0,
-          widget.liftOnHover && hovering ? -4 : 0,
-          0,
-        ),
+        duration: HajjMotion.of(context, HajjMotion.medium),
+        curve: HajjMotion.ease,
+        transform: Matrix4.translationValues(0, lift ? -4 : 0, 0),
         decoration: BoxDecoration(
           color: widget.backgroundColor ?? palette.cardSurface,
           borderRadius: BorderRadius.circular(widget.borderRadius),
@@ -448,10 +452,14 @@ class _HajjHoverCardState extends State<HajjHoverCard> {
           borderRadius: BorderRadius.circular(widget.borderRadius),
           child: Material(
             color: Colors.transparent,
-            child: InkWell(
-              onTap: widget.onTap,
-              borderRadius: BorderRadius.circular(widget.borderRadius),
-              child: Padding(padding: widget.padding, child: widget.child),
+            child: Semantics(
+              button: widget.onTap != null,
+              child: InkWell(
+                onTap: widget.onTap,
+                onFocusChange: (bool value) => setState(() => focused = value),
+                borderRadius: BorderRadius.circular(widget.borderRadius),
+                child: Padding(padding: widget.padding, child: widget.child),
+              ),
             ),
           ),
         ),
@@ -625,9 +633,9 @@ class GlowDot extends StatelessWidget {
   }
 }
 
-/// Pembahagi hiasan pendek — garis nipis, berlian kecil di tengah, garis
-/// nipis — digunakan untuk memisahkan sapaan daripada penerangan pada kad
-/// hero halaman utama.
+/// Pembahagi hiasan pendek — garis nipis, bintang lapan penjuru kecil di
+/// tengah, garis nipis — digunakan untuk memisahkan sapaan daripada
+/// penerangan dan untuk menanda permulaan bahagian kandungan.
 class HajjOrnamentDivider extends StatelessWidget {
   const HajjOrnamentDivider({required this.color, super.key});
 
@@ -635,23 +643,75 @@ class HajjOrnamentDivider extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: <Widget>[
-        Expanded(
-          child: Container(height: 1, color: color.withValues(alpha: 0.5)),
-        ),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8),
-          child: Transform.rotate(
-            angle: 0.7853981633974483, // 45 darjah
-            child: Container(width: 6, height: 6, color: color),
+    return ExcludeSemantics(
+      child: Row(
+        children: <Widget>[
+          Expanded(
+            child: Container(height: 1, color: color.withValues(alpha: 0.5)),
           ),
-        ),
-        Expanded(
-          child: Container(height: 1, color: color.withValues(alpha: 0.5)),
-        ),
-      ],
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8),
+            child: HajjStarMark(color: color, size: 14),
+          ),
+          Expanded(
+            child: Container(height: 1, color: color.withValues(alpha: 0.5)),
+          ),
+        ],
+      ),
     );
+  }
+}
+
+/// Bintang lapan penjuru padat bersaiz kecil — penanda hiasan untuk tajuk
+/// bahagian dan pembahagi. Tidak dibaca oleh pembaca skrin.
+class HajjStarMark extends StatelessWidget {
+  const HajjStarMark({required this.color, this.size = 12, super.key});
+
+  final Color color;
+  final double size;
+
+  @override
+  Widget build(BuildContext context) {
+    return ExcludeSemantics(
+      child: CustomPaint(
+        size: Size(size, size),
+        painter: _OrnamentStarPainter(color: color),
+      ),
+    );
+  }
+}
+
+class _OrnamentStarPainter extends CustomPainter {
+  _OrnamentStarPainter({required this.color});
+
+  final Color color;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final Paint fill = Paint()
+      ..color = color
+      ..style = PaintingStyle.fill;
+    final Offset c = Offset(size.width / 2, size.height / 2);
+    final double s = size.width / 2 * 0.72;
+    final Path square = Path()
+      ..addPolygon(<Offset>[
+        c + Offset(-s, -s),
+        c + Offset(s, -s),
+        c + Offset(s, s),
+        c + Offset(-s, s),
+      ], true);
+    canvas.drawPath(square, fill);
+    canvas.save();
+    canvas.translate(c.dx, c.dy);
+    canvas.rotate(math.pi / 4);
+    canvas.translate(-c.dx, -c.dy);
+    canvas.drawPath(square, fill);
+    canvas.restore();
+  }
+
+  @override
+  bool shouldRepaint(covariant _OrnamentStarPainter oldDelegate) {
+    return oldDelegate.color != color;
   }
 }
 

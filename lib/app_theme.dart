@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 @immutable
 class HajjColors extends ThemeExtension<HajjColors> {
@@ -217,6 +216,63 @@ extension HajjThemeContext on BuildContext {
   ColorScheme get appColorScheme => Theme.of(this).colorScheme;
 
   bool get isDarkMode => Theme.of(this).brightness == Brightness.dark;
+
+  bool get reduceMotion => MediaQuery.maybeDisableAnimationsOf(this) ?? false;
+}
+
+/// Token gerakan: lengkung perlahan dan anggun (tanpa lantunan), dengan
+/// tempoh dipendekkan kepada sifar apabila pengguna memilih "kurangkan
+/// animasi" dalam tetapan peranti.
+class HajjMotion {
+  HajjMotion._();
+
+  static const Curve ease = Cubic(0.25, 1, 0.5, 1);
+
+  static const Duration fast = Duration(milliseconds: 180);
+  static const Duration medium = Duration(milliseconds: 280);
+  static const Duration slow = Duration(milliseconds: 450);
+
+  static Duration of(BuildContext context, Duration duration) {
+    return context.reduceMotion ? Duration.zero : duration;
+  }
+}
+
+/// Gaya teks Arab. Amiri dibundel dalam assets/fonts supaya doa dan dalil
+/// kekal dipaparkan dengan betul walaupun tanpa internet.
+/// Nama keluarga fon seperti didaftarkan dalam pubspec.yaml. Semua berat
+/// dibundel, jadi `fontWeight` sentiasa menemui wajah yang betul.
+class AppFonts {
+  AppFonts._();
+
+  static const String display = 'PlayfairDisplay';
+  static const String body = 'PlusJakartaSans';
+  static const String arabic = 'Amiri';
+}
+
+class HajjArabic {
+  HajjArabic._();
+
+  /// Doa, talbiyah dan ayat yang dibaca — saiz besar, jarak baris lapang.
+  static TextStyle recitation(Color color) {
+    return TextStyle(
+      fontFamily: AppFonts.arabic,
+      color: color,
+      fontSize: 24,
+      height: 2.0,
+      fontWeight: FontWeight.w700,
+    );
+  }
+
+  /// Petikan teks kitab dan dalil di dalam kad rujukan.
+  static TextStyle citation(Color color) {
+    return TextStyle(
+      fontFamily: AppFonts.arabic,
+      color: color,
+      fontSize: 20,
+      height: 1.9,
+      fontWeight: FontWeight.w700,
+    );
+  }
 }
 
 class AppTheme {
@@ -257,36 +313,43 @@ class AppTheme {
       error: palette.danger,
     );
 
-    return ThemeData(
+    final ThemeData theme = ThemeData(
       useMaterial3: true,
       brightness: brightness,
       colorScheme: scheme,
+      fontFamily: AppFonts.body,
       scaffoldBackgroundColor: palette.gradientStart,
       extensions: <ThemeExtension<dynamic>>[palette],
       textTheme: TextTheme(
-        headlineLarge: GoogleFonts.playfairDisplay(
+        headlineLarge: TextStyle(
+          fontFamily: AppFonts.display,
           color: scheme.onSurface,
           fontWeight: FontWeight.w800,
           letterSpacing: -0.6,
         ),
-        headlineMedium: GoogleFonts.playfairDisplay(
+        headlineMedium: TextStyle(
+          fontFamily: AppFonts.display,
           color: scheme.onSurface,
           fontWeight: FontWeight.w700,
           letterSpacing: -0.4,
         ),
-        titleLarge: GoogleFonts.playfairDisplay(
+        titleLarge: TextStyle(
+          fontFamily: AppFonts.display,
           color: scheme.onSurface,
           fontWeight: FontWeight.w700,
         ),
-        titleMedium: GoogleFonts.plusJakartaSans(
+        titleMedium: TextStyle(
+          fontFamily: AppFonts.body,
           color: scheme.onSurface,
           fontWeight: FontWeight.w800,
         ),
-        bodyLarge: GoogleFonts.plusJakartaSans(
+        bodyLarge: TextStyle(
+          fontFamily: AppFonts.body,
           color: scheme.onSurface,
           height: 1.5,
         ),
-        bodyMedium: GoogleFonts.plusJakartaSans(
+        bodyMedium: TextStyle(
+          fontFamily: AppFonts.body,
           color: palette.textSecondary,
           height: 1.5,
         ),
@@ -296,7 +359,10 @@ class AppTheme {
       snackBarTheme: SnackBarThemeData(
         behavior: SnackBarBehavior.floating,
         backgroundColor: scheme.surface,
-        contentTextStyle: GoogleFonts.plusJakartaSans(color: scheme.onSurface),
+        contentTextStyle: TextStyle(
+          fontFamily: AppFonts.body,
+          color: scheme.onSurface,
+        ),
       ),
       dialogTheme: DialogThemeData(
         backgroundColor: scheme.surface,
@@ -310,7 +376,8 @@ class AppTheme {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(18),
           ),
-          textStyle: GoogleFonts.plusJakartaSans(
+          textStyle: const TextStyle(
+            fontFamily: AppFonts.body,
             fontWeight: FontWeight.w800,
             letterSpacing: 0.2,
           ),
@@ -323,14 +390,30 @@ class AppTheme {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(18),
           ),
-          textStyle: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w800),
+          textStyle: const TextStyle(
+            fontFamily: AppFonts.body,
+            fontWeight: FontWeight.w800,
+          ),
         ),
       ),
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
           foregroundColor: palette.emerald,
-          textStyle: GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w800),
+          textStyle: const TextStyle(
+            fontFamily: AppFonts.body,
+            fontWeight: FontWeight.w800,
+          ),
         ),
+      ),
+    );
+
+    // Arabic phrases embedded in Malay sentences fall back to Amiri instead
+    // of the browser's generic Noto, matching the dedicated Arabic blocks.
+    final List<String> arabicFallback = <String>[AppFonts.arabic];
+    return theme.copyWith(
+      textTheme: theme.textTheme.apply(fontFamilyFallback: arabicFallback),
+      primaryTextTheme: theme.primaryTextTheme.apply(
+        fontFamilyFallback: arabicFallback,
       ),
     );
   }

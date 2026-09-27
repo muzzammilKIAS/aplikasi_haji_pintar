@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:hive_ce_flutter/hive_ce_flutter.dart';
 
 import 'app_theme.dart';
@@ -287,12 +286,7 @@ class _TawafCounterScreenState extends State<TawafCounterScreen> {
                                 'حَسَنَةً وَقِنَا عَذَابَ النَّارِ',
                                 textDirection: TextDirection.rtl,
                                 textAlign: TextAlign.center,
-                                style: GoogleFonts.amiri(
-                                  color: colors.onSurface,
-                                  fontSize: 25,
-                                  height: 2.0,
-                                  fontWeight: FontWeight.w600,
-                                ),
+                                style: HajjArabic.recitation(colors.onSurface),
                               ),
                               const SizedBox(height: 16),
                               Text(

@@ -176,48 +176,52 @@ class _OfflineMapScreenState extends State<OfflineMapScreen> {
               ),
               child: Material(
                 color: Colors.transparent,
-                child: InkWell(
-                  onTap: () => _selectMap(index),
-                  borderRadius: BorderRadius.circular(17),
-                  child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 220),
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 14,
-                      vertical: 13,
-                    ),
-                    decoration: BoxDecoration(
-                      color: selected
-                          ? palette.emerald.withValues(alpha: 0.13)
-                          : palette.glassSurface,
-                      borderRadius: BorderRadius.circular(17),
-                      border: Border.all(
-                        color: selected
-                            ? palette.emerald.withValues(alpha: 0.42)
-                            : palette.glassBorder,
+                child: Semantics(
+                  button: true,
+                  selected: selected,
+                  child: InkWell(
+                    onTap: () => _selectMap(index),
+                    borderRadius: BorderRadius.circular(17),
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 220),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 14,
+                        vertical: 13,
                       ),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        HajjIcon(
-                          type: map.icon,
-                          color: selected ? palette.emerald : palette.mutedText,
-                          size: 22,
+                      decoration: BoxDecoration(
+                        color: selected
+                            ? palette.emerald.withValues(alpha: 0.13)
+                            : palette.glassSurface,
+                        borderRadius: BorderRadius.circular(17),
+                        border: Border.all(
+                          color: selected
+                              ? palette.emerald.withValues(alpha: 0.42)
+                              : palette.glassBorder,
                         ),
-                        const SizedBox(width: 8),
-                        Flexible(
-                          child: Text(
-                            map.title,
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
-                              color: selected
-                                  ? colors.onSurface
-                                  : palette.mutedText,
-                              fontWeight: FontWeight.w800,
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          HajjIcon(
+                            type: map.icon,
+                            color: selected ? palette.emerald : palette.mutedText,
+                            size: 22,
+                          ),
+                          const SizedBox(width: 8),
+                          Flexible(
+                            child: Text(
+                              map.title,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                color: selected
+                                    ? colors.onSurface
+                                    : palette.mutedText,
+                                fontWeight: FontWeight.w800,
+                              ),
                             ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                 ),
@@ -333,7 +337,7 @@ class _OfflineMapScreenState extends State<OfflineMapScreen> {
                   _currentMap.subtitle,
                   style: TextStyle(
                     color: palette.mutedText,
-                    fontSize: 11,
+                    fontSize: 12,
                     height: 1.35,
                   ),
                 ),

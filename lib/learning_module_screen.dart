@@ -870,7 +870,7 @@ class LearningModuleScreen extends StatelessWidget {
                             '${modules.length} topik',
                             style: TextStyle(
                               color: palette.emerald,
-                              fontSize: 11,
+                              fontSize: 12,
                               fontWeight: FontWeight.w800,
                             ),
                           ),
@@ -1405,7 +1405,7 @@ class UmrahLearningModuleScreen extends StatelessWidget {
                                 '${modules.length} topik',
                                 style: TextStyle(
                                   color: palette.emerald,
-                                  fontSize: 11,
+                                  fontSize: 12,
                                   fontWeight: FontWeight.w800,
                                 ),
                               ),
@@ -1555,7 +1555,7 @@ class LearningDetailScreen extends StatelessWidget {
                                   'MODUL ${module.number}',
                                   style: TextStyle(
                                     color: module.accent,
-                                    fontSize: 11,
+                                    fontSize: 12,
                                     fontWeight: FontWeight.w900,
                                     letterSpacing: 1.5,
                                   ),
@@ -2050,7 +2050,7 @@ class _LearningModuleCard extends StatelessWidget {
                 '${module.sections.length} bahagian',
                 style: TextStyle(
                   color: palette.mutedText,
-                  fontSize: 11,
+                  fontSize: 12,
                   fontWeight: FontWeight.w700,
                 ),
               ),
@@ -2150,7 +2150,7 @@ class _LearningSectionCard extends StatelessWidget {
                       '${index + 1}',
                       style: TextStyle(
                         color: accent,
-                        fontSize: 10,
+                        fontSize: 12,
                         fontWeight: FontWeight.w900,
                       ),
                     ),
@@ -2166,12 +2166,7 @@ class _LearningSectionCard extends StatelessWidget {
                           ? TextAlign.center
                           : TextAlign.start,
                       style: isArabicPrayer
-                          ? GoogleFonts.amiri(
-                              color: colors.onSurface,
-                              fontSize: 22,
-                              height: 2.0,
-                              fontWeight: FontWeight.w600,
-                            )
+                          ? HajjArabic.recitation(colors.onSurface)
                           : TextStyle(color: colors.onSurface, height: 1.55),
                     ),
                   ),
@@ -2224,7 +2219,7 @@ class _DeepDiveSubheading extends StatelessWidget {
           label,
           style: TextStyle(
             color: accent,
-            fontSize: 11,
+            fontSize: 12,
             fontWeight: FontWeight.w800,
             letterSpacing: 0.8,
           ),
@@ -2274,12 +2269,7 @@ class _DalilTile extends StatelessWidget {
               item.arabic!,
               textAlign: TextAlign.right,
               textDirection: TextDirection.rtl,
-              style: GoogleFonts.amiri(
-                color: colors.onSurface,
-                fontSize: 19,
-                height: 1.9,
-                fontWeight: FontWeight.w600,
-              ),
+              style: HajjArabic.citation(colors.onSurface),
             ),
             const SizedBox(height: 8),
             Container(height: 1, color: accent.withValues(alpha: 0.12)),
@@ -2304,7 +2294,7 @@ class _DalilTile extends StatelessWidget {
                   item.sumber,
                   style: TextStyle(
                     color: palette.mutedText,
-                    fontSize: 11,
+                    fontSize: 12,
                     fontStyle: FontStyle.italic,
                     fontWeight: FontWeight.w600,
                   ),
@@ -2345,13 +2335,13 @@ class _DeepDivePreviewChip extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
-          Icon(icon, size: 11, color: accent),
+          Icon(icon, size: 13, color: accent),
           const SizedBox(width: 4),
           Text(
             label,
             style: TextStyle(
               color: accent,
-              fontSize: 10,
+              fontSize: 12,
               fontWeight: FontWeight.w700,
             ),
           ),
@@ -2412,220 +2402,218 @@ class _DeepDiveCardState extends State<_DeepDiveCard> {
       ),
       child: Material(
         color: Colors.transparent,
-        child: InkWell(
-          borderRadius: BorderRadius.circular(20),
-          onTap: () {
-            setState(() {
-              expanded = !expanded;
-            });
-          },
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Row(
-                  children: <Widget>[
-                    Container(
-                      width: 34,
-                      height: 34,
-                      alignment: Alignment.center,
-                      decoration: BoxDecoration(
-                        color: accent.withValues(alpha: isDark ? 0.20 : 0.13),
-                        shape: BoxShape.circle,
+        child: Semantics(
+          button: true,
+          child: InkWell(
+            borderRadius: BorderRadius.circular(20),
+            onTap: () {
+              setState(() {
+                expanded = !expanded;
+              });
+            },
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Row(
+                    children: <Widget>[
+                      Container(
+                        width: 34,
+                        height: 34,
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                          color: accent.withValues(alpha: isDark ? 0.20 : 0.13),
+                          shape: BoxShape.circle,
+                        ),
+                        child: Icon(
+                          Icons.auto_stories_rounded,
+                          color: accent,
+                          size: 18,
+                        ),
                       ),
-                      child: Icon(
-                        Icons.auto_stories_rounded,
-                        color: accent,
-                        size: 18,
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Text(
-                            'Perbahasan Lanjut',
-                            style: TextStyle(
-                              color: colors.onSurface,
-                              fontWeight: FontWeight.w800,
-                              fontSize: 14,
-                            ),
-                          ),
-                          const SizedBox(height: 3),
-                          // Pratonton ikon subseksyen yang tersedia \u2014
-                          // kekal kelihatan walaupun kad masih tertutup,
-                          // supaya pembaca tahu apa yang ada di dalam
-                          // tanpa perlu membukanya dahulu.
-                          Wrap(
-                            crossAxisAlignment: WrapCrossAlignment.center,
-                            runSpacing: 4,
-                            children: <Widget>[
-                              if (data.dalil.isNotEmpty)
-                                _DeepDivePreviewChip(
-                                  icon: Icons.menu_book_rounded,
-                                  label: 'Dalil',
-                                  accent: accent,
-                                ),
-                              if (data.teksKitab != null)
-                                _DeepDivePreviewChip(
-                                  icon: Icons.rate_review_rounded,
-                                  label: 'Teks kitab',
-                                  accent: accent,
-                                ),
-                              if (data.permasalahan.isNotEmpty)
-                                _DeepDivePreviewChip(
-                                  icon: Icons.warning_amber_rounded,
-                                  label: 'Permasalahan',
-                                  accent: accent,
-                                ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                    AnimatedRotation(
-                      turns: expanded ? 0.5 : 0,
-                      duration: const Duration(milliseconds: 220),
-                      child: Icon(
-                        Icons.keyboard_arrow_down_rounded,
-                        color: accent,
-                        size: 24,
-                      ),
-                    ),
-                  ],
-                ),
-                AnimatedSize(
-                  duration: const Duration(milliseconds: 220),
-                  curve: Curves.easeOutCubic,
-                  child: !expanded
-                      ? const SizedBox(width: double.infinity)
-                      : Column(
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
-                            const SizedBox(height: 14),
-                            Container(
-                              height: 1,
-                              color: accent.withValues(alpha: 0.15),
+                            Text(
+                              'Perbahasan Lanjut',
+                              style: TextStyle(
+                                color: colors.onSurface,
+                                fontWeight: FontWeight.w800,
+                                fontSize: 14,
+                              ),
                             ),
-                            const SizedBox(height: 16),
-                            if (data.dalil.isNotEmpty) ...<Widget>[
-                              _DeepDiveSubheading(
-                                icon: Icons.menu_book_rounded,
-                                label: 'DALIL',
-                                accent: accent,
-                              ),
-                              const SizedBox(height: 10),
-                              ...data.dalil.map(
-                                (DalilItem item) =>
-                                    _DalilTile(item: item, accent: accent),
-                              ),
-                              const SizedBox(height: 4),
-                            ],
-                            if (data.teksKitab != null) ...<Widget>[
-                              _DeepDiveSubheading(
-                                icon: Icons.rate_review_rounded,
-                                label: 'TEKS KITAB',
-                                accent: accent,
-                              ),
-                              const SizedBox(height: 10),
-                              Container(
-                                width: double.infinity,
-                                padding: const EdgeInsets.all(13),
-                                decoration: BoxDecoration(
-                                  color: isDark
-                                      ? Colors.white.withValues(alpha: 0.04)
-                                      : accent.withValues(alpha: 0.045),
-                                  borderRadius: BorderRadius.circular(14),
-                                  border: Border.all(
-                                    color: isDark
-                                        ? Colors.white.withValues(alpha: 0.10)
-                                        : accent.withValues(alpha: 0.14),
+                            const SizedBox(height: 3),
+                            // Pratonton ikon subseksyen yang tersedia \u2014
+                            // kekal kelihatan walaupun kad masih tertutup,
+                            // supaya pembaca tahu apa yang ada di dalam
+                            // tanpa perlu membukanya dahulu.
+                            Wrap(
+                              crossAxisAlignment: WrapCrossAlignment.center,
+                              runSpacing: 4,
+                              children: <Widget>[
+                                if (data.dalil.isNotEmpty)
+                                  _DeepDivePreviewChip(
+                                    icon: Icons.menu_book_rounded,
+                                    label: 'Dalil',
+                                    accent: accent,
                                   ),
-                                ),
-                                child: Column(
-                                  crossAxisAlignment:
-                                      CrossAxisAlignment.stretch,
-                                  children: <Widget>[
-                                    if (data.teksKitabArabic != null) ...<Widget>[
-                                      Text(
-                                        data.teksKitabArabic!,
-                                        textAlign: TextAlign.right,
-                                        textDirection: TextDirection.rtl,
-                                        style: GoogleFonts.amiri(
-                                          color: colors.onSurface,
-                                          fontSize: 19,
-                                          height: 1.9,
-                                          fontWeight: FontWeight.w600,
-                                        ),
-                                      ),
-                                      const SizedBox(height: 8),
-                                      Container(
-                                        height: 1,
-                                        color: accent.withValues(alpha: 0.12),
-                                      ),
-                                      const SizedBox(height: 8),
-                                    ],
-                                    Text(
-                                      data.teksKitab!,
-                                      style: TextStyle(
-                                        color: colors.onSurface,
-                                        fontSize: 12.5,
-                                        height: 1.6,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              const SizedBox(height: 14),
-                            ],
-                            if (data.permasalahan.isNotEmpty) ...<Widget>[
-                              _DeepDiveSubheading(
-                                icon: Icons.warning_amber_rounded,
-                                iconSize: 15,
-                                label: 'PERMASALAHAN',
-                                accent: accent,
-                              ),
-                              const SizedBox(height: 10),
-                              ...data.permasalahan.map(
-                                (String item) => Padding(
-                                  padding: const EdgeInsets.only(bottom: 10),
-                                  child: Row(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: <Widget>[
-                                      Padding(
-                                        padding: const EdgeInsets.only(top: 5),
-                                        child: Container(
-                                          width: 6,
-                                          height: 6,
-                                          decoration: BoxDecoration(
-                                            color: accent,
-                                            shape: BoxShape.circle,
-                                          ),
-                                        ),
-                                      ),
-                                      const SizedBox(width: 10),
-                                      Expanded(
-                                        child: Text(
-                                          item,
-                                          style: TextStyle(
-                                            color: colors.onSurface,
-                                            fontSize: 12.5,
-                                            height: 1.55,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
+                                if (data.teksKitab != null)
+                                  _DeepDivePreviewChip(
+                                    icon: Icons.rate_review_rounded,
+                                    label: 'Teks kitab',
+                                    accent: accent,
                                   ),
-                                ),
-                              ),
-                            ],
+                                if (data.permasalahan.isNotEmpty)
+                                  _DeepDivePreviewChip(
+                                    icon: Icons.warning_amber_rounded,
+                                    label: 'Permasalahan',
+                                    accent: accent,
+                                  ),
+                              ],
+                            ),
                           ],
                         ),
-                ),
-              ],
+                      ),
+                      AnimatedRotation(
+                        turns: expanded ? 0.5 : 0,
+                        duration: const Duration(milliseconds: 220),
+                        child: Icon(
+                          Icons.keyboard_arrow_down_rounded,
+                          color: accent,
+                          size: 24,
+                        ),
+                      ),
+                    ],
+                  ),
+                  AnimatedSize(
+                    duration: const Duration(milliseconds: 220),
+                    curve: Curves.easeOutCubic,
+                    child: !expanded
+                        ? const SizedBox(width: double.infinity)
+                        : Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              const SizedBox(height: 14),
+                              Container(
+                                height: 1,
+                                color: accent.withValues(alpha: 0.15),
+                              ),
+                              const SizedBox(height: 16),
+                              if (data.dalil.isNotEmpty) ...<Widget>[
+                                _DeepDiveSubheading(
+                                  icon: Icons.menu_book_rounded,
+                                  label: 'DALIL',
+                                  accent: accent,
+                                ),
+                                const SizedBox(height: 10),
+                                ...data.dalil.map(
+                                  (DalilItem item) =>
+                                      _DalilTile(item: item, accent: accent),
+                                ),
+                                const SizedBox(height: 4),
+                              ],
+                              if (data.teksKitab != null) ...<Widget>[
+                                _DeepDiveSubheading(
+                                  icon: Icons.rate_review_rounded,
+                                  label: 'TEKS KITAB',
+                                  accent: accent,
+                                ),
+                                const SizedBox(height: 10),
+                                Container(
+                                  width: double.infinity,
+                                  padding: const EdgeInsets.all(13),
+                                  decoration: BoxDecoration(
+                                    color: isDark
+                                        ? Colors.white.withValues(alpha: 0.04)
+                                        : accent.withValues(alpha: 0.045),
+                                    borderRadius: BorderRadius.circular(14),
+                                    border: Border.all(
+                                      color: isDark
+                                          ? Colors.white.withValues(alpha: 0.10)
+                                          : accent.withValues(alpha: 0.14),
+                                    ),
+                                  ),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.stretch,
+                                    children: <Widget>[
+                                      if (data.teksKitabArabic != null) ...<Widget>[
+                                        Text(
+                                          data.teksKitabArabic!,
+                                          textAlign: TextAlign.right,
+                                          textDirection: TextDirection.rtl,
+                                          style: HajjArabic.citation(colors.onSurface),
+                                        ),
+                                        const SizedBox(height: 8),
+                                        Container(
+                                          height: 1,
+                                          color: accent.withValues(alpha: 0.12),
+                                        ),
+                                        const SizedBox(height: 8),
+                                      ],
+                                      Text(
+                                        data.teksKitab!,
+                                        style: TextStyle(
+                                          color: colors.onSurface,
+                                          fontSize: 12.5,
+                                          height: 1.6,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                const SizedBox(height: 14),
+                              ],
+                              if (data.permasalahan.isNotEmpty) ...<Widget>[
+                                _DeepDiveSubheading(
+                                  icon: Icons.warning_amber_rounded,
+                                  iconSize: 15,
+                                  label: 'PERMASALAHAN',
+                                  accent: accent,
+                                ),
+                                const SizedBox(height: 10),
+                                ...data.permasalahan.map(
+                                  (String item) => Padding(
+                                    padding: const EdgeInsets.only(bottom: 10),
+                                    child: Row(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: <Widget>[
+                                        Padding(
+                                          padding: const EdgeInsets.only(top: 5),
+                                          child: Container(
+                                            width: 6,
+                                            height: 6,
+                                            decoration: BoxDecoration(
+                                              color: accent,
+                                              shape: BoxShape.circle,
+                                            ),
+                                          ),
+                                        ),
+                                        const SizedBox(width: 10),
+                                        Expanded(
+                                          child: Text(
+                                            item,
+                                            style: TextStyle(
+                                              color: colors.onSurface,
+                                              fontSize: 12.5,
+                                              height: 1.55,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ],
+                          ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
@@ -2814,7 +2802,7 @@ class _ModuleDuaCard extends StatelessWidget {
               duas[i].title.toUpperCase(),
               style: TextStyle(
                 color: accent,
-                fontSize: 11,
+                fontSize: 12,
                 fontWeight: FontWeight.w800,
                 letterSpacing: 1.2,
               ),
@@ -2832,12 +2820,7 @@ class _ModuleDuaCard extends StatelessWidget {
                 duas[i].arabic,
                 textDirection: TextDirection.rtl,
                 textAlign: TextAlign.center,
-                style: GoogleFonts.amiri(
-                  color: colors.onSurface,
-                  fontSize: 22,
-                  height: 2.0,
-                  fontWeight: FontWeight.w600,
-                ),
+                style: HajjArabic.recitation(colors.onSurface),
               ),
             ),
             const SizedBox(height: 14),
@@ -2866,7 +2849,7 @@ class _ModuleDuaCard extends StatelessWidget {
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       color: palette.mutedText,
-                      fontSize: 11,
+                      fontSize: 12,
                       height: 1.4,
                     ),
                   ),
@@ -2931,7 +2914,7 @@ class _ModuleAcademicCard extends StatelessWidget {
           const SizedBox(height: 14),
           Text(
             insight,
-            textAlign: TextAlign.justify,
+            textAlign: TextAlign.start,
             style: TextStyle(
               color: palette.mutedText,
               height: 1.7,
@@ -3011,7 +2994,7 @@ class _ModuleReflectionCard extends StatelessWidget {
                         '${index + 1}',
                         style: TextStyle(
                           color: accent,
-                          fontSize: 11,
+                          fontSize: 12,
                           fontWeight: FontWeight.w800,
                         ),
                       ),

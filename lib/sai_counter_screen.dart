@@ -258,7 +258,7 @@ class _SaiCounterScreenState extends State<SaiCounterScreen> {
                                   'ARAH SEMASA',
                                   style: TextStyle(
                                     color: palette.mutedText,
-                                    fontSize: 11,
+                                    fontSize: 12,
                                     fontWeight: FontWeight.w800,
                                     letterSpacing: 1.8,
                                   ),

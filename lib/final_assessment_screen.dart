@@ -1128,57 +1128,61 @@ class _AssessmentOption extends StatelessWidget {
 
     return Material(
       color: Colors.transparent,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(18),
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 180),
-          width: double.infinity,
-          padding: const EdgeInsets.all(15),
-          decoration: BoxDecoration(
-            color: selected
-                ? palette.emerald.withValues(alpha: 0.10)
-                : palette.glassSurface,
-            borderRadius: BorderRadius.circular(18),
-            border: Border.all(
+      child: Semantics(
+        button: true,
+        selected: selected,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(18),
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 180),
+            width: double.infinity,
+            padding: const EdgeInsets.all(15),
+            decoration: BoxDecoration(
               color: selected
-                  ? palette.emerald.withValues(alpha: 0.48)
-                  : palette.glassBorder,
-              width: selected ? 1.6 : 1,
+                  ? palette.emerald.withValues(alpha: 0.10)
+                  : palette.glassSurface,
+              borderRadius: BorderRadius.circular(18),
+              border: Border.all(
+                color: selected
+                    ? palette.emerald.withValues(alpha: 0.48)
+                    : palette.glassBorder,
+                width: selected ? 1.6 : 1,
+              ),
             ),
-          ),
-          child: Row(
-            children: <Widget>[
-              Container(
-                width: 34,
-                height: 34,
-                alignment: Alignment.center,
-                decoration: BoxDecoration(
-                  color: selected ? palette.emerald : palette.softSurface,
-                  shape: BoxShape.circle,
-                ),
-                child: Text(
-                  label,
-                  style: TextStyle(
-                    color: selected ? palette.onAccent : colors.onSurface,
-                    fontWeight: FontWeight.w900,
+            child: Row(
+              children: <Widget>[
+                Container(
+                  width: 34,
+                  height: 34,
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    color: selected ? palette.emerald : palette.softSurface,
+                    shape: BoxShape.circle,
+                  ),
+                  child: Text(
+                    label,
+                    style: TextStyle(
+                      color: selected ? palette.onAccent : colors.onSurface,
+                      fontWeight: FontWeight.w900,
+                    ),
                   ),
                 ),
-              ),
-              const SizedBox(width: 13),
-              Expanded(
-                child: Text(
-                  text,
-                  style: TextStyle(
-                    color: colors.onSurface,
-                    height: 1.45,
-                    fontWeight: selected ? FontWeight.w800 : FontWeight.w600,
+                const SizedBox(width: 13),
+                Expanded(
+                  child: Text(
+                    text,
+                    style: TextStyle(
+                      color: colors.onSurface,
+                      height: 1.45,
+                      fontWeight: selected ? FontWeight.w800 : FontWeight.w600,
+                    ),
                   ),
                 ),
-              ),
-              if (selected)
-                Icon(Icons.check_circle_rounded, color: palette.emerald),
-            ],
+                if (selected)
+                  Icon(Icons.check_circle_rounded, color: palette.emerald),
+              ],
+            ),
           ),
         ),
       ),
@@ -1227,7 +1231,7 @@ class _ResultStat extends StatelessWidget {
           Text(
             label,
             textAlign: TextAlign.center,
-            style: TextStyle(color: palette.mutedText, fontSize: 11),
+            style: TextStyle(color: palette.mutedText, fontSize: 12),
           ),
         ],
       ),

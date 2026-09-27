@@ -399,11 +399,13 @@ class MyCertificatesScreen extends StatelessWidget {
                                           ),
                                         ),
                                         child: Center(
-                                          child: Text(
-                                            level == 'CEMERLANG' ? '🏆' : '🎖️',
-                                            style: const TextStyle(
-                                              fontSize: 22,
-                                            ),
+                                          child: Icon(
+                                            level == 'CEMERLANG'
+                                                ? Icons.emoji_events_rounded
+                                                : Icons.military_tech_rounded,
+                                            color: palette.gold,
+                                            size: 26,
+                                            semanticLabel: 'Tahap $level',
                                           ),
                                         ),
                                       ),

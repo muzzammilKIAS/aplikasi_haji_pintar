@@ -259,56 +259,59 @@ class _MenuOptionCard extends StatelessWidget {
 
     return Material(
       color: Colors.transparent,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(20),
-        child: Container(
-          padding: const EdgeInsets.all(20),
-          decoration: BoxDecoration(
-            color: palette.glassSurface,
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: palette.glassBorder),
-          ),
-          child: Row(
-            children: <Widget>[
-              Container(
-                width: 54,
-                height: 54,
-                decoration: BoxDecoration(
-                  color: accent.withValues(alpha: 0.15),
-                  borderRadius: BorderRadius.circular(16),
+      child: Semantics(
+        button: true,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(20),
+          child: Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: palette.glassSurface,
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: palette.glassBorder),
+            ),
+            child: Row(
+              children: <Widget>[
+                Container(
+                  width: 54,
+                  height: 54,
+                  decoration: BoxDecoration(
+                    color: accent.withValues(alpha: 0.15),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Center(
+                    child: HajjIcon(type: hajjIconType, color: accent, size: 26),
+                  ),
                 ),
-                child: Center(
-                  child: HajjIcon(type: hajjIconType, color: accent, size: 26),
-                ),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Text(
-                      title,
-                      style: TextStyle(
-                        color: colors.onSurface,
-                        fontSize: 18,
-                        fontWeight: FontWeight.w800,
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Text(
+                        title,
+                        style: TextStyle(
+                          color: colors.onSurface,
+                          fontSize: 18,
+                          fontWeight: FontWeight.w800,
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      subtitle,
-                      style: TextStyle(
-                        color: palette.mutedText,
-                        fontSize: 12,
-                        height: 1.4,
+                      const SizedBox(height: 4),
+                      Text(
+                        subtitle,
+                        style: TextStyle(
+                          color: palette.mutedText,
+                          fontSize: 12,
+                          height: 1.4,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-              Icon(Icons.chevron_right_rounded, color: palette.mutedText),
-            ],
+                Icon(Icons.chevron_right_rounded, color: palette.mutedText),
+              ],
+            ),
           ),
         ),
       ),
@@ -719,55 +722,59 @@ class _QuizOptionTile extends StatelessWidget {
 
     return Material(
       color: Colors.transparent,
-      child: InkWell(
-        onTap: showResult ? null : onTap,
-        borderRadius: BorderRadius.circular(16),
-        child: Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: bgColor,
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(
-              color: borderColor,
-              width: isSelected || (showResult && isCorrect) ? 2 : 1,
+      child: Semantics(
+        button: true,
+        selected: isSelected,
+        child: InkWell(
+          onTap: showResult ? null : onTap,
+          borderRadius: BorderRadius.circular(16),
+          child: Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: bgColor,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(
+                color: borderColor,
+                width: isSelected || (showResult && isCorrect) ? 2 : 1,
+              ),
             ),
-          ),
-          child: Row(
-            children: <Widget>[
-              Container(
-                width: 32,
-                height: 32,
-                decoration: BoxDecoration(
-                  color: showResult && isCorrect
-                      ? palette.emerald
-                      : palette.softSurface,
-                  shape: BoxShape.circle,
-                ),
-                child: Center(
-                  child: Text(
-                    label,
-                    style: TextStyle(
-                      color: showResult && isCorrect
-                          ? palette.onAccent
-                          : colors.onSurface,
-                      fontWeight: FontWeight.w900,
+            child: Row(
+              children: <Widget>[
+                Container(
+                  width: 32,
+                  height: 32,
+                  decoration: BoxDecoration(
+                    color: showResult && isCorrect
+                        ? palette.emerald
+                        : palette.softSurface,
+                    shape: BoxShape.circle,
+                  ),
+                  child: Center(
+                    child: Text(
+                      label,
+                      style: TextStyle(
+                        color: showResult && isCorrect
+                            ? palette.onAccent
+                            : colors.onSurface,
+                        fontWeight: FontWeight.w900,
+                      ),
                     ),
                   ),
                 ),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Text(
-                  text,
-                  style: TextStyle(
-                    color: textColor,
-                    fontWeight: FontWeight.w600,
-                    height: 1.4,
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Text(
+                    text,
+                    style: TextStyle(
+                      color: textColor,
+                      fontWeight: FontWeight.w600,
+                      height: 1.4,
+                    ),
                   ),
                 ),
-              ),
-              if (icon != null) Icon(icon, color: textColor),
-            ],
+                if (icon != null) Icon(icon, color: textColor),
+              ],
+            ),
           ),
         ),
       ),
@@ -1251,44 +1258,47 @@ class _ActionButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Material(
       color: Colors.transparent,
-      child: InkWell(
-        onTap: disabled ? null : onTap,
-        borderRadius: BorderRadius.circular(24),
-        child: Container(
-          height: 120,
-          decoration: BoxDecoration(
-            color: color,
-            borderRadius: BorderRadius.circular(24),
-            boxShadow: <BoxShadow>[
-              BoxShadow(
-                color: color.withValues(alpha: 0.3),
-                blurRadius: 15,
-                offset: const Offset(0, 8),
-              ),
-            ],
-          ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.2),
-                  shape: BoxShape.circle,
+      child: Semantics(
+        button: true,
+        child: InkWell(
+          onTap: disabled ? null : onTap,
+          borderRadius: BorderRadius.circular(24),
+          child: Container(
+            height: 120,
+            decoration: BoxDecoration(
+              color: color,
+              borderRadius: BorderRadius.circular(24),
+              boxShadow: <BoxShadow>[
+                BoxShadow(
+                  color: color.withValues(alpha: 0.3),
+                  blurRadius: 15,
+                  offset: const Offset(0, 8),
                 ),
-                child: Icon(icon, color: Colors.white, size: 28),
-              ),
-              const SizedBox(height: 12),
-              Text(
-                title,
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w900,
-                  letterSpacing: 1.0,
+              ],
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.2),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(icon, color: Colors.white, size: 28),
                 ),
-              ),
-            ],
+                const SizedBox(height: 12),
+                Text(
+                  title,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: 1.0,
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hive_ce_flutter/hive_ce_flutter.dart';
 
@@ -42,5 +43,55 @@ void main() {
     );
 
     expect(find.text('Simulasi Haji 3D'), findsOneWidget);
+  });
+
+  testWidgets('dashboard terus dipaparkan penuh bila animasi dikurangkan', (
+    WidgetTester tester,
+  ) async {
+    final ThemeController themeController = ThemeController(settingsBox);
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: MediaQuery(
+          data: const MediaQueryData(disableAnimations: true),
+          child: HalamanUtama(themeController: themeController),
+        ),
+      ),
+    );
+
+    final Iterable<FadeTransition> fades = tester.widgetList<FadeTransition>(
+      find.descendant(
+        of: find.byType(HalamanUtama),
+        matching: find.byType(FadeTransition),
+      ),
+    );
+    expect(fades, isNotEmpty);
+    for (final FadeTransition fade in fades) {
+      expect(fade.opacity.value, 1.0);
+    }
+  });
+
+  testWidgets('kad Akses Pantas diumumkan sebagai butang', (
+    WidgetTester tester,
+  ) async {
+    final SemanticsHandle semantics = tester.ensureSemantics();
+    final ThemeController themeController = ThemeController(settingsBox);
+
+    await tester.pumpWidget(
+      MaterialApp(home: HalamanUtama(themeController: themeController)),
+    );
+    await tester.pump(const Duration(seconds: 2));
+
+    final SemanticsNode node = tester.getSemantics(
+      find.text('Kaunter Tawaf').first,
+    );
+    SemanticsNode? current = node;
+    bool isButton = false;
+    while (current != null && !isButton) {
+      isButton = current.getSemanticsData().flagsCollection.isButton;
+      current = current.parent;
+    }
+    expect(isButton, isTrue);
+    semantics.dispose();
   });
 }

@@ -184,7 +184,7 @@ class _HalamanUtamaState extends State<HalamanUtama>
   Animation<double> _fadeFor(double start, double end) {
     return CurvedAnimation(
       parent: _entranceController,
-      curve: Interval(start, end, curve: Curves.easeOutCubic),
+      curve: Interval(start, end, curve: HajjMotion.ease),
     );
   }
 
@@ -203,6 +203,17 @@ class _HalamanUtamaState extends State<HalamanUtama>
     _breathe = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(parent: _breatheController, curve: Curves.easeInOut),
     );
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (context.reduceMotion) {
+      _entranceController.value = 1;
+      _breatheController.stop();
+    } else if (!_breatheController.isAnimating) {
+      _breatheController.repeat(reverse: true);
+    }
   }
 
   @override
@@ -635,7 +646,7 @@ class _HalamanUtamaState extends State<HalamanUtama>
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
                                     color: palette.textMuted.withValues(alpha: 0.65),
-                                    fontSize: 11,
+                                    fontSize: 12,
                                   ),
                                 ),
                               ],
@@ -738,7 +749,11 @@ class _HalamanUtamaState extends State<HalamanUtama>
       children: features.map((_FeatureData feature) {
         return SizedBox(
           width: cardWidth,
-          child: _FeatureCard(data: feature, palette: palette),
+          child: _FeatureCard(
+            data: feature,
+            palette: palette,
+            compact: columns == 1,
+          ),
         );
       }).toList(),
     );
@@ -1147,13 +1162,24 @@ class _DashSectionTitle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Text(
-      title,
-      style: GoogleFonts.playfairDisplay(
-        color: palette.textPrimary,
-        fontSize: 21,
-        fontWeight: FontWeight.w700,
-        letterSpacing: -0.2,
+    return Semantics(
+      header: true,
+      child: Row(
+        children: <Widget>[
+          HajjStarMark(color: palette.gold, size: 13),
+          const SizedBox(width: 10),
+          Flexible(
+            child: Text(
+              title,
+              style: GoogleFonts.playfairDisplay(
+                color: palette.textPrimary,
+                fontSize: 21,
+                fontWeight: FontWeight.w700,
+                letterSpacing: -0.2,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -1229,7 +1255,12 @@ class _StatBarCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return _DashCard(
+    final bool reduceMotion = context.reduceMotion;
+    return Semantics(
+      container: true,
+      label: '$title: $completed daripada $total selesai',
+      excludeSemantics: true,
+      child: _DashCard(
       palette: palette,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -1262,7 +1293,7 @@ class _StatBarCard extends StatelessWidget {
                       subtitle,
                       style: TextStyle(
                         color: palette.textMuted,
-                        fontSize: 11,
+                        fontSize: 12,
                       ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
@@ -1293,8 +1324,10 @@ class _StatBarCard extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(horizontal: 3),
                     child: TweenAnimationBuilder<double>(
                       tween: Tween<double>(begin: 0, end: done ? 1 : 0.22),
-                      duration: Duration(milliseconds: 500 + index * 60),
-                      curve: Curves.easeOutCubic,
+                      duration: reduceMotion
+                          ? Duration.zero
+                          : Duration(milliseconds: 500 + index * 60),
+                      curve: HajjMotion.ease,
                       builder: (BuildContext context, double value, _) {
                         return FractionallySizedBox(
                           heightFactor: value.clamp(0.05, 1.0),
@@ -1316,6 +1349,7 @@ class _StatBarCard extends StatelessWidget {
             ),
           ),
         ],
+      ),
       ),
     );
   }
@@ -1343,98 +1377,101 @@ class _PromoJourneyBanner extends StatelessWidget {
 
     return Material(
       color: Colors.transparent,
-      child: InkWell(
-        borderRadius: BorderRadius.circular(26),
-        onTap: onTap,
-        child: Container(
-          padding: const EdgeInsets.all(24),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(26),
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: <Color>[
-                palette.blue,
-                palette.purple,
+      child: Semantics(
+        button: true,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(26),
+          onTap: onTap,
+          child: Container(
+            padding: const EdgeInsets.all(24),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(26),
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: <Color>[
+                  palette.blue,
+                  palette.purple,
+                ],
+              ),
+              boxShadow: <BoxShadow>[
+                BoxShadow(
+                  color: palette.blue.withValues(alpha: 0.35),
+                  blurRadius: 30,
+                  offset: const Offset(0, 16),
+                ),
               ],
             ),
-            boxShadow: <BoxShadow>[
-              BoxShadow(
-                color: palette.blue.withValues(alpha: 0.35),
-                blurRadius: 30,
-                offset: const Offset(0, 16),
-              ),
-            ],
-          ),
-          child: Row(
-            children: <Widget>[
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Text(
-                      belumMula ? 'Mula Panduan Haji' : 'Sambung Panduan Haji',
-                      style: GoogleFonts.playfairDisplay(
-                        color: Colors.white,
-                        fontSize: 19,
-                        fontWeight: FontWeight.w700,
+            child: Row(
+              children: <Widget>[
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Text(
+                        belumMula ? 'Mula Panduan Haji' : 'Sambung Panduan Haji',
+                        style: GoogleFonts.playfairDisplay(
+                          color: Colors.white,
+                          fontSize: 19,
+                          fontWeight: FontWeight.w700,
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 6),
-                    Text(
-                      'Ikuti $total langkah dari persediaan hingga Tawaf Wada’, '
-                      'diselaraskan dengan kitab al-Idah karangan Imam an-Nawawi.',
-                      style: TextStyle(
-                        color: Colors.white.withValues(alpha: 0.88),
-                        fontSize: 12.5,
-                        height: 1.45,
+                      const SizedBox(height: 6),
+                      Text(
+                        'Ikuti $total langkah dari persediaan hingga Tawaf Wada’, '
+                        'diselaraskan dengan kitab al-Idah karangan Imam an-Nawawi.',
+                        style: TextStyle(
+                          color: Colors.white.withValues(alpha: 0.88),
+                          fontSize: 12.5,
+                          height: 1.45,
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 16),
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(999),
-                      child: TweenAnimationBuilder<double>(
-                        tween: Tween<double>(begin: 0, end: progress),
-                        duration: const Duration(milliseconds: 900),
-                        curve: Curves.easeOutCubic,
-                        builder: (BuildContext context, double value, _) {
-                          return LinearProgressIndicator(
-                            value: value,
-                            minHeight: 7,
-                            backgroundColor: Colors.white.withValues(alpha: 0.22),
-                            valueColor: const AlwaysStoppedAnimation<Color>(
-                              Colors.white,
-                            ),
-                          );
-                        },
+                      const SizedBox(height: 16),
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(999),
+                        child: TweenAnimationBuilder<double>(
+                          tween: Tween<double>(begin: 0, end: progress),
+                          duration: const Duration(milliseconds: 900),
+                          curve: Curves.easeOutCubic,
+                          builder: (BuildContext context, double value, _) {
+                            return LinearProgressIndicator(
+                              value: value,
+                              minHeight: 7,
+                              backgroundColor: Colors.white.withValues(alpha: 0.22),
+                              valueColor: const AlwaysStoppedAnimation<Color>(
+                                Colors.white,
+                              ),
+                            );
+                          },
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 6),
-                    Text(
-                      '$completed / $total langkah selesai',
-                      style: TextStyle(
-                        color: Colors.white.withValues(alpha: 0.82),
-                        fontSize: 11,
-                        fontWeight: FontWeight.w700,
+                      const SizedBox(height: 6),
+                      Text(
+                        '$completed / $total langkah selesai',
+                        style: TextStyle(
+                          color: Colors.white.withValues(alpha: 0.82),
+                          fontSize: 12,
+                          fontWeight: FontWeight.w700,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-              const SizedBox(width: 14),
-              Container(
-                width: 52,
-                height: 52,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  shape: BoxShape.circle,
+                const SizedBox(width: 14),
+                Container(
+                  width: 52,
+                  height: 52,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    Icons.arrow_forward_rounded,
+                    color: palette.blue,
+                  ),
                 ),
-                child: Icon(
-                  Icons.arrow_forward_rounded,
-                  color: palette.blue,
-                ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -1459,17 +1496,28 @@ class _FeatureData {
 }
 
 class _FeatureCard extends StatefulWidget {
-  const _FeatureCard({required this.data, required this.palette});
+  const _FeatureCard({
+    required this.data,
+    required this.palette,
+    this.compact = false,
+  });
 
   final _FeatureData data;
   final _DashPalette palette;
+
+  /// Susun atur senarai (ikon kiri, teks kanan) untuk grid satu lajur di
+  /// telefon, supaya kad tidak tinggi dan kosong.
+  final bool compact;
 
   @override
   State<_FeatureCard> createState() => _FeatureCardState();
 }
 
 class _FeatureCardState extends State<_FeatureCard> {
-  bool hovering = false;
+  bool pointerOver = false;
+  bool focused = false;
+
+  bool get hovering => pointerOver || focused;
 
   @override
   Widget build(BuildContext context) {
@@ -1477,6 +1525,7 @@ class _FeatureCardState extends State<_FeatureCard> {
     final _DashPalette palette = widget.palette;
     final bool isDark = context.isDarkMode;
     final bool goldHover = hovering && isDark;
+    final bool lift = hovering && !context.reduceMotion;
 
     final Color borderColor = goldHover
         ? palette.gold.withValues(alpha: 0.85)
@@ -1501,16 +1550,83 @@ class _FeatureCardState extends State<_FeatureCard> {
             ),
           ];
 
+    final Widget iconTile = Container(
+      width: 46,
+      height: 46,
+      decoration: BoxDecoration(
+        color: accent.withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(15),
+      ),
+      child: HajjIcon(type: widget.data.icon, color: accent, size: 26),
+    );
+
+    final Widget title = Text(
+      widget.data.title,
+      style: GoogleFonts.playfairDisplay(
+        color: palette.textPrimary,
+        fontSize: 17,
+        fontWeight: FontWeight.w700,
+      ),
+    );
+
+    final Widget description = Text(
+      widget.data.description,
+      style: TextStyle(color: palette.textMuted, fontSize: 13, height: 1.4),
+      maxLines: 2,
+      overflow: TextOverflow.ellipsis,
+    );
+
+    final Widget content = widget.compact
+        ? Padding(
+            padding: const EdgeInsets.fromLTRB(16, 16, 12, 16),
+            child: Row(
+              children: <Widget>[
+                iconTile,
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      title,
+                      const SizedBox(height: 4),
+                      description,
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Icon(
+                  Icons.chevron_right_rounded,
+                  color: accent.withValues(alpha: 0.7),
+                ),
+              ],
+            ),
+          )
+        : Padding(
+            padding: const EdgeInsets.all(18),
+            // Tinggi tetap supaya semua kad dalam grid sama besar tanpa
+            // mengira panjang teks penerangan.
+            child: SizedBox(
+              height: 158,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  iconTile,
+                  const SizedBox(height: 16),
+                  title,
+                  const SizedBox(height: 6),
+                  Expanded(child: description),
+                ],
+              ),
+            ),
+          );
+
     return MouseRegion(
-      onEnter: (_) {
-        setState(() { hovering = true; });
-      },
-      onExit: (_) {
-        setState(() { hovering = false; });
-      },
+      onEnter: (_) => setState(() => pointerOver = true),
+      onExit: (_) => setState(() => pointerOver = false),
       child: AnimatedContainer(
-        duration: const Duration(milliseconds: 220),
-        transform: Matrix4.translationValues(0, hovering ? -4 : 0, 0),
+        duration: HajjMotion.of(context, HajjMotion.medium),
+        curve: HajjMotion.ease,
+        transform: Matrix4.translationValues(0, lift ? -4 : 0, 0),
         child: _DashCard(
           palette: palette,
           borderRadius: 22,
@@ -1524,67 +1640,25 @@ class _FeatureCardState extends State<_FeatureCard> {
               children: <Widget>[
                 // Motif bintang lapan penjuru di bucu kad, sedikit
                 // melimpah keluar supaya kelihatan semula jadi dipotong
-                // oleh bucu bulat kad — menjadikan kad lebih "hidup".
+                // oleh bucu bulat kad.
                 Positioned(
-                  top: -22,
-                  right: -22,
+                  top: widget.compact ? -26 : -22,
+                  right: widget.compact ? -26 : -22,
                   child: IslamicCornerMotif(
-                    color: accent.withValues(alpha: 0.22),
-                    size: 92,
+                    color: accent.withValues(alpha: widget.compact ? 0.16 : 0.22),
+                    size: widget.compact ? 60 : 92,
                   ),
                 ),
                 Material(
                   color: Colors.transparent,
-                  child: InkWell(
-                    borderRadius: BorderRadius.circular(22),
-                    onTap: widget.data.onTap,
-                    child: Padding(
-                      padding: const EdgeInsets.all(18),
-                      // Tinggi tetap supaya semua kad akses pantas sama
-                      // besar tanpa mengira panjang teks penerangan.
-                      child: SizedBox(
-                        height: 158,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            Container(
-                              width: 46,
-                              height: 46,
-                              decoration: BoxDecoration(
-                                color: accent.withValues(alpha: 0.12),
-                                borderRadius: BorderRadius.circular(15),
-                              ),
-                              child: HajjIcon(
-                                type: widget.data.icon,
-                                color: accent,
-                                size: 26,
-                              ),
-                            ),
-                            const SizedBox(height: 16),
-                            Text(
-                              widget.data.title,
-                              style: GoogleFonts.playfairDisplay(
-                                color: palette.textPrimary,
-                                fontSize: 17,
-                                fontWeight: FontWeight.w700,
-                              ),
-                            ),
-                            const SizedBox(height: 6),
-                            Expanded(
-                              child: Text(
-                                widget.data.description,
-                                style: TextStyle(
-                                  color: palette.textMuted,
-                                  fontSize: 12.5,
-                                  height: 1.4,
-                                ),
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
+                  child: Semantics(
+                    button: true,
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(22),
+                      onTap: widget.data.onTap,
+                      onFocusChange: (bool value) =>
+                          setState(() => focused = value),
+                      child: content,
                     ),
                   ),
                 ),
@@ -1690,7 +1764,7 @@ class _CategoryDonutCard extends StatelessWidget {
                             'keseluruhan',
                             style: TextStyle(
                               color: palette.textMuted,
-                              fontSize: 10.5,
+                              fontSize: 12,
                             ),
                           ),
                         ],
@@ -1904,56 +1978,59 @@ class _RecentActivityCard extends StatelessWidget {
               padding: const EdgeInsets.only(bottom: 14),
               child: Material(
                 color: Colors.transparent,
-                child: InkWell(
-                  borderRadius: BorderRadius.circular(14),
-                  onTap: row.onTap,
-                  child: Row(
-                    children: <Widget>[
-                      Container(
-                        width: 42,
-                        height: 42,
-                        decoration: BoxDecoration(
-                          color: row.color.withValues(alpha: 0.12),
-                          shape: BoxShape.circle,
+                child: Semantics(
+                  button: true,
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(14),
+                    onTap: row.onTap,
+                    child: Row(
+                      children: <Widget>[
+                        Container(
+                          width: 42,
+                          height: 42,
+                          decoration: BoxDecoration(
+                            color: row.color.withValues(alpha: 0.12),
+                            shape: BoxShape.circle,
+                          ),
+                          child: HajjIcon(type: row.icon, color: row.color, size: 21),
                         ),
-                        child: HajjIcon(type: row.icon, color: row.color, size: 21),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            Text(
-                              row.title,
-                              style: TextStyle(
-                                color: palette.textPrimary,
-                                fontWeight: FontWeight.w700,
-                                fontSize: 13.5,
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              Text(
+                                row.title,
+                                style: TextStyle(
+                                  color: palette.textPrimary,
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 13.5,
+                                ),
                               ),
-                            ),
-                            const SizedBox(height: 2),
-                            Text(
-                              row.subtitle,
-                              style: TextStyle(
-                                color: palette.textMuted,
-                                fontSize: 11.5,
+                              const SizedBox(height: 2),
+                              Text(
+                                row.subtitle,
+                                style: TextStyle(
+                                  color: palette.textMuted,
+                                  fontSize: 12,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
                               ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
-                      ),
-                      const SizedBox(width: 8),
-                      Text(
-                        row.trailing,
-                        style: TextStyle(
-                          color: row.color,
-                          fontWeight: FontWeight.w800,
-                          fontSize: 12.5,
+                        const SizedBox(width: 8),
+                        Text(
+                          row.trailing,
+                          style: TextStyle(
+                            color: row.color,
+                            fontWeight: FontWeight.w800,
+                            fontSize: 12.5,
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -2010,56 +2087,60 @@ class ThemeModeTile extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: 10),
       child: Material(
         color: Colors.transparent,
-        child: InkWell(
-          onTap: () => onChanged(value),
-          borderRadius: BorderRadius.circular(18),
-          child: Container(
-            padding: const EdgeInsets.all(14),
-            decoration: BoxDecoration(
-              color: selected
-                  ? palette.emerald.withValues(alpha: 0.10)
-                  : palette.glassSurface,
-              borderRadius: BorderRadius.circular(18),
-              border: Border.all(
+        child: Semantics(
+          button: true,
+          selected: selected,
+          child: InkWell(
+            onTap: () => onChanged(value),
+            borderRadius: BorderRadius.circular(18),
+            child: Container(
+              padding: const EdgeInsets.all(14),
+              decoration: BoxDecoration(
                 color: selected
-                    ? palette.emerald.withValues(alpha: 0.40)
-                    : palette.glassBorder,
+                    ? palette.emerald.withValues(alpha: 0.10)
+                    : palette.glassSurface,
+                borderRadius: BorderRadius.circular(18),
+                border: Border.all(
+                  color: selected
+                      ? palette.emerald.withValues(alpha: 0.40)
+                      : palette.glassBorder,
+                ),
               ),
-            ),
-            child: Row(
-              children: <Widget>[
-                Icon(
-                  icon,
-                  color: selected ? palette.emerald : palette.mutedText,
-                ),
-                const SizedBox(width: 14),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Text(
-                        title,
-                        style: TextStyle(
-                          color: context.appColorScheme.onSurface,
-                          fontWeight: FontWeight.w800,
-                        ),
-                      ),
-                      const SizedBox(height: 3),
-                      Text(
-                        subtitle,
-                        style: TextStyle(
-                          color: palette.mutedText,
-                          fontSize: 12,
-                        ),
-                      ),
-                    ],
+              child: Row(
+                children: <Widget>[
+                  Icon(
+                    icon,
+                    color: selected ? palette.emerald : palette.mutedText,
                   ),
-                ),
-                Icon(
-                  selected ? Icons.check_circle_rounded : Icons.circle_outlined,
-                  color: selected ? palette.emerald : palette.mutedText,
-                ),
-              ],
+                  const SizedBox(width: 14),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Text(
+                          title,
+                          style: TextStyle(
+                            color: context.appColorScheme.onSurface,
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
+                        const SizedBox(height: 3),
+                        Text(
+                          subtitle,
+                          style: TextStyle(
+                            color: palette.mutedText,
+                            fontSize: 12,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Icon(
+                    selected ? Icons.check_circle_rounded : Icons.circle_outlined,
+                    color: selected ? palette.emerald : palette.mutedText,
+                  ),
+                ],
+              ),
             ),
           ),
         ),
