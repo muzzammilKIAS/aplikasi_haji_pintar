@@ -18,6 +18,22 @@
 
   <meta charset="UTF-8">
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
+
+  <!-- Google Analytics 4: hanya pada domain sebenar, bukan pratonton tempatan. -->
+  <script>
+    (function () {
+      var id = 'G-5FKZGEJTTG';
+      if (!/(^|\.)hajipintar\.my$/.test(location.hostname)) return;
+      var s = document.createElement('script');
+      s.async = true;
+      s.src = 'https://www.googletagmanager.com/gtag/js?id=' + id;
+      document.head.appendChild(s);
+      window.dataLayer = window.dataLayer || [];
+      window.gtag = function () { dataLayer.push(arguments); };
+      gtag('js', new Date());
+      gtag('config', id);
+    })();
+  </script>
   <meta name="description" content="Haji Pintar — teman pembelajaran Haji dan Umrah. Panduan ibadah, modul interaktif dan rekod kemajuan dalam satu aplikasi.">
   <meta name="theme-color" content="#1c5945">
 
