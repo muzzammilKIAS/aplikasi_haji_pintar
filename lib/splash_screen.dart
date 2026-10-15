@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 import 'app_theme.dart';
+import 'main.dart' show settingsBox;
+import 'prismatic_widgets.dart';
 
 /// Haji Pintar Emerald Motion Splash (SILENT) — gaya sama seperti splash
 /// e-Hadis40: aurora latar, ikon 3D timbul (extrusion), lockup jenama
@@ -56,27 +58,28 @@ class _SplashScreenState extends State<SplashScreen>
       parent: _controller,
       curve: const Interval(0.04, 0.28, curve: Curves.easeOutCubic),
     );
-    _markScale = TweenSequence<double>(<TweenSequenceItem<double>>[
-      TweenSequenceItem<double>(
-        tween: Tween<double>(
-          begin: 0.86,
-          end: 1.03,
-        ).chain(CurveTween(curve: Curves.easeOutCubic)),
-        weight: 65,
-      ),
-      TweenSequenceItem<double>(
-        tween: Tween<double>(
-          begin: 1.03,
-          end: 1.0,
-        ).chain(CurveTween(curve: Curves.easeInOut)),
-        weight: 35,
-      ),
-    ]).animate(
-      CurvedAnimation(
-        parent: _controller,
-        curve: const Interval(0.04, 0.44, curve: Curves.easeInOut),
-      ),
-    );
+    _markScale =
+        TweenSequence<double>(<TweenSequenceItem<double>>[
+          TweenSequenceItem<double>(
+            tween: Tween<double>(
+              begin: 0.86,
+              end: 1.03,
+            ).chain(CurveTween(curve: Curves.easeOutCubic)),
+            weight: 65,
+          ),
+          TweenSequenceItem<double>(
+            tween: Tween<double>(
+              begin: 1.03,
+              end: 1.0,
+            ).chain(CurveTween(curve: Curves.easeInOut)),
+            weight: 35,
+          ),
+        ]).animate(
+          CurvedAnimation(
+            parent: _controller,
+            curve: const Interval(0.04, 0.44, curve: Curves.easeInOut),
+          ),
+        );
     _markRotateY = Tween<double>(begin: -0.07, end: 0.0).animate(
       CurvedAnimation(
         parent: _controller,
@@ -93,27 +96,28 @@ class _SplashScreenState extends State<SplashScreen>
       parent: _controller,
       curve: const Interval(0.40, 0.58, curve: Curves.easeOutCubic),
     );
-    _badgeScale = TweenSequence<double>(<TweenSequenceItem<double>>[
-      TweenSequenceItem<double>(
-        tween: Tween<double>(
-          begin: 0.88,
-          end: 1.02,
-        ).chain(CurveTween(curve: Curves.easeOutCubic)),
-        weight: 65,
-      ),
-      TweenSequenceItem<double>(
-        tween: Tween<double>(
-          begin: 1.02,
-          end: 1.0,
-        ).chain(CurveTween(curve: Curves.easeInOut)),
-        weight: 35,
-      ),
-    ]).animate(
-      CurvedAnimation(
-        parent: _controller,
-        curve: const Interval(0.40, 0.60, curve: Curves.easeInOut),
-      ),
-    );
+    _badgeScale =
+        TweenSequence<double>(<TweenSequenceItem<double>>[
+          TweenSequenceItem<double>(
+            tween: Tween<double>(
+              begin: 0.88,
+              end: 1.02,
+            ).chain(CurveTween(curve: Curves.easeOutCubic)),
+            weight: 65,
+          ),
+          TweenSequenceItem<double>(
+            tween: Tween<double>(
+              begin: 1.02,
+              end: 1.0,
+            ).chain(CurveTween(curve: Curves.easeInOut)),
+            weight: 35,
+          ),
+        ]).animate(
+          CurvedAnimation(
+            parent: _controller,
+            curve: const Interval(0.40, 0.60, curve: Curves.easeInOut),
+          ),
+        );
 
     _sweep = CurvedAnimation(
       parent: _controller,
@@ -178,7 +182,7 @@ class _SplashScreenState extends State<SplashScreen>
     final HajjColors palette = context.hajjColors;
     final bool isDark = context.isDarkMode;
     final Color bg = palette.gradientStart;
-    final Color onBg = isDark ? palette.textPrimary : const Color(0xFF0B2A52);
+    final Color onBg = palette.textPrimary;
 
     return Scaffold(
       backgroundColor: bg,
@@ -195,6 +199,20 @@ class _SplashScreenState extends State<SplashScreen>
                   progress: _aurora.value,
                   isDark: isDark,
                   palette: palette,
+                ),
+                Positioned.fill(
+                  child: Opacity(
+                    opacity: 0.30 * _aurora.value,
+                    child: KaleidoscopeField(
+                      enabled:
+                          !_reducedMotion &&
+                          settingsBox.get(
+                                'ambient_motion',
+                                defaultValue: true,
+                              ) ==
+                              true,
+                    ),
+                  ),
                 ),
                 Center(
                   child: _SplashLockup(
@@ -233,7 +251,7 @@ class _IridescentAurora extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final Color base = isDark ? palette.gradientStart : const Color(0xFF14468F);
+    final Color base = palette.gradientStart;
     return Container(
       decoration: BoxDecoration(
         gradient: RadialGradient(
@@ -440,16 +458,17 @@ class _ThreeDLogoMark extends StatelessWidget {
                 height: size,
                 fit: BoxFit.contain,
                 filterQuality: FilterQuality.high,
-                errorBuilder: (BuildContext context, Object error, StackTrace? stack) {
-                  return Container(
-                    width: size,
-                    height: size,
-                    decoration: BoxDecoration(
-                      color: palette.emerald,
-                      borderRadius: BorderRadius.circular(size * 0.22),
-                    ),
-                  );
-                },
+                errorBuilder:
+                    (BuildContext context, Object error, StackTrace? stack) {
+                      return Container(
+                        width: size,
+                        height: size,
+                        decoration: BoxDecoration(
+                          color: palette.emerald,
+                          borderRadius: BorderRadius.circular(size * 0.22),
+                        ),
+                      );
+                    },
               ),
             ),
           ],
@@ -471,7 +490,7 @@ class _ThreeDLogoMark extends StatelessWidget {
             height: size,
             fit: BoxFit.contain,
             filterQuality: FilterQuality.high,
-            color: isDark ? Colors.black : const Color(0xFF0B2A52),
+            color: isDark ? Colors.black : const Color(0xFF173C2E),
             colorBlendMode: BlendMode.srcATop,
           ),
         ),
@@ -635,15 +654,17 @@ class _DisclaimerDialog extends StatelessWidget {
                 const SizedBox(height: 24),
                 Text(
                   'Haji Pintar ialah sebuah prototaip aplikasi pembelajaran '
-                  'yang dibangunkan secara bebas berasaskan kitab al-Idah '
+                  'yang dibangunkan secara bebas dengan merujuk kitab al-Idah '
                   'fi Manasik al-Hajj wa al-Umrah '
                   '(الإيضاح في مناسك الحج والعمرة) karangan Imam an-Nawawi '
-                  '(الإمام النووي).\n\n'
-                  'Aplikasi ini bukan aplikasi rasmi, produk rasmi atau '
-                  'platform yang diperakui oleh mana-mana agensi '
-                  'pengelola Haji.\n\n'
-                  'Kandungan dalam aplikasi ini hendaklah dirujuk bersama '
-                  'pembimbing Haji atau panel syariah yang berautoriti '
+                  '(الإمام النووي) sebagai sumber utama. Ringkasan dan '
+                  'terjemahan di dalamnya ialah usaha penyusun dan mungkin '
+                  'mengandungi kesilapan.\n\n'
+                  'Aplikasi ini bukan aplikasi rasmi dan tidak diperakui '
+                  'oleh mana-mana agensi pengurusan Haji atau pihak '
+                  'berkuasa agama.\n\n'
+                  'Kandungan dalam aplikasi ini hendaklah disemak bersama '
+                  'pembimbing Haji atau panel syariah yang bertauliah '
                   'sebelum dijadikan rujukan hukum.',
                   style: TextStyle(
                     fontSize: 16,

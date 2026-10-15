@@ -8,7 +8,6 @@
 // setiap topik diletakkan di bahagian bawah fail ini sebagai senarai
 // `const` berasingan.
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import 'app_theme.dart';
 import 'islamic_icons.dart';
@@ -94,104 +93,106 @@ class InteractiveLearningMenu extends StatelessWidget {
           children: <Widget>[
             const IslamicPatternOverlay(),
             SafeArea(
-          child: Column(
-            children: <Widget>[
-              _buildHeader(context, subtitle: topicTitle),
-              Expanded(
-                child: Center(
-                  child: ConstrainedBox(
-                    constraints: const BoxConstraints(maxWidth: 500),
-                    child: Padding(
-                      padding: const EdgeInsets.all(24.0),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-                          Container(
-                            width: 100,
-                            height: 100,
-                            decoration: BoxDecoration(
-                              color: accent.withValues(alpha: 0.15),
-                              shape: BoxShape.circle,
-                              border: Border.all(
-                                color: accent.withValues(alpha: 0.3),
-                              ),
-                            ),
-                            child: Center(
-                              child: HajjIcon(
-                                type: topicIcon,
-                                color: accent,
-                                size: 50,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: 24),
-                          Text(
-                            'Pilih Mod Uji Kefahaman',
-                            style: GoogleFonts.playfairDisplay(
-                              color: colors.onSurface,
-                              fontSize: 26,
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            'Pilih sama ada anda mahu menjawab Kuiz santai '
-                            'atau Latih Tubi Pantas.',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              color: palette.mutedText,
-                              fontSize: 14,
-                              height: 1.5,
-                            ),
-                          ),
-                          const SizedBox(height: 36),
-                          _MenuOptionCard(
-                            title: 'Mod Kuiz',
-                            subtitle:
-                                'Jawab soalan aneka pilihan dengan penerangan lengkap.',
-                            hajjIconType: HajjIconType.quiz,
-                            accent: const Color(0xFF4B8CCB),
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute<void>(
-                                  builder: (_) =>
-                                      LearningQuizScreen(quizData: quizData),
-                                ),
-                              );
-                            },
-                          ),
-                          const SizedBox(height: 16),
-                          _MenuOptionCard(
-                            title: 'Latih Tubi Pantas',
-                            subtitle:
-                                'Asingkan $categoryALabel atau $categoryBLabel dengan pantas.',
-                            hajjIconType: HajjIconType.rukun,
-                            accent: palette.emerald,
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute<void>(
-                                  builder: (_) => LearningGameScreen(
-                                    gameData: gameData,
-                                    categoryALabel: categoryALabel,
-                                    categoryBLabel: categoryBLabel,
-                                    categoryAIcon: categoryAIcon,
-                                    categoryBIcon: categoryBIcon,
+              child: Column(
+                children: <Widget>[
+                  _buildHeader(context, subtitle: topicTitle),
+                  Expanded(
+                    child: Center(
+                      child: ConstrainedBox(
+                        constraints: const BoxConstraints(maxWidth: 500),
+                        child: Padding(
+                          padding: const EdgeInsets.all(24.0),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              Container(
+                                width: 100,
+                                height: 100,
+                                decoration: BoxDecoration(
+                                  color: accent.withValues(alpha: 0.15),
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                    color: accent.withValues(alpha: 0.3),
                                   ),
                                 ),
-                              );
-                            },
+                                child: Center(
+                                  child: HajjIcon(
+                                    type: topicIcon,
+                                    color: accent,
+                                    size: 50,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 24),
+                              Text(
+                                'Pilih Mod Uji Kefahaman',
+                                style: TextStyle(
+                                  fontFamily: AppFonts.display,
+                                  color: colors.onSurface,
+                                  fontSize: 26,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                'Pilih sama ada anda mahu menjawab Kuiz santai '
+                                'atau Latih Tubi Pantas.',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  color: palette.mutedText,
+                                  fontSize: 14,
+                                  height: 1.5,
+                                ),
+                              ),
+                              const SizedBox(height: 36),
+                              _MenuOptionCard(
+                                title: 'Mod Kuiz',
+                                subtitle:
+                                    'Jawab soalan aneka pilihan dengan penerangan lengkap.',
+                                hajjIconType: HajjIconType.quiz,
+                                accent: const Color(0xFF4B8CCB),
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute<void>(
+                                      builder: (_) => LearningQuizScreen(
+                                        quizData: quizData,
+                                      ),
+                                    ),
+                                  );
+                                },
+                              ),
+                              const SizedBox(height: 16),
+                              _MenuOptionCard(
+                                title: 'Latih Tubi Pantas',
+                                subtitle:
+                                    'Asingkan $categoryALabel atau $categoryBLabel dengan pantas.',
+                                hajjIconType: HajjIconType.rukun,
+                                accent: palette.emerald,
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute<void>(
+                                      builder: (_) => LearningGameScreen(
+                                        gameData: gameData,
+                                        categoryALabel: categoryALabel,
+                                        categoryBLabel: categoryBLabel,
+                                        categoryAIcon: categoryAIcon,
+                                        categoryBIcon: categoryBIcon,
+                                      ),
+                                    ),
+                                  );
+                                },
+                              ),
+                            ],
                           ),
-                        ],
+                        ),
                       ),
                     ),
                   ),
-                ),
+                ],
               ),
-            ],
-          ),
-        ),
+            ),
           ],
         ),
       ),
@@ -281,7 +282,11 @@ class _MenuOptionCard extends StatelessWidget {
                     borderRadius: BorderRadius.circular(16),
                   ),
                   child: Center(
-                    child: HajjIcon(type: hajjIconType, color: accent, size: 26),
+                    child: HajjIcon(
+                      type: hajjIconType,
+                      color: accent,
+                      size: 26,
+                    ),
                   ),
                 ),
                 const SizedBox(width: 16),
@@ -427,7 +432,8 @@ class _LearningQuizScreenState extends State<LearningQuizScreen> {
                       ),
                       child: Text(
                         question.question,
-                        style: GoogleFonts.playfairDisplay(
+                        style: TextStyle(
+                          fontFamily: AppFonts.display,
                           color: colors.onSurface,
                           fontSize: 20,
                           fontWeight: FontWeight.w700,
@@ -558,7 +564,8 @@ class _LearningQuizScreenState extends State<LearningQuizScreen> {
               const SizedBox(height: 24),
               Text(
                 'Kuiz Tamat',
-                style: GoogleFonts.playfairDisplay(
+                style: TextStyle(
+                  fontFamily: AppFonts.display,
                   color: colors.onSurface,
                   fontSize: 32,
                   fontWeight: FontWeight.w700,
@@ -972,7 +979,8 @@ class _LearningGameScreenState extends State<LearningGameScreen>
                           child: Text(
                             deck[currentIndex].text,
                             textAlign: TextAlign.center,
-                            style: GoogleFonts.playfairDisplay(
+                            style: TextStyle(
+                              fontFamily: AppFonts.display,
                               color: colors.onSurface,
                               fontSize: 22,
                               fontWeight: FontWeight.w700,
@@ -1156,7 +1164,8 @@ class _LearningGameScreenState extends State<LearningGameScreen>
               const SizedBox(height: 24),
               Text(
                 isWin ? 'Tahniah!' : 'Cuba Lagi',
-                style: GoogleFonts.playfairDisplay(
+                style: TextStyle(
+                  fontFamily: AppFonts.display,
                   color: colors.onSurface,
                   fontSize: 32,
                   fontWeight: FontWeight.w700,
@@ -1397,7 +1406,7 @@ const List<LearningGameCard> asasHajiGameData = <LearningGameCard>[
     text: 'Umrah dan Haji adalah ibadah yang sama dari segi rukun dan waktu.',
     isCategoryA: false,
     explanation:
-        'Umrah boleh dilakukan bila-bila masa dan rukunnya berbeza; Haji terikat dengan waktu tertentu (bulan Haji).',
+        'Umrah boleh dilakukan hampir sepanjang tahun dan tidak mempunyai rukun wukuf; Haji pula terikat dengan waktu tertentu (bulan-bulan Haji).',
   ),
   LearningGameCard(
     text:
@@ -1411,13 +1420,13 @@ const List<LearningGameCard> asasHajiGameData = <LearningGameCard>[
         'Seseorang yang tidak berkemampuan dari segi kesihatan tetap wajib memaksa diri menunaikan Haji.',
     isCategoryA: false,
     explanation:
-        'Jika tiada kemampuan kesihatan, kewajipan Haji gugur atau boleh dirujuk kepada hukum badal Haji.',
+        'Orang yang tidak mampu dari segi kesihatan (ma’dhub) tidak wajib pergi sendiri. Namun menurut al-Idah, jika dia mempunyai harta yang cukup, dia wajib mewakilkan orang lain (badal Haji).',
   ),
   LearningGameCard(
     text: 'Miqat ialah tempat atau waktu yang ditetapkan untuk berniat ihram.',
     isCategoryA: true,
     explanation:
-        'Miqat menentukan lokasi/waktu jemaah wajib berniat ihram sebelum memasuki kawasan tertentu.',
+        'Miqat zamani ialah tempoh sah berihram Haji (Syawal, Zulkaedah dan sepuluh malam pertama Zulhijjah hingga terbit fajar Hari Raya Haji). Miqat makani ialah sempadan tempat yang tidak boleh dilepasi tanpa ihram oleh orang yang hendak menunaikan Haji atau Umrah.',
   ),
   LearningGameCard(
     text: 'Tawaf Ifadah adalah salah satu daripada rukun Haji.',
@@ -1436,13 +1445,13 @@ const List<LearningQuizQuestion> rukunWajibQuizData = <LearningQuizQuestion>[
         'Apakah perbezaan utama antara Rukun dan Wajib Haji jika ditinggalkan?',
     options: <String>[
       'Kedua-duanya boleh diganti dengan dam',
-      'Rukun yang ditinggal menyebabkan Haji tidak sah sehingga dilaksanakan, manakala Wajib boleh diganti dengan dam',
-      'Wajib yang ditinggal membatalkan Haji terus',
+      'Rukun yang ditinggalkan menyebabkan Haji tidak sempurna sehingga dilaksanakan, manakala Wajib boleh diganti dengan dam',
+      'Wajib yang ditinggalkan membatalkan Haji terus',
       'Tiada perbezaan antara kedua-duanya',
     ],
     correctIndex: 1,
     explanation:
-        'Rukun yang ditinggalkan menyebabkan Haji tidak sempurna sehingga rukun itu dilaksanakan. Wajib yang ditinggal boleh diganti dengan dam.',
+        'Rukun yang ditinggalkan menyebabkan Haji tidak sempurna sehingga rukun itu dilaksanakan, dan ia tidak boleh diganti dengan dam. Wajib yang ditinggalkan pula boleh diganti dengan dam.',
   ),
   LearningQuizQuestion(
     question: 'Manakah antara berikut adalah RUKUN Haji?',
@@ -1481,7 +1490,7 @@ const List<LearningQuizQuestion> rukunWajibQuizData = <LearningQuizQuestion>[
         'Wajib Haji yang ditinggalkan boleh menyebabkan kewajipan dam, tertakluk kepada keadaan dan hukum.',
   ),
   LearningQuizQuestion(
-    question: '"Tertib" sebagai salah satu rukun Haji bermaksud...?',
+    question: '"Tertib" dalam pelaksanaan rukun Haji bermaksud...?',
     options: <String>[
       'Melakukan rukun mengikut turutan yang betul',
       'Membayar semua kos Haji terlebih dahulu',
@@ -1490,7 +1499,7 @@ const List<LearningQuizQuestion> rukunWajibQuizData = <LearningQuizQuestion>[
     ],
     correctIndex: 0,
     explanation:
-        'Tertib bermaksud melaksanakan kebanyakan rukun Haji mengikut turutan yang betul.',
+        'Tertib bermaksud melaksanakan kebanyakan rukun Haji mengikut turutan yang betul. Menurut al-Idah, tertib bukan rukun keenam yang berasingan; ia wajib dipelihara dalam rukun-rukun tersebut.',
   ),
 ];
 
@@ -1546,14 +1555,14 @@ const List<LearningQuizQuestion> damQuizData = <LearningQuizQuestion>[
   LearningQuizQuestion(
     question: 'Apakah maksud "dam" dalam konteks ibadah Haji?',
     options: <String>[
-      'Bayaran atau sembelihan tertentu yang dikenakan dalam keadaan tertentu',
+      'Sembelihan (atau gantiannya) yang diwajibkan dalam keadaan tertentu',
       'Sejenis pakaian ihram',
       'Nama lain bagi Tawaf Wada\u2019',
       'Denda kewangan tetap yang sama bagi semua kesalahan',
     ],
     correctIndex: 0,
     explanation:
-        'Dam ialah bayaran atau sembelihan tertentu yang dikenakan dalam keadaan tertentu ketika Haji atau Umrah.',
+        'Dam ialah sembelihan binatang tertentu, atau gantiannya seperti puasa atau sedekah makanan, yang wajib dalam keadaan tertentu ketika Haji atau Umrah. Jenis dan kadarnya berbeza mengikut kesalahan.',
   ),
   LearningQuizQuestion(
     question: 'Antara berikut, yang manakah BOLEH menjadi sebab dikenakan dam?',
@@ -1615,10 +1624,11 @@ const List<LearningGameCard> damGameData = <LearningGameCard>[
         'Meninggalkan Wajib Haji seperti ini tanpa uzur boleh mewajibkan dam.',
   ),
   LearningGameCard(
-    text: 'Terlupa dan tidak sengaja memotong kuku ketika ihram',
+    text:
+        'Terlupa sedang berihram lalu tersapu minyak wangi, kemudian segera menghilangkannya sebaik teringat',
     isCategoryA: false,
     explanation:
-        'Jika terlupa atau tidak sengaja, ia dimaafkan dan tidak diwajibkan dam — tetapi mesti berhenti sebaik teringat.',
+        'Wangian yang terkena kerana terlupa atau jahil hukum tidak mewajibkan fidyah, asalkan segera dihilangkan. Berbeza dengan memotong kuku atau mencukur rambut: fidyah tetap wajib walaupun terlupa (al-Idah).',
   ),
   LearningGameCard(
     text:
@@ -1666,13 +1676,13 @@ const List<LearningQuizQuestion> doaZikirQuizData = <LearningQuizQuestion>[
     question: 'Bilakah masa yang digalakkan untuk memperbanyakkan talbiyah?',
     options: <String>[
       'Hanya semasa Tawaf sahaja',
-      'Selepas berniat ihram sehingga tiba waktu yang berkaitan dengan ibadah',
+      'Selepas berniat ihram sehingga mula melontar Jamrah Aqabah pada Hari Raya Haji',
       'Hanya pada waktu malam',
       'Selepas Tawaf Wada\u2019 sahaja',
     ],
     correctIndex: 1,
     explanation:
-        'Talbiyah digalakkan diperbanyakkan selepas berniat ihram sehingga tiba waktu yang berkaitan.',
+        'Talbiyah digalakkan diperbanyakkan selepas berniat ihram. Menurut al-Idah, jemaah Haji berhenti bertalbiyah ketika melontar batu pertama di Jamrah Aqabah, lalu menggantikannya dengan takbir.',
   ),
   LearningQuizQuestion(
     question: 'Apakah adab yang dianjurkan ketika berdoa semasa ibadah Haji?',

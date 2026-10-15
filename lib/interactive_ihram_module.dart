@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import 'app_theme.dart';
 import 'islamic_icons.dart';
@@ -47,20 +46,20 @@ const List<IhramQuizQuestion> quizData = [
     ],
     correctIndex: 2,
     explanation:
-        "Lelaki dilarang menutup kepala dengan pakaian yang melekat seperti kopiah, songkok, topi atau serban.",
+        "Lelaki dilarang menutup kepala, sepenuhnya atau sebahagian, dengan apa-apa yang dikira sebagai penutup seperti kopiah, songkok, topi atau serban. Tali pinggang dan cincin pula dibenarkan.",
   ),
   IhramQuizQuestion(
     question:
-        "Apakah hukum memakai sabun mandi yang mengandungi pewangi kuat ketika di dalam ihram?",
+        "Apakah hukum memakai sabun mandi yang mengandungi pewangi kuat dengan sengaja ketika dalam ihram?",
     options: [
       "Harus, jika badan berbau",
-      "Haram dan dikenakan dam",
+      "Haram dan dikenakan dam (fidyah)",
       "Makruh",
       "Sunat untuk kebersihan",
     ],
     correctIndex: 1,
     explanation:
-        "Menggunakan sebarang wangian sama ada pada badan, pakaian, makanan, atau sabun mandian adalah dilarang semasa ihram.",
+        "Menggunakan wangian dengan sengaja, sama ada pada badan, pakaian, makanan atau sabun mandian, adalah dilarang semasa ihram dan mewajibkan fidyah. Jika terlupa atau jahil hukum, tiada fidyah, tetapi wangian itu wajib segera dihilangkan sebaik sahaja sedar.",
   ),
   IhramQuizQuestion(
     question:
@@ -73,20 +72,20 @@ const List<IhramQuizQuestion> quizData = [
     ],
     correctIndex: 1,
     explanation:
-        "Khusus untuk wanita, larangan ihram bagi mereka adalah menutup muka (purdah/niqab) dan memakai sarung tangan.",
+        "Khusus untuk wanita, larangan pakaian ihram ialah menutup muka (purdah/niqab) dan memakai sarung tangan. Al-Idah menyatakan sarung tangan haram bagi wanita menurut pendapat yang lebih sahih (al-asah) dan mewajibkan fidyah.",
   ),
   IhramQuizQuestion(
     question:
-        "Apakah tindakan yang perlu dilakukan jika jemaah secara TIDAK SENGAJA memotong kuku (terlupa sedang berihram)?",
+        "Seorang jemaah memotong kuku kerana TERLUPA dia sedang berihram. Apakah hukumnya?",
     options: [
-      "Tidak berdosa dan tidak wajib dam",
-      "Berdosa besar",
-      "Wajib membayar dam",
+      "Tidak berdosa, tetapi tetap wajib fidyah",
+      "Tidak berdosa dan tidak wajib apa-apa fidyah",
+      "Berdosa besar dan wajib mengulang ihram",
       "Batal hajinya",
     ],
     correctIndex: 0,
     explanation:
-        "Jika terlupa (tidak sengaja) atau tidak tahu hukum, ia dimaafkan dan tidak diwajibkan dam. Namun mesti berhenti sebaik sahaja teringat.",
+        "Orang yang terlupa atau jahil hukum tidak berdosa. Namun menurut al-Idah, fidyah tetap wajib atas pendapat al-asah kerana memotong kuku dan menghilangkan rambut ialah perbuatan 'memusnahkan' (itlaf) yang tidak gugur kerana uzur. Ini berbeza dengan wangian dan pakaian: jika terlupa, tiada fidyah asalkan segera dihentikan.",
   ),
   IhramQuizQuestion(
     question: "Berikut adalah perkara yang DIBENARKAN ketika ihram, KECUALI...",
@@ -98,7 +97,7 @@ const List<IhramQuizQuestion> quizData = [
     ],
     correctIndex: 2,
     explanation:
-        "Menanggalkan rambut atau bulu di badan secara sengaja (seperti menyikat kuat hingga gugur atau mencabutnya) adalah salah satu larangan ihram.",
+        "Menghilangkan rambut atau bulu di badan (termasuk menyikat rambut sehingga tercabut) adalah larangan ihram yang mewajibkan fidyah. Menyikat yang tidak menyebabkan rambut tercabut hanya makruh.",
   ),
 ];
 
@@ -118,7 +117,7 @@ const List<IhramGameCard> gameData = [
     text: "Jemaah lelaki memakai seluar dalam atau kemeja",
     isAllowed: false,
     explanation:
-        "Lelaki dilarang memakai sebarang pakaian bersarung, berjahit, atau bercantum.",
+        "Lelaki dilarang memakai pakaian yang dijahit atau dibentuk mengikut bentuk badan atau anggota (mukhit), seperti seluar, baju dan kemeja.",
   ),
   IhramGameCard(
     text: "Memakai cermin mata atau jam tangan",
@@ -130,25 +129,25 @@ const List<IhramGameCard> gameData = [
     text: "Wanita memakai stoking kaki",
     isAllowed: true,
     explanation:
-        "Wanita wajib menutup seluruh aurat termasuk kaki. Maka ia dibenarkan dan dituntut.",
+        "Larangan pakaian berjahit hanya untuk lelaki. Wanita boleh memakai stoking, malah ia membantu menutup aurat kaki.",
   ),
   IhramGameCard(
-    text: "Mencabut pokok di Tanah Haram Mekah",
+    text: "Mencabut pokok di Tanah Haram Makkah",
     isAllowed: false,
     explanation:
-        "Menebang pokok atau mencabut tumbuhan di Tanah Haram adalah larangan keras ihram.",
+        "Menebang pokok atau mencabut tumbuhan di Tanah Haram adalah haram dan wajib diganti. Larangan ini berkait dengan kehormatan Tanah Haram, jadi ia terpakai kepada semua orang, sama ada berihram atau tidak.",
   ),
   IhramGameCard(
     text: "Memotong kuku tangan atau kaki",
     isAllowed: false,
     explanation:
-        "Dilarang memotong kuku. Jika dilakukan secara sengaja, jemaah wajib membayar dam.",
+        "Dilarang memotong kuku. Fidyah wajib dibayar walaupun dilakukan kerana terlupa atau jahil hukum (pendapat al-asah dalam al-Idah).",
   ),
   IhramGameCard(
     text: "Lelaki menggunakan payung untuk berteduh",
     isAllowed: true,
     explanation:
-        "Payung dibenarkan asalkan ia tidak diletakkan / melekat terus pada kepala.",
+        "Payung dibenarkan kerana berteduh tidak dikira menutup kepala, asalkan ia tidak diletakkan atau dililit terus pada kepala.",
   ),
   IhramGameCard(
     text: "Wanita memakai niqab (purdah)",
@@ -160,7 +159,7 @@ const List<IhramGameCard> gameData = [
     text: "Membunuh nyamuk atau kala jengking",
     isAllowed: true,
     explanation:
-        "Binatang buas atau serangga yang menyakiti/membahayakan dibenarkan untuk dibunuh.",
+        "Haiwan atau serangga yang menyakiti atau membahayakan boleh dibunuh. Ia tidak termasuk binatang buruan yang dilarang semasa ihram.",
   ),
 ];
 
@@ -191,100 +190,101 @@ class InteractiveIhramMenu extends StatelessWidget {
           children: <Widget>[
             const IslamicPatternOverlay(),
             SafeArea(
-          child: Column(
-            children: <Widget>[
-              _buildHeader(
-                context,
-                title: "Uji Kefahaman",
-                subtitle: "Larangan Ihram",
-              ),
-              Expanded(
-                child: Center(
-                  child: ConstrainedBox(
-                    constraints: const BoxConstraints(maxWidth: 500),
-                    child: Padding(
-                      padding: const EdgeInsets.all(24.0),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-                          Container(
-                            width: 100,
-                            height: 100,
-                            decoration: BoxDecoration(
-                              color: palette.gold.withValues(alpha: 0.15),
-                              shape: BoxShape.circle,
-                              border: Border.all(
-                                color: palette.gold.withValues(alpha: 0.3),
-                              ),
-                            ),
-                            child: Center(
-                              child: HajjIcon(
-                                type: HajjIconType.ihram,
-                                color: palette.gold,
-                                size: 50,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: 24),
-                          Text(
-                            "Pilih Mod Uji Kefahaman",
-                            style: GoogleFonts.playfairDisplay(
-                              color: colors.onSurface,
-                              fontSize: 26,
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            "Pilih sama ada anda mahu menjawab Kuiz santai atau Latih Tubi Pantas.",
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              color: palette.mutedText,
-                              fontSize: 14,
-                              height: 1.5,
-                            ),
-                          ),
-                          const SizedBox(height: 36),
-                          _MenuOptionCard(
-                            title: "Mod Kuiz",
-                            subtitle:
-                                "Jawab soalan aneka pilihan dengan penerangan lengkap.",
-                            hajjIconType: HajjIconType.quiz,
-                            accent: const Color(0xFF4B8CCB),
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute<void>(
-                                  builder: (_) => const IhramQuizScreen(),
+              child: Column(
+                children: <Widget>[
+                  _buildHeader(
+                    context,
+                    title: "Uji Kefahaman",
+                    subtitle: "Larangan Ihram",
+                  ),
+                  Expanded(
+                    child: Center(
+                      child: ConstrainedBox(
+                        constraints: const BoxConstraints(maxWidth: 500),
+                        child: Padding(
+                          padding: const EdgeInsets.all(24.0),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              Container(
+                                width: 100,
+                                height: 100,
+                                decoration: BoxDecoration(
+                                  color: palette.gold.withValues(alpha: 0.15),
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                    color: palette.gold.withValues(alpha: 0.3),
+                                  ),
                                 ),
-                              );
-                            },
-                          ),
-                          const SizedBox(height: 16),
-                          _MenuOptionCard(
-                            title: "Latih Tubi Pantas",
-                            subtitle:
-                                "Asingkan perbuatan dibenarkan atau larangan dengan pantas.",
-                            hajjIconType: HajjIconType.rukun,
-                            accent: palette.emerald,
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute<void>(
-                                  builder: (_) => const IhramGameScreen(),
+                                child: Center(
+                                  child: HajjIcon(
+                                    type: HajjIconType.ihram,
+                                    color: palette.gold,
+                                    size: 50,
+                                  ),
                                 ),
-                              );
-                            },
+                              ),
+                              const SizedBox(height: 24),
+                              Text(
+                                "Pilih Mod Uji Kefahaman",
+                                style: TextStyle(
+                                  fontFamily: AppFonts.display,
+                                  color: colors.onSurface,
+                                  fontSize: 26,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                "Pilih sama ada anda mahu menjawab Kuiz santai atau Latih Tubi Pantas.",
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  color: palette.mutedText,
+                                  fontSize: 14,
+                                  height: 1.5,
+                                ),
+                              ),
+                              const SizedBox(height: 36),
+                              _MenuOptionCard(
+                                title: "Mod Kuiz",
+                                subtitle:
+                                    "Jawab soalan aneka pilihan dengan penerangan lengkap.",
+                                hajjIconType: HajjIconType.quiz,
+                                accent: const Color(0xFF4B8CCB),
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute<void>(
+                                      builder: (_) => const IhramQuizScreen(),
+                                    ),
+                                  );
+                                },
+                              ),
+                              const SizedBox(height: 16),
+                              _MenuOptionCard(
+                                title: "Latih Tubi Pantas",
+                                subtitle:
+                                    "Asingkan perbuatan dibenarkan atau larangan dengan pantas.",
+                                hajjIconType: HajjIconType.rukun,
+                                accent: palette.emerald,
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute<void>(
+                                      builder: (_) => const IhramGameScreen(),
+                                    ),
+                                  );
+                                },
+                              ),
+                            ],
                           ),
-                        ],
+                        ),
                       ),
                     ),
                   ),
-                ),
+                ],
               ),
-            ],
-          ),
-        ),
+            ),
           ],
         ),
       ),
@@ -378,7 +378,11 @@ class _MenuOptionCard extends StatelessWidget {
                     borderRadius: BorderRadius.circular(16),
                   ),
                   child: Center(
-                    child: HajjIcon(type: hajjIconType, color: accent, size: 26),
+                    child: HajjIcon(
+                      type: hajjIconType,
+                      color: accent,
+                      size: 26,
+                    ),
                   ),
                 ),
                 const SizedBox(width: 16),
@@ -518,7 +522,8 @@ class _IhramQuizScreenState extends State<IhramQuizScreen> {
                       ),
                       child: Text(
                         question.question,
-                        style: GoogleFonts.playfairDisplay(
+                        style: TextStyle(
+                          fontFamily: AppFonts.display,
                           color: colors.onSurface,
                           fontSize: 20,
                           fontWeight: FontWeight.w700,
@@ -649,7 +654,8 @@ class _IhramQuizScreenState extends State<IhramQuizScreen> {
               const SizedBox(height: 24),
               Text(
                 "Kuiz Tamat",
-                style: GoogleFonts.playfairDisplay(
+                style: TextStyle(
+                  fontFamily: AppFonts.display,
                   color: colors.onSurface,
                   fontSize: 32,
                   fontWeight: FontWeight.w700,
@@ -1052,7 +1058,8 @@ class _IhramGameScreenState extends State<IhramGameScreen>
                           child: Text(
                             deck[currentIndex].text,
                             textAlign: TextAlign.center,
-                            style: GoogleFonts.playfairDisplay(
+                            style: TextStyle(
+                              fontFamily: AppFonts.display,
                               color: colors.onSurface,
                               fontSize: 24,
                               fontWeight: FontWeight.w700,
@@ -1238,7 +1245,8 @@ class _IhramGameScreenState extends State<IhramGameScreen>
               const SizedBox(height: 24),
               Text(
                 isWin ? "Tahniah!" : "Cuba Lagi",
-                style: GoogleFonts.playfairDisplay(
+                style: TextStyle(
+                  fontFamily: AppFonts.display,
                   color: colors.onSurface,
                   fontSize: 32,
                   fontWeight: FontWeight.w700,
@@ -1248,7 +1256,7 @@ class _IhramGameScreenState extends State<IhramGameScreen>
               Text(
                 isWin
                     ? "Anda berjaya membezakan larangan ihram dengan cemerlang."
-                    : "Kehabisan nyawa. Ulangkaji semula dan cuba lagi.",
+                    : "Kehabisan nyawa. Ulang kaji semula dan cuba lagi.",
                 textAlign: TextAlign.center,
                 style: TextStyle(color: palette.mutedText),
               ),

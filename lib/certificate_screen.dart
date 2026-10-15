@@ -8,6 +8,7 @@ import 'package:printing/printing.dart';
 import 'app_theme.dart';
 import 'certificate_constants.dart';
 import 'certificate_renderer.dart';
+import 'prismatic_widgets.dart';
 import 'shared_widgets.dart';
 
 class CertificateScreen extends StatefulWidget {
@@ -156,6 +157,7 @@ class _CertificateScreenState extends State<CertificateScreen> {
       achievementLevel: achievementLevelForScore(data.score),
       date: formatCertificateDate(data.issuedAt),
       certificateNumber: data.certificateNumber,
+      score: data.score,
     );
   }
 
@@ -185,9 +187,7 @@ class _CertificateScreenState extends State<CertificateScreen> {
     await _runBusyAction(() async {
       final _CertificateData data = await _prepareCertificateData();
 
-      final Uint8List bytes = await buildCertificatePdf(
-        _contentFor(data),
-      );
+      final Uint8List bytes = await buildCertificatePdf(_contentFor(data));
 
       await Printing.sharePdf(
         bytes: bytes,
@@ -223,7 +223,7 @@ class _CertificateScreenState extends State<CertificateScreen> {
       if (mounted) {
         _showMessage(
           'Sijil tidak dapat dijana. '
-          'Cuba semula.',
+          'Sila cuba semula.',
         );
       }
     } finally {
@@ -262,306 +262,319 @@ class _CertificateScreenState extends State<CertificateScreen> {
         ),
         child: Stack(
           children: <Widget>[
+            const Positioned.fill(child: KaleidoscopeBackdrop(opacity: 0.26)),
             const IslamicPatternOverlay(),
             SafeArea(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.fromLTRB(20, 16, 20, 40),
-            child: Center(
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 780),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Row(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.fromLTRB(20, 16, 20, 40),
+                child: Center(
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 780),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
-                        HajjIconButton(
-                          tooltip: 'Kembali',
-                          icon: Icons.arrow_back_rounded,
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                          },
-                        ),
-                        Expanded(
-                          child: Column(
+                        ScrollReveal(
+                          child: Row(
                             children: <Widget>[
-                              Text(
-                                'SIJIL PENCAPAIAN',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  color: colors.onSurface,
-                                  fontWeight: FontWeight.w900,
-                                  letterSpacing: 1.4,
+                              HajjIconButton(
+                                tooltip: 'Kembali',
+                                icon: Icons.arrow_back_rounded,
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                              ),
+                              Expanded(
+                                child: Column(
+                                  children: <Widget>[
+                                    Text(
+                                      'SIJIL PENCAPAIAN',
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        color: colors.onSurface,
+                                        fontWeight: FontWeight.w900,
+                                        letterSpacing: 1.4,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 3),
+                                    Text(
+                                      'Pembelajaran Kendiri Haji',
+                                      style: TextStyle(
+                                        color: palette.mutedText,
+                                        fontSize: 12,
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
-                              const SizedBox(height: 3),
-                              Text(
-                                'Pembelajaran Kendiri Haji',
-                                style: TextStyle(
-                                  color: palette.mutedText,
-                                  fontSize: 12,
+                              const SizedBox(width: 46),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 24),
+                        ScrollReveal(
+                          delay: const Duration(milliseconds: 90),
+                          child: Container(
+                            width: double.infinity,
+                            padding: const EdgeInsets.all(24),
+                            decoration: BoxDecoration(
+                              color: palette.glassSurface,
+                              borderRadius: BorderRadius.circular(28),
+                              border: Border.all(
+                                color: palette.gold.withValues(alpha: 0.30),
+                              ),
+                              boxShadow: <BoxShadow>[
+                                BoxShadow(
+                                  color: palette.shadow,
+                                  blurRadius: 28,
+                                  offset: const Offset(0, 14),
+                                ),
+                              ],
+                            ),
+                            child: Column(
+                              children: <Widget>[
+                                Container(
+                                  width: 76,
+                                  height: 76,
+                                  decoration: BoxDecoration(
+                                    color: palette.gold.withValues(alpha: 0.11),
+                                    shape: BoxShape.circle,
+                                    border: Border.all(
+                                      color: palette.gold.withValues(
+                                        alpha: 0.28,
+                                      ),
+                                    ),
+                                  ),
+                                  child: Icon(
+                                    Icons.workspace_premium_rounded,
+                                    color: palette.gold,
+                                    size: 39,
+                                  ),
+                                ),
+                                const SizedBox(height: 16),
+                                Text(
+                                  hasPassed
+                                      ? 'Tahniah! Anda layak menjana sijil.'
+                                      : 'Sijil masih dikunci.',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    color: colors.onSurface,
+                                    fontSize: 22,
+                                    fontWeight: FontWeight.w900,
+                                  ),
+                                ),
+                                const SizedBox(height: 8),
+                                Text(
+                                  hasPassed
+                                      ? 'Markah terbaik anda ialah '
+                                            '$certificateScore%.'
+                                      : 'Lengkapkan penilaian akhir '
+                                            'dan capai sekurang-kurangnya 80%.',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    color: palette.mutedText,
+                                    height: 1.5,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        CertificatePreview(
+                          content: CertificateContent(
+                            name: nameController.text.trim(),
+                            achievementLevel: achievementLevelForScore(
+                              certificateScore,
+                            ),
+                            date: formatCertificateDate(_issuedAtOrNow()),
+                            certificateNumber: widget.assessmentBox.get(
+                              'certificate_number',
+                              defaultValue: '',
+                            ),
+                            score: certificateScore,
+                          ),
+                        ),
+                        const SizedBox(height: 24),
+                        Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.all(22),
+                          decoration: BoxDecoration(
+                            color: palette.glassSurface,
+                            borderRadius: BorderRadius.circular(24),
+                            border: Border.all(color: palette.glassBorder),
+                            boxShadow: <BoxShadow>[
+                              BoxShadow(
+                                color: palette.shadow,
+                                blurRadius: 24,
+                                offset: const Offset(0, 12),
+                              ),
+                            ],
+                          ),
+                          child: Form(
+                            key: formKey,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                Text(
+                                  'Nama pada sijil',
+                                  style: TextStyle(
+                                    color: colors.onSurface,
+                                    fontSize: 17,
+                                    fontWeight: FontWeight.w900,
+                                  ),
+                                ),
+                                const SizedBox(height: 6),
+                                Text(
+                                  'Masukkan nama penuh '
+                                  'seperti yang mahu dipaparkan.',
+                                  style: TextStyle(
+                                    color: palette.mutedText,
+                                    fontSize: 12,
+                                  ),
+                                ),
+                                const SizedBox(height: 14),
+                                TextFormField(
+                                  controller: nameController,
+                                  enabled: hasPassed && !isBusy,
+                                  textCapitalization: TextCapitalization.words,
+                                  decoration: const InputDecoration(
+                                    labelText: 'Nama penuh',
+                                    hintText: 'Contoh: Ahmad bin Abdullah',
+                                    prefixIcon: Icon(
+                                      Icons.person_outline_rounded,
+                                    ),
+                                    border: OutlineInputBorder(),
+                                  ),
+                                  validator: (String? value) {
+                                    final String name = value?.trim() ?? '';
+
+                                    if (name.isEmpty) {
+                                      return 'Masukkan nama penuh.';
+                                    }
+
+                                    if (name.length < 3) {
+                                      return 'Nama terlalu pendek.';
+                                    }
+
+                                    return null;
+                                  },
+                                ),
+                                const SizedBox(height: 18),
+                                Container(
+                                  width: double.infinity,
+                                  padding: const EdgeInsets.all(16),
+                                  decoration: BoxDecoration(
+                                    color: palette.emerald.withValues(
+                                      alpha: 0.08,
+                                    ),
+                                    borderRadius: BorderRadius.circular(18),
+                                    border: Border.all(
+                                      color: palette.emerald.withValues(
+                                        alpha: 0.20,
+                                      ),
+                                    ),
+                                  ),
+                                  child: Row(
+                                    children: <Widget>[
+                                      Icon(
+                                        Icons.verified_rounded,
+                                        color: palette.emerald,
+                                      ),
+                                      const SizedBox(width: 12),
+                                      Expanded(
+                                        child: Text(
+                                          'Status: '
+                                          '${hasPassed ? 'Lulus' : 'Belum lulus'}'
+                                          '  •  Markah: '
+                                          '$certificateScore%',
+                                          style: TextStyle(
+                                            color: colors.onSurface,
+                                            fontWeight: FontWeight.w800,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        SizedBox(
+                          width: double.infinity,
+                          height: 56,
+                          child: FilledButton.icon(
+                            onPressed: hasPassed && !isBusy
+                                ? _previewCertificate
+                                : null,
+                            icon: isBusy
+                                ? const SizedBox(
+                                    width: 19,
+                                    height: 19,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                    ),
+                                  )
+                                : const Icon(Icons.picture_as_pdf_rounded),
+                            label: const Text('Pratonton / Cetak PDF'),
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        SizedBox(
+                          width: double.infinity,
+                          height: 56,
+                          child: OutlinedButton.icon(
+                            onPressed: hasPassed && !isBusy
+                                ? _shareCertificate
+                                : null,
+                            icon: const Icon(Icons.download_rounded),
+                            label: const Text('Muat Turun / Kongsi PDF'),
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.all(15),
+                          decoration: BoxDecoration(
+                            color: palette.gold.withValues(alpha: 0.08),
+                            borderRadius: BorderRadius.circular(16),
+                            border: Border.all(
+                              color: palette.gold.withValues(alpha: 0.20),
+                            ),
+                          ),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              Icon(
+                                Icons.info_outline_rounded,
+                                color: palette.gold,
+                                size: 20,
+                              ),
+                              const SizedBox(width: 11),
+                              Expanded(
+                                child: Text(
+                                  'Sijil ini mengiktiraf pencapaian '
+                                  'pembelajaran kendiri dalam aplikasi '
+                                  'Haji Pintar. Ia bukan sijil rasmi '
+                                  'mana-mana pihak berkuasa agama atau '
+                                  'agensi pengurusan Haji.',
+                                  style: TextStyle(
+                                    color: palette.mutedText,
+                                    fontSize: 12,
+                                    height: 1.5,
+                                  ),
                                 ),
                               ),
                             ],
                           ),
                         ),
-                        const SizedBox(width: 46),
                       ],
                     ),
-                    const SizedBox(height: 24),
-                    Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.all(24),
-                      decoration: BoxDecoration(
-                        color: palette.glassSurface,
-                        borderRadius: BorderRadius.circular(28),
-                        border: Border.all(
-                          color: palette.gold.withValues(alpha: 0.30),
-                        ),
-                        boxShadow: <BoxShadow>[
-                          BoxShadow(
-                            color: palette.shadow,
-                            blurRadius: 28,
-                            offset: const Offset(0, 14),
-                          ),
-                        ],
-                      ),
-                      child: Column(
-                        children: <Widget>[
-                          Container(
-                            width: 76,
-                            height: 76,
-                            decoration: BoxDecoration(
-                              color: palette.gold.withValues(alpha: 0.11),
-                              shape: BoxShape.circle,
-                              border: Border.all(
-                                color: palette.gold.withValues(alpha: 0.28),
-                              ),
-                            ),
-                            child: Icon(
-                              Icons.workspace_premium_rounded,
-                              color: palette.gold,
-                              size: 39,
-                            ),
-                          ),
-                          const SizedBox(height: 16),
-                          Text(
-                            hasPassed
-                                ? 'Tahniah! Anda layak menjana sijil.'
-                                : 'Sijil masih dikunci.',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              color: colors.onSurface,
-                              fontSize: 22,
-                              fontWeight: FontWeight.w900,
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            hasPassed
-                                ? 'Markah terbaik anda ialah '
-                                      '$certificateScore%.'
-                                : 'Lengkapkan penilaian akhir '
-                                      'dan capai sekurang-kurangnya 80%.',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              color: palette.mutedText,
-                              height: 1.5,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    CertificatePreview(
-                      content: CertificateContent(
-                        name: nameController.text.trim(),
-                        achievementLevel: achievementLevelForScore(
-                          certificateScore,
-                        ),
-                        date: formatCertificateDate(_issuedAtOrNow()),
-                        certificateNumber: widget.assessmentBox.get(
-                          'certificate_number',
-                          defaultValue: '',
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 24),
-                    Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.all(22),
-                      decoration: BoxDecoration(
-                        color: palette.glassSurface,
-                        borderRadius: BorderRadius.circular(24),
-                        border: Border.all(color: palette.glassBorder),
-                        boxShadow: <BoxShadow>[
-                          BoxShadow(
-                            color: palette.shadow,
-                            blurRadius: 24,
-                            offset: const Offset(0, 12),
-                          ),
-                        ],
-                      ),
-                      child: Form(
-                        key: formKey,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            Text(
-                              'Nama pada sijil',
-                              style: TextStyle(
-                                color: colors.onSurface,
-                                fontSize: 17,
-                                fontWeight: FontWeight.w900,
-                              ),
-                            ),
-                            const SizedBox(height: 6),
-                            Text(
-                              'Masukkan nama penuh '
-                              'seperti yang mahu dipaparkan.',
-                              style: TextStyle(
-                                color: palette.mutedText,
-                                fontSize: 12,
-                              ),
-                            ),
-                            const SizedBox(height: 14),
-                            TextFormField(
-                              controller: nameController,
-                              enabled: hasPassed && !isBusy,
-                              textCapitalization: TextCapitalization.words,
-                              decoration: const InputDecoration(
-                                labelText: 'Nama penuh',
-                                hintText: 'Contoh: Ahmad bin Abdullah',
-                                prefixIcon: Icon(Icons.person_outline_rounded),
-                                border: OutlineInputBorder(),
-                              ),
-                              validator: (String? value) {
-                                final String name = value?.trim() ?? '';
-
-                                if (name.isEmpty) {
-                                  return 'Masukkan nama penuh.';
-                                }
-
-                                if (name.length < 3) {
-                                  return 'Nama terlalu pendek.';
-                                }
-
-                                return null;
-                              },
-                            ),
-                            const SizedBox(height: 18),
-                            Container(
-                              width: double.infinity,
-                              padding: const EdgeInsets.all(16),
-                              decoration: BoxDecoration(
-                                color: palette.emerald.withValues(alpha: 0.08),
-                                borderRadius: BorderRadius.circular(18),
-                                border: Border.all(
-                                  color: palette.emerald.withValues(
-                                    alpha: 0.20,
-                                  ),
-                                ),
-                              ),
-                              child: Row(
-                                children: <Widget>[
-                                  Icon(
-                                    Icons.verified_rounded,
-                                    color: palette.emerald,
-                                  ),
-                                  const SizedBox(width: 12),
-                                  Expanded(
-                                    child: Text(
-                                      'Status: '
-                                      '${hasPassed ? 'Lulus' : 'Belum lulus'}'
-                                      '  •  Markah: '
-                                      '$certificateScore%',
-                                      style: TextStyle(
-                                        color: colors.onSurface,
-                                        fontWeight: FontWeight.w800,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    SizedBox(
-                      width: double.infinity,
-                      height: 56,
-                      child: FilledButton.icon(
-                        onPressed: hasPassed && !isBusy
-                            ? _previewCertificate
-                            : null,
-                        icon: isBusy
-                            ? const SizedBox(
-                                width: 19,
-                                height: 19,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                ),
-                              )
-                            : const Icon(Icons.picture_as_pdf_rounded),
-                        label: const Text('Pratonton / Cetak PDF'),
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    SizedBox(
-                      width: double.infinity,
-                      height: 56,
-                      child: OutlinedButton.icon(
-                        onPressed: hasPassed && !isBusy
-                            ? _shareCertificate
-                            : null,
-                        icon: const Icon(Icons.download_rounded),
-                        label: const Text('Muat Turun / Kongsi PDF'),
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.all(15),
-                      decoration: BoxDecoration(
-                        color: palette.gold.withValues(alpha: 0.08),
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(
-                          color: palette.gold.withValues(alpha: 0.20),
-                        ),
-                      ),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Icon(
-                            Icons.info_outline_rounded,
-                            color: palette.gold,
-                            size: 20,
-                          ),
-                          const SizedBox(width: 11),
-                          Expanded(
-                            child: Text(
-                              'Sijil ini ialah sijil '
-                              'pencapaian aplikasi dan '
-                              'bukan sijil rasmi pihak '
-                              'berkuasa atau agensi '
-                              'pengelola Haji.',
-                              style: TextStyle(
-                                color: palette.mutedText,
-                                fontSize: 12,
-                                height: 1.5,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
               ),
             ),
-          ),
-        ),
           ],
         ),
       ),

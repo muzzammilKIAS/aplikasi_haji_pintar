@@ -3,6 +3,7 @@ import 'package:hive_ce_flutter/hive_ce_flutter.dart';
 
 import 'app_theme.dart';
 import 'islamic_icons.dart';
+import 'prismatic_widgets.dart';
 import 'shared_widgets.dart';
 
 class TawafCounterScreen extends StatefulWidget {
@@ -97,6 +98,7 @@ class _TawafCounterScreenState extends State<TawafCounterScreen> {
         ),
         child: Stack(
           children: <Widget>[
+            const Positioned.fill(child: KaleidoscopeBackdrop(opacity: 0.24)),
             const IslamicPatternOverlay(),
             Positioned(
               top: -100,
@@ -114,193 +116,210 @@ class _TawafCounterScreenState extends State<TawafCounterScreen> {
                     constraints: const BoxConstraints(maxWidth: 680),
                     child: Column(
                       children: <Widget>[
-                        Row(
-                          children: <Widget>[
-                            GlassButton(
-                              tooltip: 'Kembali',
-                              icon: Icons.arrow_back_rounded,
-                              onPressed: () {
-                                Navigator.of(context).pop();
-                              },
-                            ),
-                            Expanded(
-                              child: Text(
-                                'KAUNTER TAWAF',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  color: colors.onSurface,
-                                  fontWeight: FontWeight.w900,
-                                  letterSpacing: 1.5,
-                                ),
-                              ),
-                            ),
-                            GlassButton(
-                              tooltip: 'Reset',
-                              icon: Icons.restart_alt_rounded,
-                              onPressed: _resetKaunter,
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 34),
-                        GlassContainer(
-                          borderRadius: 32,
-                          padding: const EdgeInsets.all(30),
-                          child: Column(
+                        ScrollReveal(
+                          child: Row(
                             children: <Widget>[
-                              StatusPill(
-                                hajjIcon: HajjIconType.kaaba,
-                                label: 'Masjidil Haram',
-                                accentColor: palette.gold,
+                              GlassButton(
+                                tooltip: 'Kembali',
+                                icon: Icons.arrow_back_rounded,
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
                               ),
-                              const SizedBox(height: 28),
-                              SizedBox(
-                                width: 220,
-                                height: 220,
-                                child: Stack(
-                                  alignment: Alignment.center,
-                                  children: <Widget>[
-                                    // BULATAN PROGRES SAHAJA (GAMBAR TELAH DIBUANG)
-                                    SizedBox(
-                                      width: 210,
-                                      height: 210,
-                                      child: CircularProgressIndicator(
-                                        value: progress,
-                                        strokeWidth: 12,
-                                        backgroundColor: palette.softSurface,
-                                        color: palette.emerald,
-                                        strokeCap: StrokeCap.round,
-                                      ),
-                                    ),
-                                    // TEKS NOMBOR
-                                    Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: <Widget>[
-                                        Text(
-                                          isCompleted ? 'SELESAI' : 'PUSINGAN',
-                                          style: TextStyle(
-                                            color: palette.mutedText,
-                                            fontSize: 12,
-                                            fontWeight: FontWeight.w700,
-                                            letterSpacing: 2,
-                                          ),
-                                        ),
-                                        const SizedBox(height: 4),
-                                        Text(
-                                          '$currentRound',
-                                          style: TextStyle(
-                                            color: colors.onSurface,
-                                            fontSize: 72,
-                                            height: 1,
-                                            fontWeight: FontWeight.w900,
-                                          ),
-                                        ),
-                                        const SizedBox(height: 4),
-                                        Text(
-                                          '$completedRounds / '
-                                          '$totalRounds selesai',
-                                          style: TextStyle(
-                                            color: palette.emerald,
-                                            fontWeight: FontWeight.w700,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              const SizedBox(height: 30),
-                              Text(
-                                isCompleted
-                                    ? 'Alhamdulillah, tujuh pusingan telah direkodkan.'
-                                    : 'Tekan butang selepas selesai pusingan $currentRound.',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  color: palette.mutedText,
-                                  height: 1.5,
-                                ),
-                              ),
-                              const SizedBox(height: 28),
-                              SizedBox(
-                                width: double.infinity,
-                                height: 66,
-                                child: FilledButton.icon(
-                                  onPressed: isCompleted
-                                      ? null
-                                      : _tambahPusingan,
-                                  icon: Icon(
-                                    isCompleted
-                                        ? Icons.check_circle_rounded
-                                        : Icons.touch_app_rounded,
-                                  ),
-                                  label: Text(
-                                    isCompleted
-                                        ? 'Tawaf selesai'
-                                        : 'Selesai pusingan $currentRound',
-                                    style: const TextStyle(
-                                      fontSize: 17,
-                                      fontWeight: FontWeight.w900,
-                                    ),
+                              Expanded(
+                                child: Text(
+                                  'KAUNTER TAWAF',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    color: colors.onSurface,
+                                    fontWeight: FontWeight.w900,
+                                    letterSpacing: 1.5,
                                   ),
                                 ),
                               ),
-                              const SizedBox(height: 12),
-                              TextButton.icon(
-                                onPressed: completedRounds > 0
-                                    ? _undurPusingan
-                                    : null,
-                                icon: const Icon(Icons.undo_rounded),
-                                label: const Text('Batalkan pusingan terakhir'),
+                              GlassButton(
+                                tooltip: 'Set semula kaunter',
+                                icon: Icons.restart_alt_rounded,
+                                onPressed: _resetKaunter,
                               ),
                             ],
                           ),
                         ),
-                        const SizedBox(height: 18),
-                        GlassContainer(
-                          borderRadius: 24,
-                          padding: const EdgeInsets.all(22),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              Row(
-                                children: <Widget>[
-                                  HajjIcon(
-                                    type: HajjIconType.doa,
-                                    color: palette.gold,
-                                    size: 27,
+                        const SizedBox(height: 34),
+                        ScrollReveal(
+                          delay: const Duration(milliseconds: 80),
+                          child: GlassContainer(
+                            borderRadius: 32,
+                            padding: const EdgeInsets.all(30),
+                            child: Column(
+                              children: <Widget>[
+                                StatusPill(
+                                  hajjIcon: HajjIconType.kaaba,
+                                  label: 'Masjidil Haram',
+                                  accentColor: palette.gold,
+                                ),
+                                const SizedBox(height: 28),
+                                SizedBox(
+                                  width: 220,
+                                  height: 220,
+                                  child: Stack(
+                                    alignment: Alignment.center,
+                                    children: <Widget>[
+                                      // BULATAN PROGRES SAHAJA (GAMBAR TELAH DIBUANG)
+                                      SizedBox(
+                                        width: 210,
+                                        height: 210,
+                                        child: CircularProgressIndicator(
+                                          value: progress,
+                                          strokeWidth: 12,
+                                          backgroundColor: palette.softSurface,
+                                          color: palette.emerald,
+                                          strokeCap: StrokeCap.round,
+                                        ),
+                                      ),
+                                      // TEKS NOMBOR
+                                      Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: <Widget>[
+                                          Text(
+                                            isCompleted
+                                                ? 'SELESAI'
+                                                : 'PUSINGAN',
+                                            style: TextStyle(
+                                              color: palette.mutedText,
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.w700,
+                                              letterSpacing: 2,
+                                            ),
+                                          ),
+                                          const SizedBox(height: 4),
+                                          Text(
+                                            '$currentRound',
+                                            style: TextStyle(
+                                              color: colors.onSurface,
+                                              fontSize: 72,
+                                              height: 1,
+                                              fontWeight: FontWeight.w900,
+                                            ),
+                                          ),
+                                          const SizedBox(height: 4),
+                                          Text(
+                                            '$completedRounds / '
+                                            '$totalRounds selesai',
+                                            style: TextStyle(
+                                              color: palette.emerald,
+                                              fontWeight: FontWeight.w700,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
                                   ),
-                                  const SizedBox(width: 10),
-                                  Text(
-                                    'Doa dan Zikir',
-                                    style: TextStyle(
-                                      color: colors.onSurface,
-                                      fontSize: 17,
-                                      fontWeight: FontWeight.w800,
+                                ),
+                                const SizedBox(height: 30),
+                                Text(
+                                  isCompleted
+                                      ? 'Alhamdulillah, tujuh pusingan telah direkodkan.'
+                                      : 'Mulakan di Hajar Aswad dengan Kaabah di sebelah kiri. '
+                                            'Tekan butang apabila kembali ke Hajar Aswad '
+                                            'untuk menamatkan pusingan $currentRound.',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    color: palette.mutedText,
+                                    height: 1.5,
+                                  ),
+                                ),
+                                const SizedBox(height: 28),
+                                SizedBox(
+                                  width: double.infinity,
+                                  height: 66,
+                                  child: FilledButton.icon(
+                                    onPressed: isCompleted
+                                        ? null
+                                        : _tambahPusingan,
+                                    icon: Icon(
+                                      isCompleted
+                                          ? Icons.check_circle_rounded
+                                          : Icons.touch_app_rounded,
+                                    ),
+                                    label: Text(
+                                      isCompleted
+                                          ? 'Tawaf selesai'
+                                          : 'Selesai pusingan $currentRound',
+                                      style: const TextStyle(
+                                        fontSize: 17,
+                                        fontWeight: FontWeight.w900,
+                                      ),
                                     ),
                                   ),
-                                ],
-                              ),
-                              const SizedBox(height: 20),
-                              Text(
-                                'رَبَّنَا آتِنَا فِي الدُّنْيَا '
-                                'حَسَنَةً وَفِي الْآخِرَةِ '
-                                'حَسَنَةً وَقِنَا عَذَابَ النَّارِ',
-                                textDirection: TextDirection.rtl,
-                                textAlign: TextAlign.center,
-                                style: HajjArabic.recitation(colors.onSurface),
-                              ),
-                              const SizedBox(height: 16),
-                              Text(
-                                'Ya Tuhan kami, berikanlah kami '
-                                'kebaikan di dunia dan kebaikan '
-                                'di akhirat, serta peliharalah '
-                                'kami daripada azab neraka.',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  color: palette.mutedText,
-                                  height: 1.6,
                                 ),
-                              ),
-                            ],
+                                const SizedBox(height: 12),
+                                TextButton.icon(
+                                  onPressed: completedRounds > 0
+                                      ? _undurPusingan
+                                      : null,
+                                  icon: const Icon(Icons.undo_rounded),
+                                  label: const Text(
+                                    'Batalkan pusingan terakhir',
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 18),
+                        ScrollReveal(
+                          delay: const Duration(milliseconds: 140),
+                          child: GlassContainer(
+                            borderRadius: 24,
+                            padding: const EdgeInsets.all(22),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                Row(
+                                  children: <Widget>[
+                                    HajjIcon(
+                                      type: HajjIconType.doa,
+                                      color: palette.gold,
+                                      size: 27,
+                                    ),
+                                    const SizedBox(width: 10),
+                                    Text(
+                                      'Doa dan Zikir',
+                                      style: TextStyle(
+                                        color: colors.onSurface,
+                                        fontSize: 17,
+                                        fontWeight: FontWeight.w800,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 20),
+                                Text(
+                                  'رَبَّنَا آتِنَا فِي الدُّنْيَا '
+                                  'حَسَنَةً وَفِي الْآخِرَةِ '
+                                  'حَسَنَةً وَقِنَا عَذَابَ النَّارِ',
+                                  textDirection: TextDirection.rtl,
+                                  textAlign: TextAlign.center,
+                                  style: HajjArabic.recitation(
+                                    colors.onSurface,
+                                  ),
+                                ),
+                                const SizedBox(height: 16),
+                                Text(
+                                  'Ya Tuhan kami, berikanlah kami '
+                                  'kebaikan di dunia dan kebaikan '
+                                  'di akhirat, serta peliharalah '
+                                  'kami daripada azab neraka.\n'
+                                  '(Surah al-Baqarah, ayat 201)',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    color: palette.mutedText,
+                                    height: 1.6,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                       ],

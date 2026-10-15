@@ -7,6 +7,7 @@ import 'app_theme.dart';
 import 'shared_widgets.dart';
 import 'certificate_screen.dart';
 import 'islamic_icons.dart';
+import 'prismatic_widgets.dart';
 
 class FinalAssessmentScreen extends StatefulWidget {
   const FinalAssessmentScreen({
@@ -154,34 +155,29 @@ class _FinalAssessmentScreenState extends State<FinalAssessmentScreen> {
       ],
       correctIndex: 0,
       explanation:
-          'Memotong kuku atau mencabut rambut tanpa sebab yang dibenarkan perlu dielakkan ketika ihram.',
+          'Memotong kuku atau menghilangkan rambut tanpa uzur adalah haram ketika ihram. Jika ada uzur (contohnya sakit), ia diharuskan tetapi fidyah tetap wajib.',
     ),
     AssessmentQuestion(
       topic: 'Larangan Ihram',
       question:
-          'Berapakah jumlah kategori larangan ihram (muharramat / محظورات) yang disebutkan dalam kitab-kitab fiqh manasik?',
-      options: <String>[
-        'Tujuh',
-        'Tiga',
-        'Sepuluh',
-        'Lima',
-      ],
+          'Menurut kitab al-Idah karangan Imam an-Nawawi, berapakah jenis larangan ihram (muharramat al-ihram / مُحَرَّمَاتُ الإِحْرَامِ)?',
+      options: <String>['Tujuh', 'Tiga', 'Sepuluh', 'Lima'],
       correctIndex: 0,
       explanation:
-          'Terdapat tujuh kategori larangan ihram: pakaian, wangian, minyak rambut, cukur/potong kuku, akad nikah, jimak dan pendahuluannya, serta memburu.',
+          'Al-Idah menyusun larangan ihram kepada tujuh jenis: pakaian, wangian, meminyakkan rambut kepala dan janggut, menghilangkan rambut dan memotong kuku, akad nikah, jimak dan pendahuluannya, serta memburu binatang buruan. Sesetengah kitab lain mengiranya sepuluh atau lebih kerana memecahkan jenis yang sama.',
     ),
     AssessmentQuestion(
       topic: 'Dam',
       question: 'Apakah maksud dam dalam ibadah Haji?',
       options: <String>[
-        'Bayaran atau sembelihan tertentu dalam keadaan tertentu',
+        'Sembelihan (atau gantiannya) yang diwajibkan dalam keadaan tertentu',
         'Nama tempat bermalam',
         'Pakaian khas untuk jemaah',
         'Doa yang dibaca selepas solat',
       ],
       correctIndex: 0,
       explanation:
-          'Dam ialah bayaran atau sembelihan tertentu yang dikenakan dalam keadaan tertentu.',
+          'Dam ialah sembelihan binatang tertentu, atau gantiannya seperti puasa atau sedekah makanan, yang wajib kerana meninggalkan wajib Haji, melanggar larangan ihram, atau kerana Haji Tamattu’/Qiran.',
     ),
     AssessmentQuestion(
       topic: 'Dam',
@@ -418,10 +414,12 @@ class _FinalAssessmentScreenState extends State<FinalAssessmentScreen> {
     };
 
     if (finalPassed) {
-      final dynamic existingCertificate =
-          widget.assessmentBox.get('certificate_number');
+      final dynamic existingCertificate = widget.assessmentBox.get(
+        'certificate_number',
+      );
 
-      if (existingCertificate == null || (existingCertificate as String).isEmpty) {
+      if (existingCertificate == null ||
+          (existingCertificate as String).isEmpty) {
         final String certificateNumber = await _janaNomborSijil();
         final String certificateUuid =
             '${DateTime.now().millisecondsSinceEpoch}-${math.Random().nextInt(9999).toString().padLeft(4, '0')}';
@@ -430,18 +428,15 @@ class _FinalAssessmentScreenState extends State<FinalAssessmentScreen> {
         dataToSave['certificate_uuid'] = certificateUuid;
         dataToSave['certificate_issued_at'] = examCompletedAt;
 
-        await widget.certificatesBox.put(
-          certificateUuid,
-          <String, dynamic>{
-            'uuid': certificateUuid,
-            'certificate_number': certificateNumber,
-            'participant_name': '',
-            'score': finalScore,
-            'achievement_level': achievementLevel,
-            'exam_completed_at': examCompletedAt,
-            'issued_at': examCompletedAt,
-          },
-        );
+        await widget.certificatesBox.put(certificateUuid, <String, dynamic>{
+          'uuid': certificateUuid,
+          'certificate_number': certificateNumber,
+          'participant_name': '',
+          'score': finalScore,
+          'achievement_level': achievementLevel,
+          'exam_completed_at': examCompletedAt,
+          'issued_at': examCompletedAt,
+        });
       }
     }
 
@@ -506,10 +501,13 @@ class _FinalAssessmentScreenState extends State<FinalAssessmentScreen> {
         ),
         child: Stack(
           children: <Widget>[
+            const Positioned.fill(child: KaleidoscopeBackdrop(opacity: 0.2)),
             const IslamicPatternOverlay(),
             SafeArea(
-          child: showResult ? _buildResult(context) : _buildQuestion(context),
-        ),
+              child: showResult
+                  ? _buildResult(context)
+                  : _buildQuestion(context),
+            ),
           ],
         ),
       ),
@@ -531,40 +529,42 @@ class _FinalAssessmentScreenState extends State<FinalAssessmentScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              Row(
-                children: <Widget>[
-                  HajjIconButton(
-                    tooltip: 'Kembali',
-                    icon: Icons.arrow_back_rounded,
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                  ),
-                  Expanded(
-                    child: Column(
-                      children: <Widget>[
-                        Text(
-                          'PENILAIAN AKHIR',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            color: colors.onSurface,
-                            fontWeight: FontWeight.w900,
-                            letterSpacing: 1.4,
-                          ),
-                        ),
-                        const SizedBox(height: 3),
-                        Text(
-                          'Markah lulus: $passingScore%',
-                          style: TextStyle(
-                            color: palette.mutedText,
-                            fontSize: 12,
-                          ),
-                        ),
-                      ],
+              ScrollReveal(
+                child: Row(
+                  children: <Widget>[
+                    HajjIconButton(
+                      tooltip: 'Kembali',
+                      icon: Icons.arrow_back_rounded,
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
                     ),
-                  ),
-                  const SizedBox(width: 46),
-                ],
+                    Expanded(
+                      child: Column(
+                        children: <Widget>[
+                          Text(
+                            'PENILAIAN AKHIR',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: colors.onSurface,
+                              fontWeight: FontWeight.w900,
+                              letterSpacing: 1.4,
+                            ),
+                          ),
+                          const SizedBox(height: 3),
+                          Text(
+                            'Markah lulus: $passingScore%',
+                            style: TextStyle(
+                              color: palette.mutedText,
+                              fontSize: 12,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 46),
+                  ],
+                ),
               ),
               const SizedBox(height: 24),
               Container(
@@ -676,14 +676,17 @@ class _FinalAssessmentScreenState extends State<FinalAssessmentScreen> {
                     ) {
                       return Padding(
                         padding: const EdgeInsets.only(bottom: 11),
-                        child: _AssessmentOption(
-                          label: String.fromCharCode(65 + optionIndex),
-                          text: question.options[optionIndex],
-                          selected:
-                              selectedAnswers[currentIndex] == optionIndex,
-                          onTap: () {
-                            _selectAnswer(optionIndex);
-                          },
+                        child: ScrollReveal(
+                          delay: Duration(milliseconds: 40 * optionIndex),
+                          child: _AssessmentOption(
+                            label: String.fromCharCode(65 + optionIndex),
+                            text: question.options[optionIndex],
+                            selected:
+                                selectedAnswers[currentIndex] == optionIndex,
+                            onTap: () {
+                              _selectAnswer(optionIndex);
+                            },
+                          ),
                         ),
                       );
                     }),
@@ -741,150 +744,158 @@ class _FinalAssessmentScreenState extends State<FinalAssessmentScreen> {
           constraints: const BoxConstraints(maxWidth: 760),
           child: Column(
             children: <Widget>[
-              Row(
-                children: <Widget>[
-                  HajjIconButton(
-                    tooltip: 'Kembali',
-                    icon: Icons.arrow_back_rounded,
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                  ),
-                  Expanded(
-                    child: Text(
-                      'KEPUTUSAN PENILAIAN',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: colors.onSurface,
-                        fontWeight: FontWeight.w900,
-                        letterSpacing: 1.2,
+              ScrollReveal(
+                child: Row(
+                  children: <Widget>[
+                    HajjIconButton(
+                      tooltip: 'Kembali',
+                      icon: Icons.arrow_back_rounded,
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                    ),
+                    Expanded(
+                      child: Text(
+                        'KEPUTUSAN PENILAIAN',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: colors.onSurface,
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: 1.2,
+                        ),
                       ),
                     ),
-                  ),
-                  const SizedBox(width: 46),
-                ],
-              ),
-              const SizedBox(height: 26),
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(28),
-                decoration: BoxDecoration(
-                  color: palette.glassSurface,
-                  borderRadius: BorderRadius.circular(30),
-                  border: Border.all(
-                    color: resultColor.withValues(alpha: 0.32),
-                  ),
-                  boxShadow: <BoxShadow>[
-                    BoxShadow(
-                      color: palette.shadow,
-                      blurRadius: 28,
-                      offset: const Offset(0, 14),
-                    ),
+                    const SizedBox(width: 46),
                   ],
                 ),
-                child: Column(
-                  children: <Widget>[
-                    Container(
-                      width: 86,
-                      height: 86,
-                      decoration: BoxDecoration(
-                        color: resultColor.withValues(alpha: 0.11),
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color: resultColor.withValues(alpha: 0.28),
-                        ),
-                      ),
-                      child: Icon(
-                        passed
-                            ? Icons.workspace_premium_rounded
-                            : Icons.menu_book_rounded,
-                        color: resultColor,
-                        size: 44,
-                      ),
+              ),
+              const SizedBox(height: 26),
+              ScrollReveal(
+                delay: const Duration(milliseconds: 90),
+                child: Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(28),
+                  decoration: BoxDecoration(
+                    color: palette.glassSurface,
+                    borderRadius: BorderRadius.circular(30),
+                    border: Border.all(
+                      color: resultColor.withValues(alpha: 0.32),
                     ),
-                    const SizedBox(height: 18),
-                    Text(
-                      passed
-                          ? 'Tahniah, anda lulus!'
-                          : 'Belum mencapai markah lulus',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: colors.onSurface,
-                        fontSize: 24,
-                        fontWeight: FontWeight.w900,
+                    boxShadow: <BoxShadow>[
+                      BoxShadow(
+                        color: palette.shadow,
+                        blurRadius: 28,
+                        offset: const Offset(0, 14),
                       ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      passed
-                          ? 'Anda layak menerima Sijil Pencapaian Pembelajaran Kendiri Haji.'
-                          : 'Ulang kaji topik yang tersilap dan cuba semula.',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(color: palette.mutedText, height: 1.5),
-                    ),
-                    if (passed) ...<Widget>[
-                      const SizedBox(height: 10),
+                    ],
+                  ),
+                  child: Column(
+                    children: <Widget>[
                       Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 14,
-                          vertical: 8,
-                        ),
+                        width: 86,
+                        height: 86,
                         decoration: BoxDecoration(
-                          color: palette.gold.withValues(alpha: 0.11),
-                          borderRadius: BorderRadius.circular(12),
+                          color: resultColor.withValues(alpha: 0.11),
+                          shape: BoxShape.circle,
                           border: Border.all(
-                            color: palette.gold.withValues(alpha: 0.28),
+                            color: resultColor.withValues(alpha: 0.28),
                           ),
                         ),
-                        child: Text(
-                          'Tahap Pencapaian: '
-                          '${widget.assessmentBox.get('achievement_level', defaultValue: 'LULUS')}',
-                          style: TextStyle(
-                            color: palette.gold,
-                            fontWeight: FontWeight.w800,
-                            letterSpacing: 0.4,
+                        child: Icon(
+                          passed
+                              ? Icons.workspace_premium_rounded
+                              : Icons.menu_book_rounded,
+                          color: resultColor,
+                          size: 44,
+                        ),
+                      ),
+                      const SizedBox(height: 18),
+                      Text(
+                        passed
+                            ? 'Tahniah, anda lulus!'
+                            : 'Belum mencapai markah lulus',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: colors.onSurface,
+                          fontSize: 24,
+                          fontWeight: FontWeight.w900,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        passed
+                            ? 'Anda layak menerima Sijil Pencapaian Pembelajaran Kendiri Haji.'
+                            : 'Ulang kaji topik yang tersilap dan cuba semula.',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(color: palette.mutedText, height: 1.5),
+                      ),
+                      if (passed) ...<Widget>[
+                        const SizedBox(height: 10),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 14,
+                            vertical: 8,
                           ),
+                          decoration: BoxDecoration(
+                            color: palette.gold.withValues(alpha: 0.11),
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
+                              color: palette.gold.withValues(alpha: 0.28),
+                            ),
+                          ),
+                          child: Text(
+                            'Tahap Pencapaian: '
+                            '${widget.assessmentBox.get('achievement_level', defaultValue: 'LULUS')}',
+                            style: TextStyle(
+                              color: palette.gold,
+                              fontWeight: FontWeight.w800,
+                              letterSpacing: 0.4,
+                            ),
+                          ),
+                        ),
+                      ],
+                      const SizedBox(height: 24),
+                      Text(
+                        '$score%',
+                        style: TextStyle(
+                          color: resultColor,
+                          fontSize: 68,
+                          height: 1,
+                          fontWeight: FontWeight.w900,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        '$correctAnswers / '
+                        '${questions.length} jawapan betul',
+                        style: TextStyle(
+                          color: palette.mutedText,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      const SizedBox(height: 21),
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(20),
+                        child: LinearProgressIndicator(
+                          value: score / 100,
+                          minHeight: 10,
+                          backgroundColor: palette.softSurface,
+                          color: resultColor,
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      Text(
+                        'Anda memerlukan sekurang-kurangnya '
+                        '$requiredCorrect jawapan betul '
+                        'untuk lulus.',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: palette.mutedText,
+                          fontSize: 12,
                         ),
                       ),
                     ],
-                    const SizedBox(height: 24),
-                    Text(
-                      '$score%',
-                      style: TextStyle(
-                        color: resultColor,
-                        fontSize: 68,
-                        height: 1,
-                        fontWeight: FontWeight.w900,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      '$correctAnswers / '
-                      '${questions.length} jawapan betul',
-                      style: TextStyle(
-                        color: palette.mutedText,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                    const SizedBox(height: 21),
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(20),
-                      child: LinearProgressIndicator(
-                        value: score / 100,
-                        minHeight: 10,
-                        backgroundColor: palette.softSurface,
-                        color: resultColor,
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    Text(
-                      'Anda memerlukan sekurang-kurangnya '
-                      '$requiredCorrect jawapan betul '
-                      'untuk lulus.',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(color: palette.mutedText, fontSize: 12),
-                    ),
-                  ],
+                  ),
                 ),
               ),
               const SizedBox(height: 16),
@@ -1335,10 +1346,10 @@ class _AssessmentNotice extends StatelessWidget {
           const SizedBox(width: 11),
           Expanded(
             child: Text(
-              'Soalan ini adalah prototaip yang diambil '
-              'daripada kitab al-Idah fi Manasik al-Hajj wa al-Umrah '
+              'Soalan-soalan ini ialah prototaip yang disusun '
+              'berpandukan kitab al-Idah fi Manasik al-Hajj wa al-Umrah '
               '(الإيضاح في مناسك الحج والعمرة) karangan Imam an-Nawawi '
-              '(الإمام النووي). Semak kandungan akhir bersama '
+              '(الإمام النووي, w. 676H). Semak kandungan akhir bersama '
               'pembimbing Haji atau panel syariah yang '
               'berautoriti sebelum dijadikan rujukan hukum.',
               style: TextStyle(

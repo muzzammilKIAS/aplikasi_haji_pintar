@@ -1,11 +1,12 @@
 {
-    "name": "hajipintar",
-    "short_name": "hajipintar",
+    "name": "Haji Pintar",
+    "short_name": "Haji Pintar",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#0175C2",
-    "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "background_color": "#f7f8f4",
+    "theme_color": "#1c5945",
+    "description": "Teman pembelajaran Haji dan Umrah. Ilmu membimbing ibadah.",
+    "lang": "ms",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

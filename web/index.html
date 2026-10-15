@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="ms">
 <head>
   <!--
     If you are serving your web app in a path other than the root, change the
@@ -18,21 +18,59 @@
 
   <meta charset="UTF-8">
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
-  <meta name="description" content="A new Flutter project.">
+  <meta name="description" content="Haji Pintar — teman pembelajaran Haji dan Umrah. Panduan ibadah, modul interaktif dan rekod kemajuan dalam satu aplikasi.">
+  <meta name="theme-color" content="#1c5945">
 
   <!-- iOS meta tags & icons -->
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
-  <meta name="apple-mobile-web-app-title" content="hajipintar">
+  <meta name="apple-mobile-web-app-title" content="Haji Pintar">
   <link rel="apple-touch-icon" href="icons/Icon-192.png">
 
   <!-- Favicon -->
   <link rel="icon" type="image/png" href="favicon.png"/>
 
-  <title>hajipintar</title>
+  <title>Haji Pintar · Ilmu Membimbing Ibadah</title>
   <link rel="manifest" href="manifest.json">
+  <style>
+    @font-face {
+      font-family: 'SourceSerif4'; font-weight: 600; font-display: swap;
+      src: url('assets/assets/fonts/SourceSerif4-SemiBold.ttf') format('truetype');
+    }
+    @font-face {
+      font-family: 'Inter'; font-weight: 400; font-display: swap;
+      src: url('assets/assets/fonts/Inter-Regular.ttf') format('truetype');
+    }
+    body { margin: 0; background: #f7f8f4; }
+    #loading {
+      position: fixed; inset: 0; display: grid; place-content: center;
+      justify-items: center; gap: 18px; background: #f7f8f4; color: #20392e;
+      font: 14px Inter, system-ui, sans-serif;
+    }
+    #loading strong { font: 600 32px SourceSerif4, Georgia, serif; letter-spacing: -0.5px; }
+    .loading-ring {
+      width: 28px; height: 28px; border: 2px solid #dce5da;
+      border-top-color: #1c5945; border-radius: 50%; animation: turn 1.2s linear infinite;
+    }
+    @keyframes turn { to { transform: rotate(360deg); } }
+    @media (prefers-color-scheme: dark) {
+      body, #loading { background: #111d19; color: #f0f3eb; }
+    }
+    @media (prefers-reduced-motion: reduce) { .loading-ring { animation: none; } }
+  </style>
 </head>
 <body>
+  <div id="loading" role="status" aria-live="polite">
+    <strong>Haji Pintar</strong>
+    <span class="loading-ring" aria-hidden="true"></span>
+    <span>Menyediakan ruang pembelajaran…</span>
+  </div>
+  <noscript>Sila dayakan JavaScript untuk menggunakan Haji Pintar.</noscript>
+  <script>
+    window.addEventListener('flutter-first-frame', function () {
+      document.getElementById('loading')?.remove();
+    });
+  </script>
   <!--
     You can customize the "flutter_bootstrap.js" script.
     This is useful to provide a custom configuration to the Flutter loader

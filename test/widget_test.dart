@@ -10,12 +10,16 @@ import 'package:aplikasi_haji_pintar/certificate_screen.dart';
 import 'package:aplikasi_haji_pintar/home_dashboard.dart';
 import 'package:aplikasi_haji_pintar/main.dart';
 import 'package:aplikasi_haji_pintar/theme_controller.dart';
+import 'package:aplikasi_haji_pintar/app_theme.dart';
+import 'package:aplikasi_haji_pintar/tawaf_counter_screen.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   setUp(() async {
-    final Directory dir = await Directory.systemTemp.createTemp('haji_pintar_test');
+    final Directory dir = await Directory.systemTemp.createTemp(
+      'haji_pintar_test',
+    );
     Hive.init(dir.path);
 
     tawafBox = await Hive.openBox<dynamic>('test_tawaf_progress');
@@ -35,13 +39,13 @@ void main() {
     await Hive.deleteBoxFromDisk('test_certificates');
   });
 
-  testWidgets('menunjukkan kad Simulasi Haji 3D pada dashboard', (WidgetTester tester) async {
+  testWidgets('menunjukkan kad Simulasi Haji 3D pada dashboard', (
+    WidgetTester tester,
+  ) async {
     final ThemeController themeController = ThemeController(settingsBox);
 
     await tester.pumpWidget(
-      MaterialApp(
-        home: HalamanUtama(themeController: themeController),
-      ),
+      MaterialApp(home: HalamanUtama(themeController: themeController)),
     );
 
     expect(find.text('Simulasi Haji 3D'), findsOneWidget);
@@ -127,5 +131,89 @@ void main() {
     }
     expect(isButton, isTrue);
     semantics.dispose();
+  });
+
+  testWidgets(
+    'dashboard muat pada telefon, tablet dan desktop termasuk teks besar',
+    (tester) async {
+      addTearDown(() => tester.view.resetPhysicalSize());
+      addTearDown(() => tester.view.resetDevicePixelRatio());
+      tester.view.devicePixelRatio = 1;
+      final ThemeController controller = ThemeController(settingsBox);
+      for (final double width in <double>[320, 390, 768, 1100, 1440]) {
+        for (final double scale in <double>[1, 1.6]) {
+          tester.view.physicalSize = Size(width, 1000);
+          await tester.pumpWidget(
+            MaterialApp(
+              theme: AppTheme.light,
+              home: MediaQuery(
+                data: MediaQueryData(
+                  size: Size(width, 1000),
+                  textScaler: TextScaler.linear(scale),
+                  disableAnimations: true,
+                ),
+                child: HalamanUtama(themeController: controller),
+              ),
+            ),
+          );
+          await tester.pump();
+          final Object? layoutError = tester.takeException();
+          expect(
+            layoutError,
+            isNull,
+            reason: 'Lebar $width, skala teks $scale\n$layoutError',
+          );
+        }
+      }
+    },
+  );
+
+  testWidgets(
+    'penapis modul dan kemajuan Hive dikemas kini tanpa muat semula',
+    (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.light,
+          home: MediaQuery(
+            data: const MediaQueryData(disableAnimations: true),
+            child: HalamanUtama(themeController: ThemeController(settingsBox)),
+          ),
+        ),
+      );
+      await tester.pump(const Duration(seconds: 1));
+      final Finder ibadah = find.widgetWithText(ChoiceChip, 'Ibadah');
+      await tester.ensureVisible(ibadah);
+      await tester.tap(ibadah);
+      await tester.pumpAndSettle();
+      expect(find.text('Kaunter Tawaf'), findsOneWidget);
+      expect(find.text('Modul Belajar'), findsNothing);
+      await tester.runAsync(
+        () => tawafBox.put(TawafCounterScreen.storageKey, 3),
+      );
+      await tester.pump();
+      expect(find.text('3 / 7 pusingan'), findsOneWidget);
+    },
+  );
+
+  testWidgets('gerakan latar boleh dihentikan dan pilihan disimpan', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.light,
+        home: HalamanUtama(themeController: ThemeController(settingsBox)),
+      ),
+    );
+    await tester.pump(const Duration(seconds: 1));
+    expect(find.byTooltip('Hentikan animasi'), findsOneWidget);
+    await tester.runAsync(() async {
+      await tester.tap(find.byTooltip('Hentikan animasi'));
+      await settingsBox.flush();
+    });
+    await tester.pumpAndSettle();
+    expect(find.byTooltip('Hidupkan animasi'), findsOneWidget);
+    expect(settingsBox.get('ambient_motion'), isFalse);
+    expect(tester.binding.transientCallbackCount, 0);
+    expect(tester.takeException(), isNull);
   });
 }

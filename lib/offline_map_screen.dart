@@ -5,6 +5,7 @@ import 'package:latlong2/latlong.dart';
 import 'app_theme.dart';
 import 'shared_widgets.dart';
 import 'islamic_icons.dart';
+import 'prismatic_widgets.dart';
 
 class OfflineMapScreen extends StatefulWidget {
   const OfflineMapScreen({super.key});
@@ -91,21 +92,25 @@ class _OfflineMapScreenState extends State<OfflineMapScreen> {
         ),
         child: Stack(
           children: <Widget>[
+            const Positioned.fill(child: KaleidoscopeBackdrop(opacity: 0.16)),
             const IslamicPatternOverlay(),
             SafeArea(
-          child: Column(
-            children: <Widget>[
-              _buildHeader(context),
-              _buildMapSelector(context),
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(18, 4, 18, 18),
-                  child: _buildMapViewer(context),
-                ),
+              child: Column(
+                children: <Widget>[
+                  ScrollReveal(child: _buildHeader(context)),
+                  ScrollReveal(
+                    delay: const Duration(milliseconds: 70),
+                    child: _buildMapSelector(context),
+                  ),
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(18, 4, 18, 18),
+                      child: _buildMapViewer(context),
+                    ),
+                  ),
+                ],
               ),
-            ],
-          ),
-        ),
+            ),
           ],
         ),
       ),
@@ -148,7 +153,7 @@ class _OfflineMapScreenState extends State<OfflineMapScreen> {
             ),
           ),
           HajjIconButton(
-            tooltip: 'Reset paparan',
+            tooltip: 'Set semula paparan',
             icon: Icons.center_focus_strong_rounded,
             onPressed: _resetZoom,
           ),
@@ -204,7 +209,9 @@ class _OfflineMapScreenState extends State<OfflineMapScreen> {
                         children: <Widget>[
                           HajjIcon(
                             type: map.icon,
-                            color: selected ? palette.emerald : palette.mutedText,
+                            color: selected
+                                ? palette.emerald
+                                : palette.mutedText,
                             size: 22,
                           ),
                           const SizedBox(width: 8),
@@ -363,21 +370,21 @@ class _OfflineMapScreenState extends State<OfflineMapScreen> {
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
           IconButton(
-            tooltip: 'Zoom masuk',
+            tooltip: 'Zum masuk',
             onPressed: _zoomIn,
             color: colors.onSurface,
             icon: const Icon(Icons.add_rounded),
           ),
           _divider(palette),
           IconButton(
-            tooltip: 'Zoom keluar',
+            tooltip: 'Zum keluar',
             onPressed: _zoomOut,
             color: colors.onSurface,
             icon: const Icon(Icons.remove_rounded),
           ),
           _divider(palette),
           IconButton(
-            tooltip: 'Reset',
+            tooltip: 'Set semula zum',
             onPressed: _resetZoom,
             color: palette.emerald,
             icon: const Icon(Icons.refresh_rounded),
@@ -428,7 +435,7 @@ class _OnlineBadge extends StatelessWidget {
           Icon(Icons.public_rounded, color: color, size: 16),
           const SizedBox(width: 7),
           Text(
-            'Online',
+            'Dalam talian',
             style: TextStyle(
               color: color,
               fontSize: 12,

@@ -8,6 +8,7 @@ import 'package:printing/printing.dart';
 import 'app_theme.dart';
 import 'certificate_constants.dart';
 import 'certificate_renderer.dart';
+import 'prismatic_widgets.dart';
 import 'shared_widgets.dart';
 
 class MyCertificatesScreen extends StatelessWidget {
@@ -63,6 +64,7 @@ class MyCertificatesScreen extends StatelessWidget {
               DateTime.now(),
         ),
         certificateNumber: certificate['certificate_number']?.toString() ?? '',
+        score: certificate['score'] is int ? certificate['score'] as int : null,
       ),
     );
   }
@@ -126,219 +128,241 @@ class MyCertificatesScreen extends StatelessWidget {
         ),
         child: Stack(
           children: <Widget>[
+            const Positioned.fill(child: KaleidoscopeBackdrop(opacity: 0.26)),
             const IslamicPatternOverlay(),
             SafeArea(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.fromLTRB(20, 16, 20, 40),
-            child: Center(
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 780),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Row(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.fromLTRB(20, 16, 20, 40),
+                child: Center(
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 780),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
-                        HajjIconButton(
-                          tooltip: 'Kembali',
-                          icon: Icons.arrow_back_rounded,
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                          },
-                        ),
-                        Expanded(
-                          child: Text(
-                            'SIJIL SAYA',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              color: colors.onSurface,
-                              fontWeight: FontWeight.w900,
-                              letterSpacing: 1.4,
-                            ),
+                        ScrollReveal(
+                          child: Row(
+                            children: <Widget>[
+                              HajjIconButton(
+                                tooltip: 'Kembali',
+                                icon: Icons.arrow_back_rounded,
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                              ),
+                              Expanded(
+                                child: Text(
+                                  'SIJIL SAYA',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    color: colors.onSurface,
+                                    fontWeight: FontWeight.w900,
+                                    letterSpacing: 1.4,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 46),
+                            ],
                           ),
                         ),
-                        const SizedBox(width: 46),
-                      ],
-                    ),
-                    const SizedBox(height: 24),
-                    FutureBuilder<List<Map<dynamic, dynamic>>>(
-                      future: _loadCertificates(),
-                      builder:
-                          (
-                            BuildContext context,
-                            AsyncSnapshot<List<Map<dynamic, dynamic>>> snapshot,
-                          ) {
-                            if (snapshot.connectionState ==
-                                ConnectionState.waiting) {
-                              return const Center(
-                                child: Padding(
-                                  padding: EdgeInsets.all(24),
-                                  child: CircularProgressIndicator(),
-                                ),
-                              );
-                            }
-
-                            final List<Map<dynamic, dynamic>> certificates =
-                                snapshot.data ?? <Map<dynamic, dynamic>>[];
-
-                            if (certificates.isEmpty) {
-                              return Container(
-                                width: double.infinity,
-                                padding: const EdgeInsets.all(28),
-                                decoration: BoxDecoration(
-                                  color: palette.glassSurface,
-                                  borderRadius: BorderRadius.circular(24),
-                                  border: Border.all(
-                                    color: palette.glassBorder,
-                                  ),
-                                ),
-                                child: Column(
-                                  children: <Widget>[
-                                    Icon(
-                                      Icons.workspace_premium_outlined,
-                                      size: 48,
-                                      color: palette.mutedText,
+                        const SizedBox(height: 24),
+                        FutureBuilder<List<Map<dynamic, dynamic>>>(
+                          future: _loadCertificates(),
+                          builder:
+                              (
+                                BuildContext context,
+                                AsyncSnapshot<List<Map<dynamic, dynamic>>>
+                                snapshot,
+                              ) {
+                                if (snapshot.connectionState ==
+                                    ConnectionState.waiting) {
+                                  return const Center(
+                                    child: Padding(
+                                      padding: EdgeInsets.all(24),
+                                      child: CircularProgressIndicator(),
                                     ),
-                                    const SizedBox(height: 16),
-                                    Text(
-                                      'Anda belum mempunyai sijil.',
-                                      style: TextStyle(
-                                        color: colors.onSurface,
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.w800,
+                                  );
+                                }
+
+                                final List<Map<dynamic, dynamic>> certificates =
+                                    snapshot.data ?? <Map<dynamic, dynamic>>[];
+
+                                if (certificates.isEmpty) {
+                                  return Container(
+                                    width: double.infinity,
+                                    padding: const EdgeInsets.all(28),
+                                    decoration: BoxDecoration(
+                                      color: palette.glassSurface,
+                                      borderRadius: BorderRadius.circular(24),
+                                      border: Border.all(
+                                        color: palette.glassBorder,
                                       ),
                                     ),
-                                    const SizedBox(height: 8),
-                                    Text(
-                                      'Selesaikan penilaian akhir dengan markah '
-                                      'sekurang-kurangnya 80% untuk menerima sijil.',
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(
-                                        color: palette.mutedText,
-                                        height: 1.5,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              );
-                            }
-
-                            return ListView.builder(
-                              shrinkWrap: true,
-                              physics: const NeverScrollableScrollPhysics(),
-                              itemCount: certificates.length,
-                              itemBuilder: (BuildContext context, int index) {
-                                final Map<dynamic, dynamic> cert =
-                                    certificates[index];
-                                final String savedName = _nameOf(cert);
-                                final String name = savedName.trim().isEmpty
-                                    ? 'Peserta'
-                                    : savedName;
-                                final String certNumber =
-                                    cert['certificate_number']?.toString() ??
-                                    '-';
-                                final int score = (cert['score'] is int)
-                                    ? cert['score'] as int
-                                    : 0;
-                                final String level =
-                                    (cert['achievement_level']?.toString() ??
-                                            'LULUS')
-                                        .toUpperCase();
-
-                                return Container(
-                                  margin: const EdgeInsets.only(bottom: 16),
-                                  padding: const EdgeInsets.all(18),
-                                  decoration: BoxDecoration(
-                                    color: palette.glassSurface,
-                                    borderRadius: BorderRadius.circular(20),
-                                    border: Border.all(
-                                      color: palette.glassBorder,
-                                    ),
-                                  ),
-                                  child: Row(
-                                    children: <Widget>[
-                                      Container(
-                                        width: 48,
-                                        height: 48,
-                                        decoration: BoxDecoration(
-                                          color: palette.gold.withValues(
-                                            alpha: 0.11,
+                                    child: Column(
+                                      children: <Widget>[
+                                        Icon(
+                                          Icons.workspace_premium_outlined,
+                                          size: 48,
+                                          color: palette.mutedText,
+                                        ),
+                                        const SizedBox(height: 16),
+                                        Text(
+                                          'Anda belum mempunyai sijil.',
+                                          style: TextStyle(
+                                            color: colors.onSurface,
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.w800,
                                           ),
+                                        ),
+                                        const SizedBox(height: 8),
+                                        Text(
+                                          'Selesaikan penilaian akhir dengan markah '
+                                          'sekurang-kurangnya 80% untuk menerima sijil.',
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(
+                                            color: palette.mutedText,
+                                            height: 1.5,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                }
+
+                                return ListView.builder(
+                                  shrinkWrap: true,
+                                  physics: const NeverScrollableScrollPhysics(),
+                                  itemCount: certificates.length,
+                                  itemBuilder: (BuildContext context, int index) {
+                                    final Map<dynamic, dynamic> cert =
+                                        certificates[index];
+                                    final String savedName = _nameOf(cert);
+                                    final String name = savedName.trim().isEmpty
+                                        ? 'Peserta'
+                                        : savedName;
+                                    final String certNumber =
+                                        cert['certificate_number']
+                                            ?.toString() ??
+                                        '-';
+                                    final int score = (cert['score'] is int)
+                                        ? cert['score'] as int
+                                        : 0;
+                                    final String level =
+                                        (cert['achievement_level']
+                                                    ?.toString() ??
+                                                'LULUS')
+                                            .toUpperCase();
+
+                                    return ScrollReveal(
+                                      delay: Duration(
+                                        milliseconds: 60 * (index % 6),
+                                      ),
+                                      child: Container(
+                                        margin: const EdgeInsets.only(
+                                          bottom: 16,
+                                        ),
+                                        padding: const EdgeInsets.all(18),
+                                        decoration: BoxDecoration(
+                                          color: palette.glassSurface,
                                           borderRadius: BorderRadius.circular(
-                                            15,
+                                            20,
                                           ),
                                           border: Border.all(
-                                            color: palette.gold.withValues(
-                                              alpha: 0.24,
-                                            ),
+                                            color: palette.glassBorder,
                                           ),
                                         ),
-                                        child: Center(
-                                          child: Icon(
-                                            level == 'CEMERLANG'
-                                                ? Icons.emoji_events_rounded
-                                                : Icons.military_tech_rounded,
-                                            color: palette.gold,
-                                            size: 26,
-                                            semanticLabel: 'Tahap $level',
-                                          ),
-                                        ),
-                                      ),
-                                      const SizedBox(width: 14),
-                                      Expanded(
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
+                                        child: Row(
                                           children: <Widget>[
-                                            Text(
-                                              name,
-                                              style: TextStyle(
-                                                color: colors.onSurface,
-                                                fontSize: 16,
-                                                fontWeight: FontWeight.w800,
+                                            Container(
+                                              width: 48,
+                                              height: 48,
+                                              decoration: BoxDecoration(
+                                                color: palette.gold.withValues(
+                                                  alpha: 0.11,
+                                                ),
+                                                borderRadius:
+                                                    BorderRadius.circular(15),
+                                                border: Border.all(
+                                                  color: palette.gold
+                                                      .withValues(alpha: 0.24),
+                                                ),
+                                              ),
+                                              child: Center(
+                                                child: Icon(
+                                                  level == 'CEMERLANG'
+                                                      ? Icons
+                                                            .emoji_events_rounded
+                                                      : Icons
+                                                            .military_tech_rounded,
+                                                  color: palette.gold,
+                                                  size: 26,
+                                                  semanticLabel: 'Tahap $level',
+                                                ),
                                               ),
                                             ),
-                                            const SizedBox(height: 4),
-                                            Text(
-                                              '$certNumber  •  $score%  •  $level',
-                                              style: TextStyle(
-                                                color: palette.mutedText,
-                                                fontSize: 12,
+                                            const SizedBox(width: 14),
+                                            Expanded(
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: <Widget>[
+                                                  Text(
+                                                    name,
+                                                    style: TextStyle(
+                                                      color: colors.onSurface,
+                                                      fontSize: 16,
+                                                      fontWeight:
+                                                          FontWeight.w800,
+                                                    ),
+                                                  ),
+                                                  const SizedBox(height: 4),
+                                                  Text(
+                                                    '$certNumber  •  $score%  •  $level',
+                                                    style: TextStyle(
+                                                      color: palette.mutedText,
+                                                      fontSize: 12,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                            IconButton(
+                                              tooltip: 'Pratonton',
+                                              onPressed: () =>
+                                                  _previewCertificate(
+                                                    context,
+                                                    cert,
+                                                  ),
+                                              icon: Icon(
+                                                Icons.visibility_rounded,
+                                                color: palette.emerald,
+                                              ),
+                                            ),
+                                            IconButton(
+                                              tooltip: 'Muat turun',
+                                              onPressed: () =>
+                                                  _shareCertificate(
+                                                    context,
+                                                    cert,
+                                                  ),
+                                              icon: Icon(
+                                                Icons.download_rounded,
+                                                color: palette.gold,
                                               ),
                                             ),
                                           ],
                                         ),
                                       ),
-                                      IconButton(
-                                        tooltip: 'Pratonton',
-                                        onPressed: () =>
-                                            _previewCertificate(context, cert),
-                                        icon: Icon(
-                                          Icons.visibility_rounded,
-                                          color: palette.emerald,
-                                        ),
-                                      ),
-                                      IconButton(
-                                        tooltip: 'Muat turun',
-                                        onPressed: () =>
-                                            _shareCertificate(context, cert),
-                                        icon: Icon(
-                                          Icons.download_rounded,
-                                          color: palette.gold,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
+                                    );
+                                  },
                                 );
                               },
-                            );
-                          },
+                        ),
+                      ],
                     ),
-                  ],
+                  ),
                 ),
               ),
             ),
-          ),
-        ),
           ],
         ),
       ),

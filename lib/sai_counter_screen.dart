@@ -4,13 +4,14 @@ import 'package:hive_ce_flutter/hive_ce_flutter.dart';
 import 'app_theme.dart';
 import 'shared_widgets.dart';
 import 'islamic_icons.dart';
+import 'prismatic_widgets.dart';
 
 class SaiCounterScreen extends StatefulWidget {
   const SaiCounterScreen({required this.saiBox, super.key});
 
   final Box<dynamic> saiBox;
 
-  /// Kunci storan Hive bagi bilangan perjalanan Sa'i yang selesai.
+  /// Kunci storan Hive bagi bilangan perjalanan Sa’i yang selesai.
   static const String storageKey = 'completedSaiTrips';
 
   static const int totalTrips = 7;
@@ -40,7 +41,10 @@ class _SaiCounterScreenState extends State<SaiCounterScreen> {
   void initState() {
     super.initState();
 
-    final dynamic savedValue = widget.saiBox.get(SaiCounterScreen.storageKey, defaultValue: 0);
+    final dynamic savedValue = widget.saiBox.get(
+      SaiCounterScreen.storageKey,
+      defaultValue: 0,
+    );
 
     if (savedValue is int) {
       completedTrips = savedValue.clamp(0, totalTrips).toInt();
@@ -101,250 +105,275 @@ class _SaiCounterScreenState extends State<SaiCounterScreen> {
         ),
         child: Stack(
           children: <Widget>[
+            const Positioned.fill(child: KaleidoscopeBackdrop(opacity: 0.24)),
             const IslamicPatternOverlay(),
             SafeArea(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(20),
-            child: Center(
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 680),
-                child: Column(
-                  children: <Widget>[
-                    Row(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(20),
+                child: Center(
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 680),
+                    child: Column(
                       children: <Widget>[
-                        HajjIconButton(
-                          tooltip: 'Kembali',
-                          icon: Icons.arrow_back_rounded,
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                          },
-                        ),
-                        Expanded(
-                          child: Text(
-                            'KAUNTER SA’I',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              color: colors.onSurface,
-                              fontWeight: FontWeight.w900,
-                              letterSpacing: 1.5,
-                            ),
-                          ),
-                        ),
-                        HajjIconButton(
-                          tooltip: 'Reset',
-                          icon: Icons.restart_alt_rounded,
-                          onPressed: resetKaunter,
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 30),
-                    Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.all(28),
-                      decoration: BoxDecoration(
-                        color: palette.glassSurface,
-                        borderRadius: BorderRadius.circular(30),
-                        border: Border.all(color: palette.glassBorder),
-                        boxShadow: <BoxShadow>[
-                          BoxShadow(
-                            color: palette.shadow,
-                            blurRadius: 28,
-                            offset: const Offset(0, 14),
-                          ),
-                        ],
-                      ),
-                      child: Column(
-                        children: <Widget>[
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 13,
-                              vertical: 8,
-                            ),
-                            decoration: BoxDecoration(
-                              color: palette.gold.withValues(alpha: 0.10),
-                              borderRadius: BorderRadius.circular(50),
-                              border: Border.all(
-                                color: palette.gold.withValues(alpha: 0.25),
+                        ScrollReveal(
+                          child: Row(
+                            children: <Widget>[
+                              HajjIconButton(
+                                tooltip: 'Kembali',
+                                icon: Icons.arrow_back_rounded,
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
                               ),
-                            ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: <Widget>[
-                                HajjIcon(
-                                  type: HajjIconType.sai,
-                                  color: palette.gold,
-                                  size: 20,
-                                  strokeWidth: 5,
-                                ),
-                                const SizedBox(width: 8),
-                                Text(
-                                  'Safa dan Marwah',
-                                  style: TextStyle(
-                                    color: palette.gold,
-                                    fontWeight: FontWeight.w800,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          const SizedBox(height: 28),
-                          SizedBox(
-                            width: 220,
-                            height: 220,
-                            child: Stack(
-                              alignment: Alignment.center,
-                              children: <Widget>[
-                                SizedBox(
-                                  width: 210,
-                                  height: 210,
-                                  child: CircularProgressIndicator(
-                                    value: progress,
-                                    strokeWidth: 12,
-                                    backgroundColor: palette.softSurface,
-                                    color: palette.emerald,
-                                    strokeCap: StrokeCap.round,
-                                  ),
-                                ),
-                                Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: <Widget>[
-                                    Text(
-                                      isCompleted ? 'SELESAI' : 'PERJALANAN',
-                                      style: TextStyle(
-                                        color: palette.mutedText,
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w700,
-                                        letterSpacing: 2,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 4),
-                                    Text(
-                                      '$currentTrip',
-                                      style: TextStyle(
-                                        color: colors.onSurface,
-                                        fontSize: 72,
-                                        height: 1,
-                                        fontWeight: FontWeight.w900,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 5),
-                                    Text(
-                                      '$completedTrips / '
-                                      '$totalTrips selesai',
-                                      style: TextStyle(
-                                        color: palette.emerald,
-                                        fontWeight: FontWeight.w800,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ),
-                          const SizedBox(height: 26),
-                          Container(
-                            width: double.infinity,
-                            padding: const EdgeInsets.all(17),
-                            decoration: BoxDecoration(
-                              color: palette.emerald.withValues(alpha: 0.09),
-                              borderRadius: BorderRadius.circular(17),
-                              border: Border.all(
-                                color: palette.emerald.withValues(alpha: 0.20),
-                              ),
-                            ),
-                            child: Column(
-                              children: <Widget>[
-                                Text(
-                                  'ARAH SEMASA',
-                                  style: TextStyle(
-                                    color: palette.mutedText,
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w800,
-                                    letterSpacing: 1.8,
-                                  ),
-                                ),
-                                const SizedBox(height: 7),
-                                Text(
-                                  currentDirection,
+                              Expanded(
+                                child: Text(
+                                  'KAUNTER SA’I',
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
                                     color: colors.onSurface,
-                                    fontSize: 21,
                                     fontWeight: FontWeight.w900,
+                                    letterSpacing: 1.5,
+                                  ),
+                                ),
+                              ),
+                              HajjIconButton(
+                                tooltip: 'Set semula kaunter',
+                                icon: Icons.restart_alt_rounded,
+                                onPressed: resetKaunter,
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 30),
+                        ScrollReveal(
+                          delay: const Duration(milliseconds: 80),
+                          child: Container(
+                            width: double.infinity,
+                            padding: const EdgeInsets.all(28),
+                            decoration: BoxDecoration(
+                              color: palette.glassSurface,
+                              borderRadius: BorderRadius.circular(30),
+                              border: Border.all(color: palette.glassBorder),
+                              boxShadow: <BoxShadow>[
+                                BoxShadow(
+                                  color: palette.shadow,
+                                  blurRadius: 28,
+                                  offset: const Offset(0, 14),
+                                ),
+                              ],
+                            ),
+                            child: Column(
+                              children: <Widget>[
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 13,
+                                    vertical: 8,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: palette.gold.withValues(alpha: 0.10),
+                                    borderRadius: BorderRadius.circular(50),
+                                    border: Border.all(
+                                      color: palette.gold.withValues(
+                                        alpha: 0.25,
+                                      ),
+                                    ),
+                                  ),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: <Widget>[
+                                      HajjIcon(
+                                        type: HajjIconType.sai,
+                                        color: palette.gold,
+                                        size: 20,
+                                        strokeWidth: 5,
+                                      ),
+                                      const SizedBox(width: 8),
+                                      Text(
+                                        'Safa dan Marwah',
+                                        style: TextStyle(
+                                          color: palette.gold,
+                                          fontWeight: FontWeight.w800,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                const SizedBox(height: 28),
+                                SizedBox(
+                                  width: 220,
+                                  height: 220,
+                                  child: Stack(
+                                    alignment: Alignment.center,
+                                    children: <Widget>[
+                                      SizedBox(
+                                        width: 210,
+                                        height: 210,
+                                        child: CircularProgressIndicator(
+                                          value: progress,
+                                          strokeWidth: 12,
+                                          backgroundColor: palette.softSurface,
+                                          color: palette.emerald,
+                                          strokeCap: StrokeCap.round,
+                                        ),
+                                      ),
+                                      Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: <Widget>[
+                                          Text(
+                                            isCompleted
+                                                ? 'SELESAI'
+                                                : 'PERJALANAN',
+                                            style: TextStyle(
+                                              color: palette.mutedText,
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.w700,
+                                              letterSpacing: 2,
+                                            ),
+                                          ),
+                                          const SizedBox(height: 4),
+                                          Text(
+                                            '$currentTrip',
+                                            style: TextStyle(
+                                              color: colors.onSurface,
+                                              fontSize: 72,
+                                              height: 1,
+                                              fontWeight: FontWeight.w900,
+                                            ),
+                                          ),
+                                          const SizedBox(height: 5),
+                                          Text(
+                                            '$completedTrips / '
+                                            '$totalTrips selesai',
+                                            style: TextStyle(
+                                              color: palette.emerald,
+                                              fontWeight: FontWeight.w800,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                const SizedBox(height: 26),
+                                Container(
+                                  width: double.infinity,
+                                  padding: const EdgeInsets.all(17),
+                                  decoration: BoxDecoration(
+                                    color: palette.emerald.withValues(
+                                      alpha: 0.09,
+                                    ),
+                                    borderRadius: BorderRadius.circular(17),
+                                    border: Border.all(
+                                      color: palette.emerald.withValues(
+                                        alpha: 0.20,
+                                      ),
+                                    ),
+                                  ),
+                                  child: Column(
+                                    children: <Widget>[
+                                      Text(
+                                        'ARAH SEMASA',
+                                        style: TextStyle(
+                                          color: palette.mutedText,
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.w800,
+                                          letterSpacing: 1.8,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 7),
+                                      Text(
+                                        currentDirection,
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(
+                                          color: colors.onSurface,
+                                          fontSize: 21,
+                                          fontWeight: FontWeight.w900,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                const SizedBox(height: 24),
+                                SizedBox(
+                                  width: double.infinity,
+                                  height: 66,
+                                  child: FilledButton.icon(
+                                    onPressed: isCompleted
+                                        ? null
+                                        : tambahPerjalanan,
+                                    icon: Icon(
+                                      isCompleted
+                                          ? Icons.check_circle_rounded
+                                          : Icons.touch_app_rounded,
+                                    ),
+                                    label: Text(
+                                      isCompleted
+                                          ? 'Sa’i selesai'
+                                          : 'Selesai perjalanan $currentTrip',
+                                      style: const TextStyle(
+                                        fontSize: 17,
+                                        fontWeight: FontWeight.w900,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(height: 10),
+                                TextButton.icon(
+                                  onPressed: completedTrips > 0
+                                      ? undurPerjalanan
+                                      : null,
+                                  icon: const Icon(Icons.undo_rounded),
+                                  label: const Text(
+                                    'Batalkan perjalanan terakhir',
                                   ),
                                 ),
                               ],
                             ),
                           ),
-                          const SizedBox(height: 24),
-                          SizedBox(
-                            width: double.infinity,
-                            height: 66,
-                            child: FilledButton.icon(
-                              onPressed: isCompleted ? null : tambahPerjalanan,
-                              icon: Icon(
-                                isCompleted
-                                    ? Icons.check_circle_rounded
-                                    : Icons.touch_app_rounded,
-                              ),
-                              label: Text(
-                                isCompleted
-                                    ? 'Sa’i selesai'
-                                    : 'Selesai perjalanan $currentTrip',
-                                style: const TextStyle(
-                                  fontSize: 17,
-                                  fontWeight: FontWeight.w900,
-                                ),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: 10),
-                          TextButton.icon(
-                            onPressed: completedTrips > 0
-                                ? undurPerjalanan
-                                : null,
-                            icon: const Icon(Icons.undo_rounded),
-                            label: const Text('Batalkan perjalanan terakhir'),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 18),
-                    Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.all(18),
-                      decoration: BoxDecoration(
-                        color: palette.gold.withValues(alpha: 0.08),
-                        borderRadius: BorderRadius.circular(18),
-                        border: Border.all(
-                          color: palette.gold.withValues(alpha: 0.18),
                         ),
-                      ),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Icon(Icons.info_outline_rounded, color: palette.gold),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: Text(
-                              'Safa ke Marwah dikira satu perjalanan. '
-                              'Perjalanan kembali dari Marwah ke Safa '
-                              'dikira sebagai perjalanan berikutnya.',
-                              style: TextStyle(
-                                color: palette.mutedText,
-                                height: 1.5,
+                        const SizedBox(height: 18),
+                        ScrollReveal(
+                          delay: const Duration(milliseconds: 140),
+                          child: Container(
+                            width: double.infinity,
+                            padding: const EdgeInsets.all(18),
+                            decoration: BoxDecoration(
+                              color: palette.gold.withValues(alpha: 0.08),
+                              borderRadius: BorderRadius.circular(18),
+                              border: Border.all(
+                                color: palette.gold.withValues(alpha: 0.18),
                               ),
                             ),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                Icon(
+                                  Icons.info_outline_rounded,
+                                  color: palette.gold,
+                                ),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: Text(
+                                    'Sa’i dimulakan di Safa dan diakhiri di Marwah. '
+                                    'Safa ke Marwah dikira perjalanan pertama, '
+                                    'dan Marwah ke Safa dikira perjalanan kedua. '
+                                    'Perjalanan ketujuh berakhir di Marwah.',
+                                    style: TextStyle(
+                                      color: palette.mutedText,
+                                      height: 1.5,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
-                  ],
+                  ),
                 ),
               ),
             ),
-          ),
-        ),
           ],
         ),
       ),

@@ -9,9 +9,16 @@ import 'package:aplikasi_haji_pintar/certificate_renderer.dart';
 void main() {
   Future<void> loadFonts() async {
     const Map<String, List<String>> families = <String, List<String>>{
-      'PlayfairDisplay': <String>['PlayfairDisplay-Bold.ttf'],
-      'PlusJakartaSans': <String>['PlusJakartaSans-Bold.ttf'],
-      'Amiri': <String>['Amiri-Bold.ttf'],
+      'SourceSerif4': <String>[
+        'SourceSerif4-SemiBold.ttf',
+        'SourceSerif4-Bold.ttf',
+      ],
+      'Inter': <String>[
+        'Inter-Regular.ttf',
+        'Inter-Italic.ttf',
+        'Inter-SemiBold.ttf',
+      ],
+      'Amiri': <String>['Amiri-Regular.ttf'],
     };
     for (final MapEntry<String, List<String>> family in families.entries) {
       final FontLoader loader = FontLoader(family.key);
@@ -28,12 +35,14 @@ void main() {
       achievementLevel: 'CEMERLANG',
       date: '3 Mac 2026',
       certificateNumber: 'HP-2026-0001',
+      score: 100,
     ),
     CertificateContent(
       name: 'Ahmad Muzzammil bin Mohammad Najib al-Kelantani',
       achievementLevel: 'SANGAT BAIK',
       date: '27 September 2026',
       certificateNumber: 'HP-2026-1234567',
+      score: 90,
     ),
     CertificateContent(
       name: 'Siti',

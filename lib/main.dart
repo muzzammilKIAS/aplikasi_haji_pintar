@@ -43,7 +43,7 @@ class AplikasiHajiPintar extends StatelessWidget {
       animation: themeController,
       builder: (BuildContext context, Widget? child) {
         return MaterialApp(
-          title: 'hajipintar',
+          title: 'Haji Pintar',
           debugShowCheckedModeBanner: false,
           theme: AppTheme.light,
           darkTheme: AppTheme.dark,

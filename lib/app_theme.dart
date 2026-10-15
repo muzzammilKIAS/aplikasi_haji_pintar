@@ -57,63 +57,61 @@ class HajjColors extends ThemeExtension<HajjColors> {
   final Color cardSurface;
   final Color cardBorder;
 
-  // Palet biru elegan + aksen pelbagai warna (emas, mawar, teal) —
-  // dikongsi oleh seluruh aplikasi (dashboard dan semua paparan dalaman)
-  // supaya tema kekal konsisten merentasi skrin.
+  // Zamrud sebagai asas, dengan bias cahaya biru dan aksen pink asal.
   static const HajjColors light = HajjColors(
-    gradientStart: Color(0xFFEAF4FD),
-    gradientMiddle: Color(0xFFF6FAFF),
-    gradientEnd: Color(0xFFEFF2FC),
+    gradientStart: Color(0xFFF5F8FA),
+    gradientMiddle: Color(0xFFFBF5FA),
+    gradientEnd: Color(0xFFEDF8F4),
     glassSurface: Color(0xFFFFFFFF),
-    glassBorder: Color(0xFFD9E6F5),
-    mutedText: Color(0xFF5E7089),
-    gold: Color(0xFFC98A2E),
-    emerald: Color(0xFF2D6FE0),
+    glassBorder: Color(0xFFE3E7DF),
+    mutedText: Color(0xFF657369),
+    gold: Color(0xFF927035),
+    emerald: Color(0xFF1C5945),
     danger: Color(0xFFB64949),
-    softSurface: Color(0xFFDCEBFB),
-    shadow: Color(0x1F0B3D91),
+    softSurface: Color(0xFFECF2EB),
+    shadow: Color(0x1F213D2D),
     onAccent: Color(0xFFFFFFFF),
-    textPrimary: Color(0xFF152A47),
-    textSecondary: Color(0xFF5E7089),
-    divider: Color(0xFFE1EDF8),
-    success: Color(0xFF2E9E7C),
-    warning: Color(0xFFC5822D),
-    sand: Color(0xFFF0DDB0),
-    sandSoft: Color(0xFFF7ECD6),
-    skySoft: Color(0xFFDCEEFC),
-    sageSoft: Color(0xFFD9F0EA),
-    secondaryColor: Color(0xFFE0608F),
-    secondarySoft: Color(0xFFFBE1EA),
+    textPrimary: Color(0xFF20392E),
+    textSecondary: Color(0xFF657369),
+    divider: Color(0xFFE3E7DF),
+    success: Color(0xFF28704F),
+    warning: Color(0xFF927035),
+    sand: Color(0xFFE2CCA5),
+    sandSoft: Color(0xFFF5F0E5),
+    skySoft: Color(0xFFE5F0FF),
+    sageSoft: Color(0xFFECF2EB),
+    secondaryColor: Color(0xFFB12F69),
+    secondarySoft: Color(0xFFFCE6F1),
     cardSurface: Color(0xFFFFFFFF),
-    cardBorder: Color(0xFFD9E6F5),
+    cardBorder: Color(0xFFE3E7DF),
   );
 
   static const HajjColors dark = HajjColors(
-    gradientStart: Color(0xFF060B1A),
-    gradientMiddle: Color(0xFF0B1636),
-    gradientEnd: Color(0xFF060B1A),
-    glassSurface: Color(0x17FFFFFF),
-    glassBorder: Color(0x26FFFFFF),
-    mutedText: Color(0xFFA6B3D0),
-    gold: Color(0xFFFFC96B),
-    emerald: Color(0xFF6FA8FF),
+    gradientStart: Color(0xFF111D19),
+    gradientMiddle: Color(0xFF14231D),
+    gradientEnd: Color(0xFF111D19),
+    glassSurface: Color(0xFF1B2B23),
+    glassBorder: Color(0xFF34483D),
+    mutedText: Color(0xFFADBCB0),
+    gold: Color(0xFFD8BE88),
+    emerald: Color(0xFF9ACCAE),
     danger: Color(0xFFFF6571),
-    softSurface: Color(0xFF16264A),
-    shadow: Color(0x66000B2E),
-    onAccent: Color(0xFF041226),
-    textPrimary: Color(0xFFF2F6FF),
-    textSecondary: Color(0xFFA6B3D0),
-    divider: Color(0x26FFFFFF),
-    success: Color(0xFF4FE0CC),
-    warning: Color(0xFFFFC96B),
-    sand: Color(0xFF3A2E1E),
-    sandSoft: Color(0xFF241C12),
-    skySoft: Color(0xFF16223B),
-    sageSoft: Color(0xFF123531),
+    softSurface: Color(0xFF223A2C),
+    shadow: Color(0x66040E08),
+    onAccent: Color(0xFF12261C),
+    textPrimary: Color(0xFFF0F3EB),
+    textSecondary: Color(0xFFADBCB0),
+    divider: Color(0xFF34483D),
+    success: Color(0xFF9ACCAE),
+    warning: Color(0xFFD8BE88),
+    sand: Color(0xFF4B402C),
+    sandSoft: Color(0xFF302D22),
+    skySoft: Color(0xFF243632),
+    sageSoft: Color(0xFF223A2C),
     secondaryColor: Color(0xFFFF8FC5),
-    secondarySoft: Color(0xFF3A1B2C),
-    cardSurface: Color(0x17FFFFFF),
-    cardBorder: Color(0x26FFFFFF),
+    secondarySoft: Color(0xFF392335),
+    cardSurface: Color(0xFF1B2B23),
+    cardBorder: Color(0xFF34483D),
   );
 
   @override
@@ -244,8 +242,8 @@ class HajjMotion {
 class AppFonts {
   AppFonts._();
 
-  static const String display = 'PlayfairDisplay';
-  static const String body = 'PlusJakartaSans';
+  static const String display = 'SourceSerif4';
+  static const String body = 'Inter';
   static const String arabic = 'Amiri';
 }
 
@@ -294,24 +292,23 @@ class AppTheme {
   }) {
     final bool isDark = brightness == Brightness.dark;
 
-    final ColorScheme scheme = ColorScheme.fromSeed(
-      seedColor: isDark ? const Color(0xFF6FA8FF) : const Color(0xFF2D6FE0),
-      brightness: brightness,
-    ).copyWith(
-      primary: palette.emerald,
-      onPrimary: palette.onAccent,
-      secondary: palette.gold,
-      onSecondary: isDark
-          ? const Color(0xFF201A0D)
-          : const Color(0xFFFFFFFF),
-      surface: isDark ? const Color(0xFF0F1A38) : palette.cardSurface,
-      onSurface: isDark ? const Color(0xFFF2F6FF) : palette.textPrimary,
-      surfaceContainerHighest: isDark
-          ? const Color(0xFF182A55)
-          : palette.sandSoft,
-      outline: isDark ? const Color(0xFF6B7FA8) : palette.cardBorder,
-      error: palette.danger,
-    );
+    final ColorScheme scheme =
+        ColorScheme.fromSeed(
+          seedColor: palette.emerald,
+          brightness: brightness,
+        ).copyWith(
+          primary: palette.emerald,
+          onPrimary: palette.onAccent,
+          secondary: palette.gold,
+          onSecondary: isDark
+              ? const Color(0xFF201A0D)
+              : const Color(0xFFFFFFFF),
+          surface: palette.cardSurface,
+          onSurface: palette.textPrimary,
+          surfaceContainerHighest: palette.sandSoft,
+          outline: palette.textSecondary,
+          error: palette.danger,
+        );
 
     final ThemeData theme = ThemeData(
       useMaterial3: true,
