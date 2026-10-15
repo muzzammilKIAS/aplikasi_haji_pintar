@@ -18,6 +18,7 @@ import 'prismatic_widgets.dart';
 import 'sai_counter_screen.dart';
 import 'tawaf_counter_screen.dart';
 import 'theme_controller.dart';
+import 'visit_counter.dart';
 
 Map<String, int> _tarikhMasihiKeHijrahTabular(DateTime tarikh) {
   final int jd = ((tarikh.millisecondsSinceEpoch / 86400000) + 2440587.5 + 0.5)
@@ -1039,12 +1040,62 @@ class _Welcome extends StatelessWidget {
               if (small) ...<Widget>[
                 const SizedBox(height: 12),
                 const _TodayDate(compact: true),
+                const _VisitCount(compact: true),
               ],
             ],
           ),
         ),
-        if (!small) const _TodayDate(),
+        if (!small)
+          const Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[_TodayDate(), _VisitCount()],
+          ),
       ],
+    );
+  }
+}
+
+class _VisitCount extends StatelessWidget {
+  const _VisitCount({this.compact = false});
+  final bool compact;
+  @override
+  Widget build(BuildContext context) {
+    final HajjColors p = context.hajjColors;
+    return FutureBuilder<int?>(
+      future: VisitCounter.total(),
+      builder: (BuildContext context, AsyncSnapshot<int?> snapshot) {
+        final int? total = snapshot.data;
+        if (total == null) {
+          return const SizedBox.shrink();
+        }
+        final String label = '${formatVisitCount(total)} kunjungan';
+        return Padding(
+          padding: EdgeInsets.only(top: compact ? 8 : 12),
+          child: Semantics(
+            label: 'Jumlah kunjungan laman: $label',
+            excludeSemantics: true,
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Icon(
+                  Icons.visibility_outlined,
+                  size: compact ? 14 : 18,
+                  color: p.gold,
+                ),
+                SizedBox(width: compact ? 8 : 12),
+                Text(
+                  label,
+                  style: TextStyle(
+                    fontSize: compact ? 11 : 12,
+                    fontWeight: FontWeight.w600,
+                    color: p.textSecondary,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 }
