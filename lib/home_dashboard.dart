@@ -365,10 +365,6 @@ class _HalamanUtamaState extends State<HalamanUtama>
                                 const SizedBox(height: 12),
                                 preparation,
                               ],
-                              if (VisitCounter.isAvailable) ...<Widget>[
-                                SizedBox(height: box.maxWidth >= 580 ? 16 : 12),
-                                const _VisitStatsCard(compact: true),
-                              ],
                             ],
                           );
                         }
@@ -384,10 +380,6 @@ class _HalamanUtamaState extends State<HalamanUtama>
                                   const _WukufCountdown(),
                                   const SizedBox(height: 16),
                                   preparation,
-                                  if (VisitCounter.isAvailable) ...<Widget>[
-                                    const SizedBox(height: 16),
-                                    const _VisitStatsCard(),
-                                  ],
                                 ],
                               ),
                             ),
@@ -558,6 +550,10 @@ class _HalamanUtamaState extends State<HalamanUtama>
                     .23,
                   ),
                   const SizedBox(height: 32),
+                  if (VisitCounter.isAvailable) ...<Widget>[
+                    const _VisitBadge(),
+                    const SizedBox(height: 16),
+                  ],
                   Divider(color: p.divider),
                   const SizedBox(height: 14),
                   Wrap(
@@ -1058,127 +1054,51 @@ class _Welcome extends StatelessWidget {
   }
 }
 
-class _VisitStatsCard extends StatelessWidget {
-  const _VisitStatsCard({this.compact = false});
-  final bool compact;
+class _VisitBadge extends StatelessWidget {
+  const _VisitBadge();
   @override
   Widget build(BuildContext context) {
     final HajjColors p = context.hajjColors;
-    return _Panel(
-      padding: const EdgeInsets.all(22),
-      accent: PrismAccent.blue,
-      child: FutureBuilder<VisitStats>(
-        future: VisitCounter.stats(),
-        builder: (BuildContext context, AsyncSnapshot<VisitStats> snapshot) {
-          final VisitStats? stats = snapshot.data;
-          final bool loading = snapshot.connectionState != ConnectionState.done;
-          final bool failed = !loading && (stats == null || stats.isEmpty);
-          String show(int? v) => v == null ? '—' : formatVisitCount(v);
-          final String total = show(stats?.total);
-          final String today = show(stats?.today);
-
-          return Semantics(
-            label: loading
-                ? 'Memuatkan data kunjungan laman'
-                : 'Kunjungan laman: $total keseluruhan, $today hari ini',
-            excludeSemantics: true,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+    return FutureBuilder<VisitStats>(
+      future: VisitCounter.stats(),
+      builder: (BuildContext context, AsyncSnapshot<VisitStats> snapshot) {
+        final bool loading = snapshot.connectionState != ConnectionState.done;
+        String show(int? v) =>
+            loading ? '…' : (v == null ? '—' : formatVisitCount(v));
+        final String total = show(snapshot.data?.total);
+        final String today = show(snapshot.data?.today);
+        final TextStyle label = TextStyle(fontSize: 11, color: p.textSecondary);
+        final TextStyle value = TextStyle(
+          fontSize: 12,
+          fontWeight: FontWeight.w800,
+          color: p.textPrimary,
+        );
+        return Semantics(
+          label: 'Kunjungan laman: $total keseluruhan, $today hari ini',
+          excludeSemantics: true,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
+            decoration: BoxDecoration(
+              color: p.cardSurface,
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(color: p.divider),
+            ),
+            child: Wrap(
+              crossAxisAlignment: WrapCrossAlignment.center,
+              spacing: 8,
+              runSpacing: 4,
               children: <Widget>[
-                Row(
-                  children: <Widget>[
-                    Icon(Icons.insights_outlined, color: p.gold, size: 19),
-                    const SizedBox(width: 9),
-                    Expanded(
-                      child: Text(
-                        'KUNJUNGAN LAMAN',
-                        style: TextStyle(
-                          fontSize: 9,
-                          letterSpacing: 1.2,
-                          fontWeight: FontWeight.w800,
-                          color: p.textSecondary,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                Wrap(
-                  crossAxisAlignment: WrapCrossAlignment.center,
-                  spacing: 9,
-                  children: <Widget>[
-                    Text(
-                      loading ? '…' : total,
-                      style: TextStyle(
-                        fontFamily: AppFonts.display,
-                        fontSize: compact ? 38 : 48,
-                        height: 1.1,
-                        color: p.emerald,
-                      ),
-                    ),
-                    Text(
-                      'keseluruhan',
-                      style: TextStyle(fontSize: 12, color: p.textSecondary),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 9,
-                  ),
-                  decoration: BoxDecoration(
-                    color: p.emerald.withValues(alpha: .08),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Row(
-                    children: <Widget>[
-                      Container(
-                        width: 7,
-                        height: 7,
-                        decoration: BoxDecoration(
-                          color: p.emerald,
-                          shape: BoxShape.circle,
-                        ),
-                      ),
-                      const SizedBox(width: 9),
-                      Expanded(
-                        child: Text(
-                          'Hari ini',
-                          style: TextStyle(
-                            fontSize: 11,
-                            color: p.textSecondary,
-                          ),
-                        ),
-                      ),
-                      Text(
-                        loading ? '…' : today,
-                        style: TextStyle(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w800,
-                          color: p.textPrimary,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 10),
-                Text(
-                  failed
-                      ? 'Data kunjungan tidak dapat dimuatkan buat masa ini.'
-                      : 'Dikira sekali bagi setiap sesi pelayar.',
-                  style: TextStyle(
-                    color: p.textSecondary,
-                    fontSize: 10,
-                    height: 1.5,
-                  ),
-                ),
+                Icon(Icons.insights_outlined, size: 15, color: p.gold),
+                Text('Kunjungan laman', style: label),
+                Text(total, style: value),
+                Text('·', style: label),
+                Text('Hari ini', style: label),
+                Text(today, style: value),
               ],
             ),
-          );
-        },
-      ),
+          ),
+        );
+      },
     );
   }
 }
