@@ -365,6 +365,10 @@ class _HalamanUtamaState extends State<HalamanUtama>
                                 const SizedBox(height: 12),
                                 preparation,
                               ],
+                              if (VisitCounter.isAvailable) ...<Widget>[
+                                SizedBox(height: box.maxWidth >= 580 ? 16 : 12),
+                                const _VisitStatsCard(compact: true),
+                              ],
                             ],
                           );
                         }
@@ -380,6 +384,10 @@ class _HalamanUtamaState extends State<HalamanUtama>
                                   const _WukufCountdown(),
                                   const SizedBox(height: 16),
                                   preparation,
+                                  if (VisitCounter.isAvailable) ...<Widget>[
+                                    const SizedBox(height: 16),
+                                    const _VisitStatsCard(),
+                                  ],
                                 ],
                               ),
                             ),
@@ -1040,62 +1048,137 @@ class _Welcome extends StatelessWidget {
               if (small) ...<Widget>[
                 const SizedBox(height: 12),
                 const _TodayDate(compact: true),
-                const _VisitCount(compact: true),
               ],
             ],
           ),
         ),
-        if (!small)
-          const Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[_TodayDate(), _VisitCount()],
-          ),
+        if (!small) const _TodayDate(),
       ],
     );
   }
 }
 
-class _VisitCount extends StatelessWidget {
-  const _VisitCount({this.compact = false});
+class _VisitStatsCard extends StatelessWidget {
+  const _VisitStatsCard({this.compact = false});
   final bool compact;
   @override
   Widget build(BuildContext context) {
     final HajjColors p = context.hajjColors;
-    return FutureBuilder<int?>(
-      future: VisitCounter.total(),
-      builder: (BuildContext context, AsyncSnapshot<int?> snapshot) {
-        final int? total = snapshot.data;
-        if (total == null) {
-          return const SizedBox.shrink();
-        }
-        final String label = '${formatVisitCount(total)} kunjungan';
-        return Padding(
-          padding: EdgeInsets.only(top: compact ? 8 : 12),
-          child: Semantics(
-            label: 'Jumlah kunjungan laman: $label',
+    return _Panel(
+      padding: const EdgeInsets.all(22),
+      accent: PrismAccent.blue,
+      child: FutureBuilder<VisitStats>(
+        future: VisitCounter.stats(),
+        builder: (BuildContext context, AsyncSnapshot<VisitStats> snapshot) {
+          final VisitStats? stats = snapshot.data;
+          final bool loading = snapshot.connectionState != ConnectionState.done;
+          final bool failed = !loading && (stats == null || stats.isEmpty);
+          String show(int? v) => v == null ? '—' : formatVisitCount(v);
+          final String total = show(stats?.total);
+          final String today = show(stats?.today);
+
+          return Semantics(
+            label: loading
+                ? 'Memuatkan data kunjungan laman'
+                : 'Kunjungan laman: $total keseluruhan, $today hari ini',
             excludeSemantics: true,
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                Icon(
-                  Icons.visibility_outlined,
-                  size: compact ? 14 : 18,
-                  color: p.gold,
+                Row(
+                  children: <Widget>[
+                    Icon(Icons.insights_outlined, color: p.gold, size: 19),
+                    const SizedBox(width: 9),
+                    Expanded(
+                      child: Text(
+                        'KUNJUNGAN LAMAN',
+                        style: TextStyle(
+                          fontSize: 9,
+                          letterSpacing: 1.2,
+                          fontWeight: FontWeight.w800,
+                          color: p.textSecondary,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-                SizedBox(width: compact ? 8 : 12),
+                const SizedBox(height: 12),
+                Wrap(
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  spacing: 9,
+                  children: <Widget>[
+                    Text(
+                      loading ? '…' : total,
+                      style: TextStyle(
+                        fontFamily: AppFonts.display,
+                        fontSize: compact ? 38 : 48,
+                        height: 1.1,
+                        color: p.emerald,
+                      ),
+                    ),
+                    Text(
+                      'keseluruhan',
+                      style: TextStyle(fontSize: 12, color: p.textSecondary),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 9,
+                  ),
+                  decoration: BoxDecoration(
+                    color: p.emerald.withValues(alpha: .08),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Row(
+                    children: <Widget>[
+                      Container(
+                        width: 7,
+                        height: 7,
+                        decoration: BoxDecoration(
+                          color: p.emerald,
+                          shape: BoxShape.circle,
+                        ),
+                      ),
+                      const SizedBox(width: 9),
+                      Expanded(
+                        child: Text(
+                          'Hari ini',
+                          style: TextStyle(
+                            fontSize: 11,
+                            color: p.textSecondary,
+                          ),
+                        ),
+                      ),
+                      Text(
+                        loading ? '…' : today,
+                        style: TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w800,
+                          color: p.textPrimary,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 10),
                 Text(
-                  label,
+                  failed
+                      ? 'Data kunjungan tidak dapat dimuatkan buat masa ini.'
+                      : 'Dikira sekali bagi setiap sesi pelayar.',
                   style: TextStyle(
-                    fontSize: compact ? 11 : 12,
-                    fontWeight: FontWeight.w600,
                     color: p.textSecondary,
+                    fontSize: 10,
+                    height: 1.5,
                   ),
                 ),
               ],
             ),
-          ),
-        );
-      },
+          );
+        },
+      ),
     );
   }
 }
